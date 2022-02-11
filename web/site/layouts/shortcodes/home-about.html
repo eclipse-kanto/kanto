@@ -1,0 +1,23 @@
+{{ $_hugo_config := `{ "version": 1 }` }}
+{{ $col_id := .Get "color" | default .Ordinal }}
+{{ $height := .Get "height" | default "auto"  }}
+{{ $type   := .Get "type" | default "" }} 
+<a id="td-block-{{ .Ordinal }}" class="td-offset-anchor"></a>
+<section class="td-box td-box--{{ $col_id }} td-box--gradient td-box--height-{{ $height }} pt-5">
+	<div class="row justify-content-center">
+		<img class="justify-content-center pt-5" src="/images/logos/kanto.png" alt="Eclipse Kanto" style="max-width: 500px;" />
+		<!-- <img class="justify-content-center pt-5" src="/images/logos/kanto_c.png" alt="Eclipse Kanto" style="max-width: 500px;" /> -->
+		{{ with .Get "title" }}
+		<div class="row justify-content-center td-box--{{ $col_id }} pt-3 title-section">
+			<h2 class="kanto border-bottom-light border-bottom-light">{{ . }}</h2>
+		</div>
+		{{ end }}
+		<div class="row {{ $type }} pt-4">
+			{{ if eq .Page.File.Ext "md" }}
+				{{ .Inner | markdownify }}
+			{{ else }}
+				{{ .Inner | htmlUnescape | safeHTML }}
+			{{ end }}
+		</div>
+	</div>
+</section>

@@ -1,0 +1,86 @@
+.title-section {
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: $primary;
+}
+
+.kanto-button-container {
+  height: 100px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.kanto-button-container a {
+  text-decoration: none;
+}
+
+.kanto-button {
+  height: 50px;
+  width: 170px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s;
+  border-bottom: 1px !important;
+  border-style: none none solid none !important;
+}
+
+.kanto-button:hover {
+  border-radius: 0.2rem !important;
+}
+
+.kanto-button.kanto {
+  color: $primary !important;
+  border-color: $primary !important;
+}
+
+.kanto-button.kanto:hover {
+  color: $white !important;
+  transform: translate(10px,0px);
+}
+
+.kanto-button.kanto-feature {
+  color: $kanto-feature-color !important;
+  border-color: $kanto-feature-color !important;
+}
+
+.kanto-button.kanto-feature:hover {
+  color: $white !important;
+  background-color: $kanto-arch-color !important;
+}
+
+.kanto-button.kanto-white-arch {
+  color: $white !important;
+  background-color: $kanto-arch-color !important;
+}
+
+.kanto-button.kanto-white-arch:hover {
+  color: $kanto-arch-color !important;
+  background-color: $white !important;
+}
+
+button[aria-expanded=true] .show-collapsed {
+  display: none;
+}
+
+button[aria-expanded=false] .show-expanded {
+  display: none;
+}
+
+// Extra small devices (portrait phones, less than 576px)
+@include media-breakpoint-down(xs) {
+  .kanto-button {
+    height: 35px;
+    width: 130px;
+    font-size: 0.7rem;
+    border-style: solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.2s;
+  }  
+}

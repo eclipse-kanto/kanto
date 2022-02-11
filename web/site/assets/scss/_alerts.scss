@@ -1,0 +1,35 @@
+.alert-primary {
+  border-style: solid !important;
+  border-color: $primary !important;
+  border-width: 0 0 0 4px !important;
+  .alert-heading {
+    color: $primary !important;
+  }
+}
+
+.alert-dark {
+  border-style: solid !important;
+  border-color: $kanto-feature-color !important;
+  border-width: 0 0 0 4px !important;
+  .alert-heading {
+    color: $kanto-feature-color !important;
+  }
+}
+
+.alert-mid {
+  border-style: solid !important;
+  border-color: $kanto-mid-color !important;
+  border-width: 0 0 0 4px !important;
+  .alert-heading {
+    color: $kanto-mid-color !important;
+  }
+}
+
+.alert-light {
+  border-style: solid !important;
+  border-color: $kanto-gold-color !important;
+  border-width: 0 0 0 4px !important;
+  .alert-heading {
+    color: $kanto-gold-color !important;
+  }
+}
