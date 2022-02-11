@@ -1,0 +1,44 @@
+.kanto,
+h2,
+h3 {
+  color: $primary;
+}
+
+h1, .h1 {
+  font-size: 2.5rem;
+  font-weight: 200;
+}
+
+.kanto-feature {
+  color: $kanto-feature-color;
+}
+
+.kanto-highlight {
+  color: $kanto-mid-color;
+  font-weight: 600;
+  font-size: 1.6rem;
+}
+
+.white {
+  color: $white;
+}
+
+.tooltip-inner {
+  background-color: $primary-dark;
+}
+
+.td-toc #TableOfContents a {
+  color: rgba($color: black, $alpha: 0.7);
+}
+
+.td-search-input:not(:focus)  {
+  color: rgba($color: white, $alpha: 0.5);
+}
+
+.text-footer-menu {
+  color: rgba($color: white, $alpha: 0.7);
+}
+
+a.text-footer-menu:hover, a.text-footer-menu:focus {
+  color: $kanto-menu-hover;
+}

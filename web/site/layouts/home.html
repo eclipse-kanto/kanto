@@ -1,0 +1,7 @@
+{{ define "main" }}
+{{ with .Content }}
+{{ . }}
+
+{{ partial "architecture.html" (dict "regular_pages" $.Site.RegularPages "color_bg" "bg-white")}}
+{{ end }}
+{{ end }}

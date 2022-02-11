@@ -1,0 +1,20 @@
+#td-cover-block-0 {
+  background-image: url("/kanto_background.png");
+}
+
+.-bg-kanto-primary {
+  background-attachment: fixed;
+  background-size: cover;
+  color: $white;
+  resize: both;
+}
+
+.-bg-kanto-arch {
+  background-color: $kanto-arch-color;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.bg-dark {
+  background-color: $bg-dark !important;
+}
