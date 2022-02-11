@@ -1,4 +1,4 @@
-![Kanto logo](https://github.com/eclipse-kanto/kanto/raw/master/logo/kanto.svg)
+![Kanto logo](https://github.com/eclipse-kanto/kanto/raw/main/logo/kanto.svg)
 
 # Eclipse Kanto
 
