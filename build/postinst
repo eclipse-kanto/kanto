@@ -1,0 +1,77 @@
+# Automatically added by dh_systemd_enable/12.1.1bv2019.0b1
+if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-deconfigure" ] || [ "$1" = "abort-remove" ] ; then
+    deb-systemd-invoke restart 'mosquitto.service' >/dev/null || true
+
+    # This will only remove masks created by d-s-h on package removal.
+    deb-systemd-helper unmask 'suite-connector.service' >/dev/null || true
+
+    # was-enabled defaults to true, so new installations run enable.
+    if deb-systemd-helper --quiet was-enabled 'suite-connector.service'; then
+        # Enables the unit on first installation, creates new
+        # symlinks on upgrades if the unit file has changed.
+        deb-systemd-helper enable 'suite-connector.service' >/dev/null || true
+    else
+        # Update the statefile to add new symlinks (if any), which need to be
+        # cleaned up on purge. Also remove old symlinks.
+        deb-systemd-helper update-state 'suite-connector.service' >/dev/null || true
+    fi
+
+    # This will only remove masks created by d-s-h on package removal.
+    deb-systemd-helper unmask 'container-management.service' >/dev/null || true
+
+    # was-enabled defaults to true, so new installations run enable.
+    if deb-systemd-helper --quiet was-enabled 'container-management.service'; then
+        # Enables the unit on first installation, creates new
+        # symlinks on upgrades if the unit file has changed.
+        deb-systemd-helper enable 'container-management.service' >/dev/null || true
+    else
+        # Update the statefile to add new symlinks (if any), which need to be
+        # cleaned up on purge. Also remove old symlinks.
+        deb-systemd-helper update-state 'container-management.service' >/dev/null || true
+    fi
+
+    # This will only remove masks created by d-s-h on package removal.
+    deb-systemd-helper unmask 'file-upload.service' >/dev/null || true
+
+    # was-enabled defaults to true, so new installations run enable.
+    if deb-systemd-helper --quiet was-enabled 'file-upload.service'; then
+        # Enables the unit on first installation, creates new
+        # symlinks on upgrades if the unit file has changed.
+        deb-systemd-helper enable 'file-upload.service' >/dev/null || true
+    else
+        # Update the statefile to add new symlinks (if any), which need to be
+        # cleaned up on purge. Also remove old symlinks.
+        deb-systemd-helper update-state 'file-upload.service' >/dev/null || true
+    fi
+
+    # This will only remove masks created by d-s-h on package removal.
+    deb-systemd-helper unmask 'software-update.service' >/dev/null || true
+
+    # was-enabled defaults to true, so new installations run enable.
+    if deb-systemd-helper --quiet was-enabled 'software-update.service'; then
+        # Enables the unit on first installation, creates new
+        # symlinks on upgrades if the unit file has changed.
+        deb-systemd-helper enable 'software-update.service' >/dev/null || true
+    else
+        # Update the statefile to add new symlinks (if any), which need to be
+        # cleaned up on purge. Also remove old symlinks.
+        deb-systemd-helper update-state 'software-update.service' >/dev/null || true
+    fi
+fi
+# End automatically added section
+# Automatically added by dh_systemd_start/12.1.1bv2019.0b1
+if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-deconfigure" ] || [ "$1" = "abort-remove" ] ; then
+    if [ -d /run/systemd/system ]; then
+        systemctl --system daemon-reload >/dev/null || true
+        if [ -n "$2" ]; then
+            _dh_action=restart
+        else
+            _dh_action=start
+        fi
+        deb-systemd-invoke $_dh_action 'suite-connector.service' >/dev/null || true
+        deb-systemd-invoke $_dh_action 'container-management.service' >/dev/null || true
+        deb-systemd-invoke $_dh_action 'file-upload.service' >/dev/null || true
+        deb-systemd-invoke $_dh_action 'software-update.service' >/dev/null || true
+    fi
+fi
+# End automatically added section
