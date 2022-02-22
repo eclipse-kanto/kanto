@@ -1,0 +1,433 @@
+env:
+  - GO111MODULE=on
+  - CGO_ENABLED=0
+builds:
+  # suite-connector builds
+  - id: build-suite-connector
+    dir: ./build-tmp/suite-connector
+    main:  ./cmd/connector
+    binary: suite-connector/suite-connector
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  - id: build-suite-connector-deb
+    dir: ./build-tmp/suite-connector
+    main:  ./cmd/connector
+    binary: suite-connector
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  # container-management builds
+  - id: build-container-management
+    dir: ./build-tmp/container-management
+    main:  ./containerm/daemon
+    binary: container-management/container-management
+    env:
+      - VERSION_PKG=github.com/eclipse-kanto/container-management/containerm
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X {{ .Env.VERSION_PKG }}/version.GitCommit={{ .ShortCommit }} -X {{ .Env.VERSION_PKG }}/version.ProjectVersion={{ .Version }} -X {{ .Env.VERSION_PKG }}/version.APIVersion={{ .Version }} -X {{ .Env.VERSION_PKG }}/version.BuildTime={{ .Date }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  - id: build-container-management-cli
+    dir: ./build-tmp/container-management
+    main: ./containerm/cli
+    binary: container-management/kanto-cm
+    env:
+      - VERSION_PKG=github.com/eclipse-kanto/container-management/containerm
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X {{ .Env.VERSION_PKG }}/version.GitCommit={{ .ShortCommit }} -X {{ .Env.VERSION_PKG }}/version.ProjectVersion={{ .Version }} -X {{ .Env.VERSION_PKG }}/version.APIVersion={{ .Version }} -X {{ .Env.VERSION_PKG }}/version.BuildTime={{ .Date }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  - id: build-container-management-deb
+    dir: ./build-tmp/container-management
+    main:  ./containerm/daemon
+    binary: container-management
+    env:
+      - VERSION_PKG=github.com/eclipse-kanto/container-management/containerm
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X {{ .Env.VERSION_PKG }}/version.GitCommit={{ .ShortCommit }} -X {{ .Env.VERSION_PKG }}/version.ProjectVersion={{ .Version }} -X {{ .Env.VERSION_PKG }}/version.APIVersion={{ .Version }} -X {{ .Env.VERSION_PKG }}/version.BuildTime={{ .Date }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  - id: build-container-management-cli-deb
+    dir: ./build-tmp/container-management
+    main: ./containerm/cli
+    binary: kanto-cm
+    env:
+      - VERSION_PKG=github.com/eclipse-kanto/container-management/containerm
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X {{ .Env.VERSION_PKG }}/version.GitCommit={{ .ShortCommit }} -X {{ .Env.VERSION_PKG }}/version.ProjectVersion={{ .Version }} -X {{ .Env.VERSION_PKG }}/version.APIVersion={{ .Version }} -X {{ .Env.VERSION_PKG }}/version.BuildTime={{ .Date }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  # file-upload builds
+  - id: build-file-upload
+    dir: ./build-tmp/file-upload
+    main:  ./
+    binary: file-upload/file-upload
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  - id: build-file-upload-deb
+    dir: ./build-tmp/file-upload
+    main:  ./
+    binary: file-upload
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  # software-update builds
+  - id: build-software-update
+    dir: ./build-tmp/software-update
+    main:  ./cmd/software-update
+    binary: software-update/software-update
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  - id: build-software-update-deb
+    dir: ./build-tmp/software-update
+    main:  ./cmd/software-update
+    binary: software-update
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w
+    mod_timestamp: '{{ .CommitTimestamp }}'
+archives:
+  - id: kanto-archive-all
+    builds:
+      - build-suite-connector
+      - build-container-management
+      - build-container-management-cli
+      - build-file-upload
+      - build-software-update
+    replacements:
+      amd64: x86_64
+    files:
+      # common files
+      - LICENSE
+      # suite-connector additional files
+      - src: ./build-tmp/suite-connector/NOTICE.md
+        dst: suite-connector
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/suite-connector/cmd/connector/iothub.crt
+        dst: suite-connector
+        strip_parent: true
+        info:
+          mode: 0644
+      # container-management additional files
+      - src: ./build-tmp/container-management/NOTICE.md
+        dst: container-management
+        strip_parent: true
+        info:
+          mode: 0644
+      # file-upload additional files
+      - src: ./build-tmp/file-upload/NOTICE.md
+        dst: file-upload
+        strip_parent: true
+        info:
+          mode: 0644
+      # software-update additional files
+      - src: ./build-tmp/software-update/NOTICE.md
+        dst: software-update
+        strip_parent: true
+        info:
+          mode: 0644
+nfpms:
+  - builds:
+      - build-suite-connector-deb
+      - build-container-management-deb
+      - build-container-management-cli-deb
+      - build-file-upload-deb
+      - build-software-update-deb
+    replacements:
+      amd64: x86_64
+    maintainer: Contributors to the Eclipse Foundation, Kanto Project <kanto-dev@eclipse.org>
+    description: |-
+      Eclipse Kanto™ is a modular IoT edge software that enables devices for IoT with all essentials
+      like cloud connectivity, digital twins, local communication, container management,
+      and software updates - all configurable and remotely manageable by an IoT cloud ecosystem of choice.
+    homepage: https://eclipse.org/kanto
+    license: EPL-2.0
+    formats:
+      - deb
+    dependencies:
+      - containerd.io
+      - mosquitto
+    scripts:
+      postinstall: "build/postinst"
+      preremove: "build/prerm"
+      postremove: "build/postrm"
+    contents:
+      # suite-connector additional resources
+      - src: ./build-tmp/suite-connector/resources/suite-connector.service
+        dst: /etc/systemd/system/suite-connector.service
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/suite-connector/resources/config.json
+        dst: /etc/suite-connector/config.json
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/suite-connector/cmd/connector/iothub.crt
+        dst: /etc/suite-connector/iothub.crt
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/suite-connector/NOTICE.md
+        dst: /usr/share/doc/suite-connector/NOTICE.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/suite-connector/README.md
+        dst: /usr/share/doc/suite-connector/README.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/suite-connector/LICENSE
+        dst: /usr/share/doc/suite-connector/LICENSE
+        file_info:
+          mode: 0644
+      - src: ./build/suite-connector.conf
+        dst: /etc/mosquitto/conf.d/suite-connector.conf
+        type: config
+        file_info:
+          mode: 0644
+      # container-management additional resources
+      - src: ./build-tmp/container-management/containerm/resources/container-management.service
+        dst: /etc/systemd/system/container-management.service
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/container-management/containerm/resources/config.json
+        dst: /etc/container-management/config.json
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/container-management/NOTICE.md
+        dst: /usr/share/doc/container-management/NOTICE.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/container-management/README.md
+        dst: /usr/share/doc/container-management/README.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/container-management/LICENSE
+        dst: /usr/share/doc/container-management/LICENSE
+        file_info:
+          mode: 0644
+      # file-upload additional resources
+      - src: ./build-tmp/file-upload/resources/file-upload.service
+        dst: /etc/systemd/system/file-upload.service
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/file-upload/resources/config.json
+        dst: /etc/file-upload/config.json
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/file-upload/NOTICE.md
+        dst: /usr/share/doc/file-upload/NOTICE.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/file-upload/README.md
+        dst: /usr/share/doc/file-upload/README.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/file-upload/LICENSE
+        dst: /usr/share/doc/file-upload/LICENSE
+        file_info:
+          mode: 0644
+      # software-update additional resources
+      - src: ./build-tmp/software-update/resources/software-update.service
+        dst: /etc/systemd/system/software-update.service
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/software-update/resources/config.json
+        dst: /etc/software-update/config.json
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/software-update/NOTICE.md
+        dst: /usr/share/doc/software-update/NOTICE.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/software-update/README.md
+        dst: /usr/share/doc/software-update/README.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/software-update/LICENSE
+        dst: /usr/share/doc/software-update/LICENSE
+        file_info:
+          mode: 0644
+checksum:
+  name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+release:
+  #discussion_category_name: Announcement
+  prerelease: auto
+  mode: prepend
+  header: |
+    ## Eclipse Kanto {{ .Tag }} now available!
+    ### {{ .Date }}
+
+    Check out what's new in Eclipse Kanto {{ .Tag }}!
+  footer: |
+    ## Sincere thanks to all contributors for making this release possible!
