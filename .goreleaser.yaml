@@ -305,7 +305,7 @@ nfpms:
     formats:
       - deb
     dependencies:
-      - containerd.io
+      - containerd.io | containerd
       - mosquitto
     scripts:
       postinstall: "build/postinst"
