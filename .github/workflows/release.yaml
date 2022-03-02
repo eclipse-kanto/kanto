@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: eclipse-kanto/suite-connector
-          path: ${{ env.BUILD_TMP }}/suite-connector'
+          path: ${{ env.BUILD_TMP }}/suite-connector
           ref: ${{ github.ref }}
           token: ${{ secrets.WF_AUTH }}
       - name: Checkout container-management
@@ -60,3 +60,7 @@ jobs:
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GOPATH is no longer exported by the actions/setup-go@v2
+          # https://github.com/actions/setup-go/issues/12#issuecomment-604605595
+          # https://github.com/goreleaser/goreleaser-action/issues/267
+          GOPATH: /home/runner/go
