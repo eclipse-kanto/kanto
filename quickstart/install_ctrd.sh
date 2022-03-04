@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Copyright (c) 2022 Contributors to the Eclipse Foundation
 #
@@ -86,7 +86,7 @@ add_debian_backport_repo() {
     fi
 }
 
-install_containerd_ce() {
+install_containerd_io() {
     pre_reqs="apt-transport-https ca-certificates curl"
     if [ "$lsb_dist" = "debian" ]; then
         # libseccomp2 does not exist for debian jessie main repos for aarch64
@@ -112,43 +112,46 @@ install_containerd_ce() {
 }
 
 #-----------------------------------------------------------
-set -e
+install() {
+    set -e
 
-user="$(id -un 2>/dev/null || true)"
+    user="$(id -un 2>/dev/null || true)"
 
-
-sh_c='sh -c'
-if [ "$user" != 'root' ]; then
-    if command_exists sudo; then
-            sh_c='sudo -E sh -c'
-    elif command_exists su; then
-            sh_c='su -c'
-    else
-            cat >&2 <<-'EOF'
+    sh_c='sh -c'
+    if [ "$user" != 'root' ]; then
+        if command_exists sudo; then
+                sh_c='sudo -E sh -c'
+        elif command_exists su; then
+                sh_c='su -c'
+        else
+                cat >&2 <<-'EOF'
             Error: this installer needs the ability to run commands as root.
             We are unable to find either "sudo" or "su" available to make this happen.
 EOF
-            exit 1
+                exit 1
+        fi
     fi
-fi
 
-set +e
+    set +e
 
-# Get distro
-lsb_dist=$( get_distribution )
-lsb_dist="$(echo "$lsb_dist" | tr '[:upper:]' '[:lower:]')"
+    # Get distro
+    lsb_dist=$( get_distribution )
+    lsb_dist="$(echo "$lsb_dist" | tr '[:upper:]' '[:lower:]')"
 
-# Get and check distro version
-dist_version=$( get_distribution_version ) || exit 1
-dist_version="$(echo "$dist_version" | tr '[:upper:]' '[:lower:]')"
-echo "Target installation $lsb_dist's version is $dist_version"
+    # Get and check distro version
+    dist_version=$( get_distribution_version ) || exit 1
+    dist_version="$(echo "$dist_version" | tr '[:upper:]' '[:lower:]')"
+    echo "Target installation $lsb_dist's version is $dist_version"
 
-# Install containerd.io package
-install_containerd_ce || exit 1
+    # Install containerd.io package
+    install_containerd_io || exit 1
 
-# Check installation
-if command_exists ctr && [ -e /var/run/containerd/containerd.sock ]; then
-    (
-        $sh_c 'ctr version'
-    ) || exit 1
-fi
+    # Check installation
+    if command_exists ctr && [ -e /var/run/containerd/containerd.sock ]; then
+        (
+            $sh_c 'ctr version'
+        ) || exit 1
+    fi
+}
+
+install
