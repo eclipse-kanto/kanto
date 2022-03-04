@@ -15,7 +15,8 @@
 export HONO_EP=hono.eclipseprojects.io
 # The Hono tenant to be created
 export TENANT=
-# The identifier of the device on the tenant - Note! It's important for the ID to follow the convention namespace:name (e.g. quickstart:raspberry)
+# The identifier of the device on the tenant
+# Note! It's important for the ID to follow the convention namespace:name (e.g. quickstart:raspberry)
 export DEVICE_ID=
 # The authentication identifier of the device
 export AUTH_ID=
