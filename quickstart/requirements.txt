@@ -9,4 +9,4 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 
-proton~=0.9.1
+python-qpid-proton==0.36.0

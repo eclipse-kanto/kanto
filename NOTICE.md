@@ -51,6 +51,12 @@ PrismJS/prism (1.25.0)
 * Project: https://github.com/PrismJS/prism
 * Source:  https://github.com/PrismJS/prism/releases/tag/v1.25.0
 
+apache/qpid-proton (0.36.0)
+
+* License: Apache License 2.0
+* Project: https://github.com/apache/qpid-proton
+* Source:  https://github.com/apache/qpid-proton/tree/0.36.0
+
 ## Cryptography
 
 Content may contain encryption software. The country in which you are currently
