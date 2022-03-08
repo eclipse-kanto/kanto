@@ -1,0 +1,8 @@
+{{ $_hugo_config := `{ "version": 1 }` }}
+<a href="{{ index .Params 0 }}" target="_blank">
+            {{ if eq .Page.File.Ext "md" }}
+            {{ .Inner | markdownify }}
+            {{ else }}
+            {{ .Inner | htmlUnescape | safeHTML }}
+            {{ end }}
+</a>

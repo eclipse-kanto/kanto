@@ -10,10 +10,6 @@ $color2:#5e9e56;
 $color3:#a19f20;
 $color4:#ace79a;
 
-// kanto bg colors - not used now
-// $kanto-bg-light: #dfecdd;
-// $kanto-bg-dark: #dae2d9;
-
 $primary: $color1;
 $primary-light: #58a718;
 $primary-dark: #2a4d14;
@@ -21,14 +17,14 @@ $primary-dark: #2a4d14;
 // Home page component
 $kanto-feature-color: $color3;
 $kanto-gold-color: $color3;
-$kanto-mid-color: $color2;// #70994e;
+$kanto-mid-color: $color2;
 $kanto-menu-hover: $color4;
 
 // Home page architecture background
 $kanto-arch-color:#809b73;
 
-// This overrides the font color for the site
-$body-bg:#ececeb;
+// Override theme colors with Kanto ones
+$body-bg: #ececeb;
 $gray-900: $primary-dark;
 $gray-100: $body-bg;
 $secondary: $kanto-gold-color;
