@@ -6,7 +6,7 @@ description: >
 weight: 1
 ---
 
-Suite connector enables the remote connectivity to an IoT cloud ecosystem of choice, powered by Eclipse Hono™ (e.g. <a href="https://www.eclipse.org/packages/packages/cloud2edge" target="_blank">Eclipse Cloud2Edge</a>. and Bosch IoT Suite). It provides the following use cases:
+Suite connector enables the remote connectivity to an IoT cloud ecosystem of choice, powered by Eclipse Hono™ (e.g.  {{% refn "https://www.eclipse.org/packages/packages/cloud2edge" %}}Eclipse Cloud2Edge{{% /refn %}} and Bosch IoT Suite). It provides the following use cases:
 
 * **Enriched remote connection**
   * **Optimized** - to pass the messages via a single underlying connection
