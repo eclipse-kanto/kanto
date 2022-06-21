@@ -2,7 +2,7 @@
 title: "Container management"
 type: docs
 description: >
-  Empower the runtime for containerized edge applications.
+  Empower the edge device for containerized applications.
 weight: 2
 ---
 
