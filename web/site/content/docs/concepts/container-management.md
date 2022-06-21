@@ -6,7 +6,7 @@ description: >
 weight: 2
 ---
 
-Container management enables a lightweight standard runtime which is capable to run containerized applications with all advantages of the technology: isolation, portability and efficiency. The deployment and management are available for local usage or remote usage via an IoT cloud ecosystem. The following use cases are provided:
+Container management enables a lightweight standard runtime which is capable to run containerized applications with all advantages of the technology: isolation, portability and efficiency. The deployment and management are available both locally and remotely via an IoT cloud ecosystem of choice. The following use cases are provided:
 
 * **Standardized approach** - with OCI (Open Container Initiative) compliant container images and runtime
 * **Lightweight runtime** - with a default integration of {{% refn "https://containerd.io/" %}}`containerd`{{% /refn %}} and a possibility for another container technology of choice like podman, LXC and more
@@ -24,4 +24,4 @@ The built image is made available for usage by being pushed to a container image
 To create a new container instance, the container management uses such an image reference and a configuration for it to produce a fully functional container.
 The container lifecycle (start, update, stop, remove) and environment (memory constraints, restart policy, etc.) are also handled by the runtime.
 The container management continuously ensures the applications availability via state awareness and restart policies, provides monitoring via flexible logging and fine-grained resources management.
-All of that is achieved on top of an underlying runtime of choice that takes care of the low-level isolation mechanisms. By default this is {{% refn "https://containerd.io/" %}}`containerd`{{% /refn %}}.
+All of that is achieved on top of an underlying runtime of choice ({{% refn "https://containerd.io/" %}}`containerd`{{% /refn %}} by default) that takes care of the low-level isolation mechanisms.
