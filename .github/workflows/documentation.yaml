@@ -1,0 +1,77 @@
+name: Documentation
+
+on:
+  issues:
+    types:
+      - closed
+
+env:
+  WEBSITE_CONTENT_DIR: hugo-public-dist
+  WEBSITE_SOURCES_DIR: web/site
+  WEBSITE_REF: website
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    if: contains( github.event.issue.labels.*.name, 'documentation')
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Checkout website content
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.WEBSITE_REF }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ env.WEBSITE_CONTENT_DIR }}
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.101.0'
+          extended: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install NPM dependencies
+        working-directory: ${{ env.WEBSITE_SOURCES_DIR }}
+        run: npm ci
+
+      - name: Prune current content
+        working-directory: ${{ env.WEBSITE_CONTENT_DIR }}
+        run: git rm -rf *
+
+      - name: Build website
+        working-directory: ${{ env.WEBSITE_SOURCES_DIR }}
+        run: hugo --minify -d ${{ github.workspace }}/${{ env.WEBSITE_CONTENT_DIR }}
+
+      - name: Check for content changes
+        id: git-check
+        working-directory: ${{ env.WEBSITE_CONTENT_DIR }}
+        run: |
+          git add -A
+          echo ::set-output name=modified::$(if git diff --cached --exit-code --quiet; then echo "false"; else echo "true"; fi)
+
+      - name: Push content changes
+        if: steps.git-check.outputs.modified == 'true'
+        working-directory: ${{ env.WEBSITE_CONTENT_DIR }}
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git commit -am "[#${{ github.event.issue.number }}] Automated content build"
+          git push origin ${{ env.WEBSITE_REF }}
