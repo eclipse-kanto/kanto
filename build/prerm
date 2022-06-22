@@ -1,8 +1,0 @@
-# Automatically added by dh_systemd_start/12.1.1bv2019.0b1
-if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
-    deb-systemd-invoke stop 'software-update.service' >/dev/null || true
-    deb-systemd-invoke stop 'file-upload.service' >/dev/null || true
-    deb-systemd-invoke stop 'container-management.service' >/dev/null || true
-    deb-systemd-invoke stop 'suite-connector.service' >/dev/null || true
-fi
-# End automatically added section
