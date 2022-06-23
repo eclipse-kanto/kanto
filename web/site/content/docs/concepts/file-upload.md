@@ -2,7 +2,7 @@
 title: "File upload"
 type: docs
 description: >
-  Empower the edge device to upload data to various storage providers.
+  Empower the edge device to upload files to various storage providers.
 weight: 4
 ---
 
