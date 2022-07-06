@@ -15,7 +15,7 @@ File upload enables sending of files to a backend storage of choice. It can be u
 
 ![File upload](/kanto/images/docs/concepts/file-upload.png)
 
-## How it works
+### How it works
 
 It's not always possible to inline all the data into exchanged messages. For example, large log files or large diagnostic files cannot be sent as a telemetry message. In such scenarios, file upload can assist enabling massive amount of data to be stored to the backend storage.
 

@@ -16,7 +16,7 @@ Container management enables a lightweight standard runtime which is capable to 
 
 ![Container management](/kanto/images/docs/concepts/container-management.png)
 
-## How it works
+### How it works
 
 A container image packs the application executable along with all its needed dependencies into a single artifact that can be built by a tooling of choice.
 The built image is made available for usage by being pushed to a container image registry where the runtime can refer it to.
