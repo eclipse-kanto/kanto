@@ -59,7 +59,6 @@ The following template illustrates all possible properties with their default va
     "type": "file",
     "context": "edge",
     "files": "",
-    "dumpFiles": false,
     "singleUpload": false,
     "checksum": false,
     "stopTimeout": "30s",
