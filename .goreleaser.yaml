@@ -293,6 +293,7 @@ nfpms:
       - build-container-management-cli-deb
       - build-file-upload-deb
       - build-software-update-deb
+    bindir: /usr/local/bin
     replacements:
       amd64: x86_64
     maintainer: Contributors to the Eclipse Foundation, Kanto Project <kanto-dev@eclipse.org>
@@ -307,6 +308,7 @@ nfpms:
     dependencies:
       - containerd.io | containerd
       - mosquitto
+      - iptables
     scripts:
       postinstall: "build/postinst"
       preremove: "build/prerm"
