@@ -1,4 +1,3 @@
 {{ $_hugo_config := `{ "version": 1 }` }}
-{{ $ref := index .Params 0 }}
-{{ $page := .Page.GetPage $ref }}
-{{- "" -}}<a href="{{$page.RelPermalink}}" target="_blank">{{if eq .Page.File.Ext "md"}}{{.Inner|markdownify}}{{else}}{{.Inner|htmlUnescape|safeHTML}}{{end}}</a>{{- "" -}}
+{{ $relreflink := relref . (index .Params 0) }}
+{{- "" -}}<a href="{{$relreflink}}" target="_blank">{{if eq .Page.File.Ext "md"}}{{.Inner|markdownify}}{{else}}{{.Inner|htmlUnescape|safeHTML}}{{end}}</a>{{- "" -}}

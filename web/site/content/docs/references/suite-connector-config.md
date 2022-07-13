@@ -12,7 +12,7 @@ To control all aspects of the suite connector behavior.
 
 | Property | Type | Default | Description |
 | - | - | - | - |
-| provisioningFile | string ​| provisioning.json | Path to the provisioning file, if {{% relrefn "docs/getting-started/dmp" %}}Bosch IoT Device Management{{% /relrefn %}} is in use |
+| provisioningFile | string ​| provisioning.json | Path to the provisioning file, if {{% relrefn "dmp" %}}Bosch IoT Device Management{{% /relrefn %}} is in use |
 | **Remote connectivity** | | | |
 | address | string | mqtts://mqtt.bosch-iot-hub.com:8883 | Address of the MQTT endpoint that the suite connector will connect for the remote communication, the format is: `scheme://host:port` |
 | deviceId | string | | Device unique identifier |
