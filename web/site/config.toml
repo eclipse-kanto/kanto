@@ -52,6 +52,9 @@ anchor = "smart"
       style = "autumn"
       # Uncomment if you want your chosen highlight style used for code blocks without a specified language
       # guessSyntax = "true"
+  [markup.tableOfContents]
+      endLevel = 6
+      startLevel = 1
 
 # Everything below this are Site Params
 

@@ -15,7 +15,7 @@ Software update enables the deployment and management of various software artifa
 
 ![Software update](/kanto/images/docs/concepts/software-update.png)
 
-## How it works
+### How it works
 
 When the install operation is received at the edge, the download process is initiated. Retrieving the artifacts will continue until they are stored at the edge or their size threshold is reached. If successful, the artifacts are validated for integrity and further processed by the configured script. It is responsible to apply the new software and finish the operation. A status report is announced on each step of the process enabling its transparent monitoring.
 

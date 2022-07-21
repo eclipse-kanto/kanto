@@ -18,17 +18,17 @@ Suite connector enables the remote connectivity to an IoT cloud ecosystem of cho
 
 ![Suite connector](/kanto/images/docs/concepts/suite-connector.png)
 
-## How it works
+### How it works
 
 The suite connector plays a key role in two communication aspects - local and remote.
 
-### Cloud connectivity
+#### Cloud connectivity
 
 To initiate its connection, the edge has to be manually or automatically provisioned. The result of this operation is different parameters and identifiers. Currently, suite connector supports MQTT transport as a connection-oriented and requiring less resources in comparison to AMQP. Once established, the connection is used as a channel to pass the edge telemetry and event messages. The IoT cloud can control the edge via commands and responses.
 
 In case of a connection interruption, the suite connector will switch to offline mode. The message buffer mechanism will be activated to ensure that there is no data loss. Reconnect exponential backoff algorithm will be started to guarantee that no excessive load will be generated to the IoT cloud. All local applications are not affected and can continue to operate as normal. Once the remote connection is restored, all buffered messages will be sent and the edge will be fully restored to online mode.
 
-### Local communication
+#### Local communication
 
 Ensuring that local applications are loosely coupled, Eclipse Hono™ MQTT definitions are in use. The event-driven local messages exchange is done via a MQTT message broker - Eclipse Mosquitto™. The suite connector takes the responsibility to forward these messages to the IoT cloud and vice versa.
 
