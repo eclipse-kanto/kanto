@@ -27,6 +27,7 @@ they communicate remotely with Eclipse Hono only. To run them, you need:
   wget https://github.com/eclipse-kanto/kanto/raw/main/quickstart/hono_commands.py && \
   wget https://github.com/eclipse-kanto/kanto/raw/main/quickstart/hono_events.py && \
   wget https://github.com/eclipse-kanto/kanto/raw/main/quickstart/requirements.txt && \
+  wget https://github.com/eclipse-kanto/kanto/raw/main/quickstart/hono_update_software.py && \
   wget https://github.com/eclipse-kanto/kanto/raw/main/quickstart/hono_provisioning.sh
   ```
 
