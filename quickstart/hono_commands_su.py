@@ -77,7 +77,7 @@ class CommandResponsesHandler(MessagingHandler):
         response = json.loads(event.message.body)
         print(json.dumps(response, indent=2))
         if response["status"] == 204:
-            print('[ok]', command)
+            print('[ok]', "su")
         else:
             print('[error]')
         os.kill(os.getpid(), signal.SIGINT)
@@ -113,24 +113,19 @@ class CommandsInvoker(MessagingHandler):
         print(json.dumps(json.loads(payload), indent=2))
         msg = Message(body=payload, address='{}/{}'.format(address, device_id),
                       content_type="application/json",
-                      subject=command, reply_to=reply_to_address, correlation_id=correlation_id, id=str(uuid.uuid4()))
+                      subject="su", reply_to=reply_to_address, correlation_id=correlation_id, id=str(uuid.uuid4()))
         event.sender.send(msg)
         event.sender.close()
         event.connection.close()
         print('[sent]')
 
 
-CLI_OPT_SU_CMD = "su"
-
 # Parse command line args
-options, reminder = getopt.getopt(sys.argv[2:], 't:d:')
+options, reminder = getopt.getopt(sys.argv[1:], 't:d:')
 opts_dict = dict(options)
 tenant_id = os.environ.get("TENANT") or opts_dict['-t']
 device_id = os.environ.get("DEVICE_ID") or opts_dict['-d']
-command = sys.argv[1]
-if command != CLI_OPT_SU_CMD:
-    print('[error] unsupported command', command)
-    exit(1)
+
 
 # AMQP global configurations
 uri = 'amqp://hono.eclipseprojects.io:15672'
@@ -161,3 +156,4 @@ def handler(signum, frame):
 signal.signal(signal.SIGINT, handler)
 while True:
     pass
+
