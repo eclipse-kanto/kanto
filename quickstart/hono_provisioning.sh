@@ -23,7 +23,7 @@ export AUTH_ID=
 # A password for the device to authenticate with
 export PWD=
 
-curl -i -X POST http://$HONO_EP:28080/v1/tenants/$TENANT
+curl -i -X POST http://$HONO_EP:28080/v1/tenants/$TENANT -H  "content-type: application/json"  --data-binary '{"ext": {"messaging-type": "amqp"}}'
 curl -i -X POST http://$HONO_EP:28080/v1/devices/$TENANT/$DEVICE_ID -H  "content-type: application/json" --data-binary '{"authorities":["auto-provisioning-enabled"]}'
 curl -i -X PUT -H "content-type: application/json" --data-binary '[{
   "type": "hashed-password",
