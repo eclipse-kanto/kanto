@@ -45,7 +45,7 @@ software_update_action_template = Template("""
           },
           "artifacts": [{
             "checksums": {
-              "SHA1": "$sha1"
+              "SHA256": "$sha256"
             },
             "download": {
               "HTTPS": {
@@ -56,7 +56,7 @@ software_update_action_template = Template("""
             "size": 	$size
           }]
         }],
-        "correlationId": "$correlation_id"
+    "correlationId": "$correlation_id"
 }
 """)
 
@@ -104,7 +104,7 @@ class CommandsInvoker(MessagingHandler):
         value = json.dumps(json.loads(software_update_action_template.substitute(
             module_name="hello", version="2.10", size=30,
             url="https://github.com/eclipse-kanto/kanto/raw/main/quickstart/install_hello.sh",
-            sha1="6f0e473ca05d4eba7afaac4dd4455f0d7a1c0138",
+            sha256="03a105509663680d6d5db0e2b5939a77fab68429fca4dd5d181924a73e82b5d9",
             correlation_id=str(uuid.uuid4()))))
 
         payload = ditto_live_inbox_msg_template.substitute(namespace=namespaced_id[0], name=namespaced_id[1],

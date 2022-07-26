@@ -51,7 +51,7 @@ In another terminal, we are ready to spin up a `hello` Debian package at the edg
 that requires the Eclipse Hono tenant (`-t`) and the device identifier (`-d`):
 
 ```shell
-python3 hono_update_software.py -t demo -d demo:device
+python3 hono_commands_su.py -t demo -d demo:device
 ```
 
 ### Verify
