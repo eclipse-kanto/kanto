@@ -25,4 +25,4 @@ enabling its transparent monitoring.
 
 ### What's next
 
-[How to upload file]({{< relref "upload-files" >}})
+[How to upload files]({{< relref "upload-files" >}})

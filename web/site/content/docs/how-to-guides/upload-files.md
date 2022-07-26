@@ -8,7 +8,7 @@ weight: 2
 
 Following the steps below you will upload an example log file to your HTTP file server
 via a publicly available Eclipse Hono sandbox using Eclipse Kanto.
-A couple of simple Eclipse Hono northbound business applications written in Python are
+A simple Eclipse Hono northbound business application written in Python is
 provided to explore the capabilities for remotely uploading and monitoring.
 
 ### Before you begin
@@ -25,6 +25,11 @@ To ensure that all steps in this guide can be executed, you need:
   pip3 install servefile
   ```
 
+* If you don't have an installed and running Eclipse Kanto on your edge device,
+  follow [Install Eclipse Kanto]({{< relref "install" >}})
+* If you don't have a connected Eclipse Kanto to Eclipse Hono sandbox,
+  follow [Explore via Eclipse Hono]({{< relref "hono" >}})
+
 * The {{% refn "https://github.com/eclipse-kanto/kanto/blob/main/quickstart/hono_commands_fu.py" %}} 
   file upload application {{% /refn %}}
 
@@ -35,10 +40,6 @@ To ensure that all steps in this guide can be executed, you need:
   wget https://github.com/eclipse-kanto/kanto/raw/main/quickstart/hono_commands_fu.py
   ```
 
-* If you don't have an installed and running Eclipse Kanto on your edge device,
-  follow [Install Eclipse Kanto]({{< relref "install" >}})
-* If you don't have a connected Eclipse Kanto to Eclipse Hono sandbox,
-  follow [Explore via Eclipse Hono]({{< relref "hono" >}})
 
 ### Upload log file
 
