@@ -39,23 +39,23 @@ ditto_live_inbox_msg_template = Template("""
 software_update_action_template = Template("""
 {
     "softwareModules": [{
-          "softwareModule": {
+        "softwareModule": {
             "name": "$module_name",
             "version": "$version"
-          },
-          "artifacts": [{
+        },
+        "artifacts": [{
             "checksums": {
-              "SHA256": "$sha256"
+                "SHA256": "$sha256"
             },
             "download": {
-              "HTTPS": {
-                "url": "$url"
-              }
+                "HTTPS": {
+                    "url": "$url"
+                }
             },
             "filename": "install.sh",
             "size": 	$size
-          }]
-        }],
+        }]
+    }],
     "correlationId": "$correlation_id"
 }
 """)
