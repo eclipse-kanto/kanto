@@ -26,15 +26,15 @@ To ensure that all steps in this guide can be executed, you need:
   ```
 
 * If you don't have an installed and running Eclipse Kanto on your edge device,
-  follow [Install Eclipse Kanto]({{< relref "install" >}})
+  follow {{% relrefn "install" %}} Install Eclipse Kanto {{% /relrefn %}}
 * If you don't have a connected Eclipse Kanto to Eclipse Hono sandbox,
-  follow [Explore via Eclipse Hono]({{< relref "hono" >}})
+  follow {{% relrefn "hono" %}} Explore via Eclipse Hono {{% /relrefn %}}
 
 * The {{% refn "https://github.com/eclipse-kanto/kanto/blob/main/quickstart/hono_commands_fu.py" %}} 
   file upload application {{% /refn %}}
 
-  Navigate to the `quickstart` folder where the resources from the [Explore via Eclipse Hono]({{< relref "hono" >}})
-  guide are located and execute the following script:
+  Navigate to the `quickstart` folder where the resources from the {{% relrefn "hono" %}} Explore via Eclipse Hono 
+  {{% /relrefn %}} guide are located and execute the following script:
   
   ```shell
   wget https://github.com/eclipse-kanto/kanto/raw/main/quickstart/hono_commands_fu.py

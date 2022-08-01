@@ -32,7 +32,7 @@ ditto_live_inbox_msg_template = Template("""
         "correlation-id": "$correlation_id",
         "response-required": true
     },
-    "path": "/features/$feature/inbox/messages/$action",
+    "path": "/features/AutoUploadable/inbox/messages/$action",
     "value": $value
 }
 """)
@@ -79,13 +79,15 @@ class CommandsInvoker(MessagingHandler):
         print('[sending command]')
         correlation_id = str(uuid.uuid4())
         namespaced_id = device_id.split(':', 1)
-        feature = 'AutoUploadable'
-        upload_options = {"https.url": "http://localhost:8080/suite-connector.log"}
-        value = json.dumps(dict(correlationId=self.correlation_id, options=upload_options))
+        if self.action == "trigger":
+            value = json.dumps(dict(correlation_id=self.correlation_id))
+        else:
+            upload_options = {"https.url": "http://localhost:8080/suite-connector.log"}
+            value = json.dumps(dict(correlationId=self.correlation_id, options=upload_options))
 
         payload = ditto_live_inbox_msg_template.substitute(namespace=namespaced_id[0], name=namespaced_id[1],
                                                            action=self.action, correlation_id=correlation_id,
-                                                           feature=feature, value=value)
+                                                           value=value)
         print(payload)
         msg = Message(body=payload, address='{}/{}'.format(self.address, device_id), content_type="application/json",
                       subject="fu", reply_to=reply_to_address, correlation_id=correlation_id, id=str(uuid.uuid4()))
@@ -130,7 +132,7 @@ command_address = 'command/{}'.format(tenant_id)
 event_address = 'event/{}'.format(tenant_id)
 reply_to_address = 'command_response/{}/replies'.format(tenant_id)
 
-print('[starting] demo commands app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
+print('[starting] file upload commands app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
 
 # Create command invoker and handler
 events_handler = Container(EventsHandler(uri, event_address))
@@ -148,7 +150,7 @@ commands_invoker.run()
 
 
 def handler(signum, frame):
-    print('[stopping] demo commands app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
+    print('[stopping] file upload commands app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
     events_handler.stop()
     response_handler.stop()
     events_thread.join(timeout=5)
