@@ -15,7 +15,7 @@ To control all aspects of the container instance behavior.
 | container_name | string | <container_id> | User-defined name for the container, if omitted the internally auto-generated container ID will be set |
 | **Image** | | | |
 | name | string | | Fully qualified image reference, that follows the {{% refn "https://github.com/opencontainers/image-spec" %}}OCI Image Specification{{% /refn %}}, the format is: `host[:port]/[namespace/]name:tag` |
-| **Image - encryption** | | | |
+| **Image - decryption** | | | |
 | keys | string[] | | Private keys (GPG private key ring, JWE or PKCS7) used for decrypting images, the format is: `filepath_private_key[:password]` |
 | recipients | string[] | | Recipients (only for PKCS7 and must be an x509) used for decrypting images, the format is: `pkcs7:filepath_x509_certificate` |
 | **Networking** | | | |
@@ -27,8 +27,8 @@ To control all aspects of the container instance behavior.
 | proto | string | tcp | Protocol used for the port mapping from container to a host, the possible options are: tcp and udp |
 | container_port | int | | Port number on the container that is mapped to the host port |
 | host_ip | string | 0.0.0.0 | Host IP address |
-| host_port | int | | Host ports beginning range |
-| host_port_end | int | <host_port> | Host ports ending range |
+| host_port | int | | Beginning of the host ports range |
+| host_port_end | int | <host_port> | Ending of the host ports range |
 | **Host resources - devices** | | | |
 | path_on_host | string | | Path to the device on the host |
 | path_in_container | string | | Path to the device in the container |
@@ -36,7 +36,7 @@ To control all aspects of the container instance behavior.
 | privileged | bool | false | Container access all devices on the host |
 | **Host resources - mount points** | | | |
 | source | string | | Path to the file or directory on the host that is referred from within the container |
-| destination | string | | Path to the file or directory is mounted inside the container |
+| destination | string | | Path to the file or directory that is mounted inside the container |
 | propagation_mode | string | rprivate | Propagation mode in which mounts in container are accessible on host, the supported modes are: rprivate, private, rshared, shared, rslave or slave |
 | **Process** | | | |
 | env | string[] | | Environment variables that are set into container |
@@ -52,7 +52,7 @@ To control all aspects of the container instance behavior.
 | **Logging** | | | |
 | type | string | json-file | Type in which the logs are produced, the possible options are: json-file or none |
 | max_files | int | 2 | Maximum log files before getting rotated |
-| max_size | string | 100M | Maximum logs size before getting rotated as a number with a unit suffix of B, K, M and G |
+| max_size | string | 100M | Maximum log file size before getting rotated as a number with a unit suffix of B, K, M and G |
 | root_dir | string | <meta_path>/containers/<container_id> | Root directory where the log messages are stored per a container |
 | mode | string | blocking | Messaging delivery mode from the container to log driver, the supported modes are: blocking and non-blocking |
 | max_buffer_size | string | 1M | Maximum buffer size to store the messages per container as a number with a unit suffix of B, K, M and G |
