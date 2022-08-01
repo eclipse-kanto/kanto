@@ -25,38 +25,34 @@ from proton.reactor import Container
 
 ditto_live_inbox_msg_template = Template("""
 {
-    "topic": "$namespace/$name/things/live/messages/$action",
+    "topic": "$namespace/$name/things/live/messages/install",
     "headers": {
         "content-type": "application/json",
         "correlation-id": "$correlation_id",
         "response-required": true
     },
-    "path": "/features/$feature/inbox/messages/$action",
-    "value": $value
-}
-""")
-
-software_update_action_template = Template("""
-{
-    "softwareModules": [{
-        "softwareModule": {
-            "name": "$module_name",
-            "version": "$version"
-        },
-        "artifacts": [{
-            "checksums": {
-                "SHA256": "$sha256"
+    "path": "/features/SoftwareUpdatable/inbox/messages/install",
+    "value": {
+        "softwareModules": [{
+            "softwareModule": {
+                "name": "install-hello",
+                "version": "1.0.0"
             },
-            "download": {
-                "HTTPS": {
-                    "url": "$url"
-                }
-            },
-            "filename": "install.sh",
-            "size": 	$size
-        }]
-    }],
-    "correlationId": "$correlation_id"
+            "artifacts": [{
+                "checksums": {
+                    "SHA256": "03a105509663680d6d5db0e2b5939a77fab68429fca4dd5d181924a73e82b5d9"
+                },
+                "download": {
+                    "HTTPS": {
+                        "url": "https://github.com/eclipse-kanto/kanto/raw/main/quickstart/install_hello.sh"
+                    }
+                },
+                "filename": "install.sh",
+                "size": 	424
+            }]
+        }],
+        "correlationId": "$correlation_id"
+    }
 }
 """)
 
@@ -98,18 +94,9 @@ class CommandsInvoker(MessagingHandler):
         print('[sending command]')
         correlation_id = str(uuid.uuid4())
         namespaced_id = device_id.split(':', 1)
-        action = "install"
-        feature = "SoftwareUpdatable"
-
-        value = json.dumps(json.loads(software_update_action_template.substitute(
-            module_name="hello", version="2.10", size=30,
-            url="https://github.com/eclipse-kanto/kanto/raw/main/quickstart/install_hello.sh",
-            sha256="03a105509663680d6d5db0e2b5939a77fab68429fca4dd5d181924a73e82b5d9",
-            correlation_id=str(uuid.uuid4()))))
 
         payload = ditto_live_inbox_msg_template.substitute(namespace=namespaced_id[0], name=namespaced_id[1],
-                                                           action=action,
-                                                           correlation_id=correlation_id, feature=feature, value=value)
+                                                           correlation_id=correlation_id)
         print(json.dumps(json.loads(payload), indent=2))
         msg = Message(body=payload, address='{}/{}'.format(address, device_id),
                       content_type="application/json",
@@ -132,7 +119,7 @@ uri = 'amqp://hono.eclipseprojects.io:15672'
 address = 'command/{}'.format(tenant_id)
 reply_to_address = 'command_response/{}/replies'.format(tenant_id)
 
-print('[starting] demo commands app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
+print('[starting] demo software update app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
 
 # Create command invoker and handler
 response_handler = Container(CommandResponsesHandler(uri, reply_to_address))
@@ -146,7 +133,7 @@ commands_invoker.run()
 
 
 def handler(signum, frame):
-    print('[stopping] demo commands app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
+    print('[stopping] demo software update app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
     response_handler.stop()
     thread.join(timeout=5)
     print('[stopped]')
@@ -156,4 +143,3 @@ def handler(signum, frame):
 signal.signal(signal.SIGINT, handler)
 while True:
     pass
-
