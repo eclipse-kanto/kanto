@@ -47,8 +47,8 @@ To control all aspects of the container instance behavior.
 | memory_swap | string | | Total amount of memory and swap that the container can use as a number with a unit suffix of B, K, M and G, use -1 to allow the container to use unlimited swap |
 | **Lifecycle** | | | |
 | type | string | unless-stopped | Container restart policy, the supported types are: always, no, on-failure and unless-stopped |
-| maximum_retry_count | int | 1 | Maximum number of retries that are made to restart the container on exit |
-| retry_timeout | int | 100 | Timeout period for each retry that is made to restart the container on exit |
+| maximum_retry_count | int | | Maximum number of retries that are made to restart the container on exit |
+| retry_timeout | int | | Timeout period in seconds for each retry that is made to restart the container on exit |
 | **Logging** | | | |
 | type | string | json-file | Type in which the logs are produced, the possible options are: json-file or none |
 | max_files | int | 2 | Maximum log files before getting rotated |
@@ -127,8 +127,8 @@ Be aware that some combinations require property removal.
         },
         "restart_policy": {
             "type": "unless-stopped",
-            "maximum_retry_count": 1,
-            "retry_timeout": 100
+            "maximum_retry_count": 0,
+            "retry_timeout": 0
         },
         "log_config": {
             "driver_config": {
