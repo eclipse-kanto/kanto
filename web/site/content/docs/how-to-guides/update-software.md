@@ -19,14 +19,14 @@ script will be downloaded and executed.
 To ensure that your edge device is capable to execute the steps in this guide, you need:
 
 * Debian-based linux distribution and the `apt` command line tool
-* If you don't have an installed and running Eclipse Kanto, follow [Install Eclipse Kanto]({{< relrefn "install" >}})
+* If you don't have an installed and running Eclipse Kanto, follow {{% relrefn "hono" %}} Install Eclipse Kanto {{% /relrefn %}}
 * If you don't have a connected Eclipse Kanto to Eclipse Hono sandbox,
-  follow [Explore via Eclipse Hono]({{< relrefn "hono" >}})
+  follow {{% relrefn "hono" %}} Explore via Eclipse Hono {{% /relrefn %}}
 
 * The {{% refn "https://github.com/eclipse-kanto/kanto/blob/main/quickstart/hono_commands_su.py" %}} 
   software update application {{% /refn %}}
 
-  Navigate to the `quickstart` folder where the resources from the [Explore via Eclipse Hono]({{< relrefn "hono" >}})
+  Navigate to the `quickstart` folder where the resources from the {{% relrefn "hono" %}} Explore via Eclipse Hono {{% /relrefn %}}
   guide are located and execute the following script:
 
   ```shell
