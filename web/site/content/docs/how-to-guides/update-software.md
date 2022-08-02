@@ -19,7 +19,7 @@ script will be downloaded and executed.
 To ensure that your edge device is capable to execute the steps in this guide, you need:
 
 * Debian-based linux distribution and the `apt` command line tool
-* If you don't have an installed and running Eclipse Kanto, follow {{% relrefn "hono" %}} Install Eclipse Kanto {{% /relrefn %}}
+* If you don't have an installed and running Eclipse Kanto, follow {{% relrefn "install" %}} Install Eclipse Kanto {{% /relrefn %}}
 * If you don't have a connected Eclipse Kanto to Eclipse Hono sandbox,
   follow {{% relrefn "hono" %}} Explore via Eclipse Hono {{% /relrefn %}}
 

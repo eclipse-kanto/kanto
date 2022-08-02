@@ -17,8 +17,8 @@ import sys
 import threading
 import time
 import uuid
-from string import Template
 
+from string import Template
 from proton import Message
 from proton.handlers import MessagingHandler
 from proton.reactor import Container
