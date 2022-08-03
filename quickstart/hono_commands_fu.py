@@ -54,9 +54,7 @@ class CommandResponsesHandler(MessagingHandler):
         response = json.loads(event.message.body)
         print(json.dumps(response, indent=2))
         if response["status"] == 204:
-            print('[ok]')
-            if response["topic"].split("/")[-1] == "start":
-                os.kill(os.getpid(), signal.SIGINT)
+            print('[ok]', "fu")
         else:
             print('[error]')
             os.kill(os.getpid(), signal.SIGINT)
@@ -102,6 +100,7 @@ class EventsHandler(MessagingHandler):
         super(EventsHandler, self).__init__()
         self.server = server
         self.receiver_address = receiver_address
+        self.__correlation_id = None
 
     def on_start(self, event):
         conn = event.container.connect(self.server, user="consumer@HONO", password="verysecret")
@@ -109,15 +108,19 @@ class EventsHandler(MessagingHandler):
         print('[events handler connected]')
 
     def on_message(self, event):
-        print('[event received]')
         if event.message.body is not None:
             body = json.loads(event.message.body)
-            print(json.dumps(body, indent=2))
             if body["topic"].split("/")[-1] == "request":
-                correlation_id = body["value"]["correlationId"]
-                Container(CommandsInvoker(uri, command_address, "start", correlation_id=correlation_id)).run()
-        else:
-            print('<empty>')
+                print('[event received]')
+                print(json.dumps(body, indent=2))
+                self.__correlation_id = body["value"]["correlationId"]
+                Container(CommandsInvoker(uri, command_address, "start", correlation_id=self.__correlation_id)).run()
+            elif body["topic"].split("/")[-1] == "modify" and body["path"].split("/")[-1] == "lastUpload":
+                if body["value"]["correlationId"] == self.__correlation_id.split("#")[0]:
+                    print('[event received]')
+                    print(json.dumps(body, indent=2))
+                    if body["value"]["state"] == "SUCCESS":
+                        os.kill(os.getpid(), signal.SIGINT)
 
 
 # Parse command line args
@@ -132,7 +135,7 @@ command_address = 'command/{}'.format(tenant_id)
 event_address = 'event/{}'.format(tenant_id)
 reply_to_address = 'command_response/{}/replies'.format(tenant_id)
 
-print('[starting] file upload commands app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
+print('[starting] demo file upload app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
 
 # Create command invoker and handler
 events_handler = Container(EventsHandler(uri, event_address))
@@ -150,7 +153,7 @@ commands_invoker.run()
 
 
 def handler(signum, frame):
-    print('[stopping] file upload commands app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
+    print('[stopping] demo file upload app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
     events_handler.stop()
     response_handler.stop()
     events_thread.join(timeout=5)
