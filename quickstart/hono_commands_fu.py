@@ -116,7 +116,7 @@ class EventsHandler(MessagingHandler):
                 self.__correlation_id = body["value"]["correlationId"]
                 Container(CommandsInvoker(uri, command_address, "start", correlation_id=self.__correlation_id)).run()
             elif body["topic"].split("/")[-1] == "modify" and body["path"].split("/")[-1] == "lastUpload":
-                if body["value"]["correlationId"] == self.__correlation_id.split("#")[0]:
+                if self.__correlation_id is not None and body["value"]["correlationId"] == self.__correlation_id.split("#")[0]:
                     print('[event received]')
                     print(json.dumps(body, indent=2))
                     if body["value"]["state"] == "SUCCESS":
