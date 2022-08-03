@@ -2,7 +2,7 @@
 title: "Container configuration"
 type: docs
 description: >
-  Customize the deployment of container instance.
+  Customize the deployment of a container instance.
 weight: 2
 ---
 
@@ -37,7 +37,7 @@ To control all aspects of the container instance behavior.
 | **Host resources - mount points** | | | |
 | source | string | | Path to the file or directory on the host that is referred from within the container |
 | destination | string | | Path to the file or directory that is mounted inside the container |
-| propagation_mode | string | rprivate | Propagation mode in which mounts in container are accessible on host, the supported modes are: rprivate, private, rshared, shared, rslave or slave |
+| propagation_mode | string | rprivate | Bind propagation for the mount, supported are: rprivate, private, rshared, shared, rslave or slave |
 | **Process** | | | |
 | env | string[] | | Environment variables that are set into container |
 | cmd | string[] | | Command with arguments that is executed upon container's start |
@@ -54,7 +54,7 @@ To control all aspects of the container instance behavior.
 | max_files | int | 2 | Maximum log files before getting rotated |
 | max_size | string | 100M | Maximum log file size before getting rotated as a number with a unit suffix of B, K, M and G |
 | root_dir | string | <meta_path>/containers/<container_id> | Root directory where the log messages are stored per a container |
-| mode | string | blocking | Messaging delivery mode from the container to log driver, the supported modes are: blocking and non-blocking |
+| mode | string | blocking | Messaging delivery mode from the container to the log driver, the supported modes are: blocking and non-blocking |
 | max_buffer_size | string | 1M | Maximum buffer size to store the messages per container as a number with a unit suffix of B, K, M and G |
 
 ### Example
