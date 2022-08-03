@@ -78,7 +78,7 @@ class CommandsInvoker(MessagingHandler):
         correlation_id = str(uuid.uuid4())
         namespaced_id = device_id.split(':', 1)
         if self.action == "trigger":
-            value = json.dumps(dict(correlation_id=self.correlation_id))
+            value = json.dumps(dict(correlationId=self.correlation_id))
         else:
             upload_options = {"https.url": "http://localhost:8080/suite-connector.log"}
             value = json.dumps(dict(correlationId=self.correlation_id, options=upload_options))
@@ -96,11 +96,11 @@ class CommandsInvoker(MessagingHandler):
 
 
 class EventsHandler(MessagingHandler):
-    def __init__(self, server, receiver_address):
+    def __init__(self, server, receiver_address, correlation_id):
         super(EventsHandler, self).__init__()
         self.server = server
         self.receiver_address = receiver_address
-        self.__correlation_id = None
+        self.correlation_id = correlation_id
 
     def on_start(self, event):
         conn = event.container.connect(self.server, user="consumer@HONO", password="verysecret")
@@ -113,10 +113,10 @@ class EventsHandler(MessagingHandler):
             if body["topic"].split("/")[-1] == "request":
                 print('[event received]')
                 print(json.dumps(body, indent=2))
-                self.__correlation_id = body["value"]["correlationId"]
-                Container(CommandsInvoker(uri, command_address, "start", correlation_id=self.__correlation_id)).run()
+                request_correlation_id = body["value"]["correlationId"]
+                Container(CommandsInvoker(uri, command_address, "start", correlation_id=request_correlation_id)).run()
             elif body["topic"].split("/")[-1] == "modify" and body["path"].split("/")[-1] == "lastUpload":
-                if self.__correlation_id is not None and body["value"]["correlationId"] == self.__correlation_id.split("#")[0]:
+                if body["value"]["correlationId"] == self.correlation_id:
                     print('[event received]')
                     print(json.dumps(body, indent=2))
                     if body["value"]["state"] == "SUCCESS":
@@ -138,9 +138,10 @@ reply_to_address = 'command_response/{}/replies'.format(tenant_id)
 print('[starting] demo file upload app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
 
 # Create command invoker and handler
-events_handler = Container(EventsHandler(uri, event_address))
+upload_correlation_id = "demo.upload"
+events_handler = Container(EventsHandler(uri, event_address, correlation_id=upload_correlation_id))
 response_handler = Container(CommandResponsesHandler(uri, reply_to_address))
-commands_invoker = Container(CommandsInvoker(uri, command_address, "trigger", correlation_id="demo.upload"))
+commands_invoker = Container(CommandsInvoker(uri, command_address, "trigger", correlation_id=upload_correlation_id))
 
 events_thread = threading.Thread(target=lambda: events_handler.run(), daemon=True)
 events_thread.start()
