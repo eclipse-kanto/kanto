@@ -111,15 +111,19 @@ class EventsHandler(MessagingHandler):
         if event.message.body is not None:
             body = json.loads(event.message.body)
             if body["topic"].split("/")[-1] == "request":
-                print('[event received]')
+                print('[request event received]')
                 print(json.dumps(body, indent=2))
                 request_correlation_id = body["value"]["correlationId"]
                 Container(CommandsInvoker(uri, command_address, "start", correlation_id=request_correlation_id)).run()
             elif body["topic"].split("/")[-1] == "modify" and body["path"].split("/")[-1] == "lastUpload":
                 if body["value"]["correlationId"] == self.correlation_id:
-                    print('[event received]')
+                    print('[last upload event received]')
                     print(json.dumps(body, indent=2))
                     if body["value"]["state"] == "SUCCESS":
+                        print('[successful upload]')
+                        os.kill(os.getpid(), signal.SIGINT)
+                    elif body["value"]["state"] == "FAILED":
+                        print('[failed upload]')
                         os.kill(os.getpid(), signal.SIGINT)
 
 
@@ -138,7 +142,7 @@ reply_to_address = 'command_response/{}/replies'.format(tenant_id)
 print('[starting] demo file upload app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
 
 # Create command invoker and handler
-upload_correlation_id = "demo.upload"
+upload_correlation_id = "demo.upload." + str(uuid.uuid4())
 events_handler = Container(EventsHandler(uri, event_address, correlation_id=upload_correlation_id))
 response_handler = Container(CommandResponsesHandler(uri, reply_to_address))
 commands_invoker = Container(CommandsInvoker(uri, command_address, "trigger", correlation_id=upload_correlation_id))
