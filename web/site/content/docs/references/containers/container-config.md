@@ -16,15 +16,15 @@ To control all aspects of the container instance behavior.
 | **Image** | | | |
 | name | string | | Fully qualified image reference, that follows the {{% refn "https://github.com/opencontainers/image-spec" %}}OCI Image Specification{{% /refn %}}, the format is: `host[:port]/[namespace/]name:tag` |
 | **Image - decryption** | | | |
-| keys | string[] | | Private keys (GPG private key ring, JWE or PKCS7) used for decrypting images, the format is: `filepath_private_key[:password]` |
-| recipients | string[] | | Recipients (only for PKCS7 and must be an x509) used for decrypting images, the format is: `pkcs7:filepath_x509_certificate` |
+| keys | string[] | | Private keys (GPG private key ring, JWE or PKCS7) used for decrypting the container's image, the format is: `filepath_private_key[:password]` |
+| recipients | string[] | | Recipients (only for PKCS7 and must be an x509) used for decrypting the container's image, the format is: `pkcs7:filepath_x509_certificate` |
 | **Networking** | | | |
 | domain_name | string | <container_name>-domain | Domain name inside the container, if omitted the `container_name` with suffix -domain will be set |
 | host_name | string | <container_name>-host | Host name for the container, if omitted the `container_name` with suffix -host will be set |
-| network_mode | string | bridge | Container's networking capabilities type based on the desired communication mode, the possible options are: bridge, host or none |
-| extra_hosts | string[] | | Extra host name to IP address mapping added to the container network configuration, the format is: `hostname:ip` |
+| network_mode | string | bridge | The container's networking capabilities type based on the desired communication mode, the possible options are: bridge, host or none |
+| extra_hosts | string[] | | Extra host name to IP address mappings added to the container network configuration, the format is: `hostname:ip` |
 | **Networking - port mappings** | | | |
-| proto | string | tcp | Protocol used for the port mapping from container to a host, the possible options are: tcp and udp |
+| proto | string | tcp | Protocol used for the port mapping from the container to the host, the possible options are: tcp and udp |
 | container_port | int | | Port number on the container that is mapped to the host port |
 | host_ip | string | 0.0.0.0 | Host IP address |
 | host_port | int | | Beginning of the host ports range |
@@ -33,29 +33,29 @@ To control all aspects of the container instance behavior.
 | path_on_host | string | | Path to the device on the host |
 | path_in_container | string | | Path to the device in the container |
 | cgroup_permissions | string | rwm | Cgroup permissions for the device access, possible options are: r(read), w(write), m(mknod) and all combinations are possible |
-| privileged | bool | false | Container access all devices on the host |
+| privileged | bool | false | Grant root capabilities to all devices on the host system |
 | **Host resources - mount points** | | | |
 | source | string | | Path to the file or directory on the host that is referred from within the container |
 | destination | string | | Path to the file or directory that is mounted inside the container |
 | propagation_mode | string | rprivate | Bind propagation for the mount, supported are: rprivate, private, rshared, shared, rslave or slave |
 | **Process** | | | |
-| env | string[] | | Environment variables that are set into container |
-| cmd | string[] | | Command with arguments that is executed upon container's start |
+| env | string[] | | Environment variables that are set into the container |
+| cmd | string[] | | Command with arguments that is executed upon the container's start |
 | **Resource management** | | | |
-| memory | string | | Hard memory limitation of a container as a number with a unit suffix of B, K, M and G, the minimum allowed value is 3M |
-| memory_reservation | string | | Soft memory limitation of a container as a number with a unit suffix of B, K, M and G, if `memory` is specified, the `memory_reservation` must be smaller than it |
+| memory | string | | Hard memory limitation of the container as a number with a unit suffix of B, K, M and G, the minimum allowed value is 3M |
+| memory_reservation | string | | Soft memory limitation of the container as a number with a unit suffix of B, K, M and G, if `memory` is specified, the `memory_reservation` must be smaller than it |
 | memory_swap | string | | Total amount of memory and swap that the container can use as a number with a unit suffix of B, K, M and G, use -1 to allow the container to use unlimited swap |
 | **Lifecycle** | | | |
-| type | string | unless-stopped | Container restart policy, the supported types are: always, no, on-failure and unless-stopped |
+| type | string | unless-stopped | The container restart policy, the supported types are: always, no, on-failure and unless-stopped |
 | maximum_retry_count | int | | Maximum number of retries that are made to restart the container on exit with fail, if the `type` is on-failure |
 | retry_timeout | int | | Timeout period in seconds for each retry that is made to restart the container on exit with fail, if the `type` is on-failure |
 | **Logging** | | | |
 | type | string | json-file | Type in which the logs are produced, the possible options are: json-file or none |
 | max_files | int | 2 | Maximum log files before getting rotated |
 | max_size | string | 100M | Maximum log file size before getting rotated as a number with a unit suffix of B, K, M and G |
-| root_dir | string | <meta_path>/containers/<container_id> | Root directory where the log messages are stored per a container |
+| root_dir | string | <meta_path>/containers/<container_id> | Root directory where the log messages are stored per the container |
 | mode | string | blocking | Messaging delivery mode from the container to the log driver, the supported modes are: blocking and non-blocking |
-| max_buffer_size | string | 1M | Maximum buffer size to store the messages per container as a number with a unit suffix of B, K, M and G |
+| max_buffer_size | string | 1M | Maximum buffer size to store the messages for the container as a number with a unit suffix of B, K, M and G |
 
 ### Example
 
