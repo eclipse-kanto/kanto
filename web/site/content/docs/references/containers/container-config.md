@@ -46,20 +46,20 @@ To control all aspects of the container instance behavior.
 | memory_reservation | string | | Soft memory limitation of the container as a number with a unit suffix of B, K, M and G, if `memory` is specified, the `memory_reservation` must be smaller than it |
 | memory_swap | string | | Total amount of memory and swap that the container can use as a number with a unit suffix of B, K, M and G, use -1 to allow the container to use unlimited swap |
 | **Lifecycle** | | | |
-| type | string | unless-stopped | The container restart policy, the supported types are: always, no, on-failure and unless-stopped |
+| type | string | unless-stopped | The container's restart policy, the supported types are: always, no, on-failure and unless-stopped |
 | maximum_retry_count | int | | Maximum number of retries that are made to restart the container on exit with fail, if the `type` is on-failure |
 | retry_timeout | int | | Timeout period in seconds for each retry that is made to restart the container on exit with fail, if the `type` is on-failure |
 | **Logging** | | | |
 | type | string | json-file | Type in which the logs are produced, the possible options are: json-file or none |
 | max_files | int | 2 | Maximum log files before getting rotated |
 | max_size | string | 100M | Maximum log file size before getting rotated as a number with a unit suffix of B, K, M and G |
-| root_dir | string | <meta_path>/containers/<container_id> | Root directory where the log messages are stored per the container |
+| root_dir | string | <meta_path>/containers/<container_id> | Root directory where the container's log messages are stored |
 | mode | string | blocking | Messaging delivery mode from the container to the log driver, the supported modes are: blocking and non-blocking |
-| max_buffer_size | string | 1M | Maximum buffer size to store the messages for the container as a number with a unit suffix of B, K, M and G |
+| max_buffer_size | string | 1M | Maximum size of the buffered container's log messages in a non-blocking mode as a number with a unit suffix of B, K, M and G |
 
 ### Example
 
-The minimal required information to create the container instance is the receptive container image.
+The minimal required information to create a container instance is the receptive container image.
 
 ```json
 {
@@ -74,7 +74,7 @@ The minimal required information to create the container instance is the recepti
 The configuration can be further adjusted according to the use case. The following template illustrates all possible properties with their default values.
 
 {{% warn %}}
-Be aware that some combinations require property removal.
+Be aware that some combinations may require property removal.
 {{% /warn %}}
 
 ```json
