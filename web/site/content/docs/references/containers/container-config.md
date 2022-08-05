@@ -59,7 +59,7 @@ To control all aspects of the container instance behavior.
 
 ### Example
 
-The minimal required information to create a container instance is the receptive container image.
+The minimal required configuration to spin up an InfluxDB container instance.
 
 ```json
 {
@@ -74,7 +74,7 @@ The minimal required information to create a container instance is the receptive
 The configuration can be further adjusted according to the use case. The following template illustrates all possible properties with their default values.
 
 {{% warn %}}
-Be aware that some combinations may require property removal.
+Be aware that some combinations may require property removal
 {{% /warn %}}
 
 ```json
