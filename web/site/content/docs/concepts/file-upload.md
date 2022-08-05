@@ -22,3 +22,7 @@ It's not always possible to inline all the data into exchanged messages. For exa
 There are different triggers which can initiate the upload operation: periodic or explicit. Once initiated, the request will be sent to the IoT cloud for confirmation or cancellation transferred back to the edge. If starting is confirmed, the files 
 to upload will be selected according to the specified configuration, their integrity check information can be calculated and the transfer of the binary content will begin. A status report is announced on each step of the upload process 
 enabling its transparent monitoring.
+
+### What's next
+
+[How to upload files]({{< relref "upload-files" >}})
