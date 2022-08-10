@@ -26,7 +26,7 @@ builds:
     ldflags:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
-  - id: build-suite-connector-deb
+  - id: build-suite-connector-pkg
     dir: ./build-tmp/suite-connector
     main:  ./cmd/connector
     binary: suite-connector
@@ -100,7 +100,7 @@ builds:
     ldflags:
       - -s -w -X {{ .Env.VERSION_PKG }}/version.GitCommit={{ .ShortCommit }} -X {{ .Env.VERSION_PKG }}/version.ProjectVersion={{ .Version }} -X {{ .Env.VERSION_PKG }}/version.APIVersion={{ .Version }} -X {{ .Env.VERSION_PKG }}/version.BuildTime={{ .Date }}
     mod_timestamp: '{{ .CommitTimestamp }}'
-  - id: build-container-management-deb
+  - id: build-container-management-pkg
     dir: ./build-tmp/container-management
     main:  ./containerm/daemon
     binary: container-management
@@ -125,7 +125,7 @@ builds:
     ldflags:
       - -s -w -X {{ .Env.VERSION_PKG }}/version.GitCommit={{ .ShortCommit }} -X {{ .Env.VERSION_PKG }}/version.ProjectVersion={{ .Version }} -X {{ .Env.VERSION_PKG }}/version.APIVersion={{ .Version }} -X {{ .Env.VERSION_PKG }}/version.BuildTime={{ .Date }}
     mod_timestamp: '{{ .CommitTimestamp }}'
-  - id: build-container-management-cli-deb
+  - id: build-container-management-cli-pkg
     dir: ./build-tmp/container-management
     main: ./containerm/cli
     binary: kanto-cm
@@ -174,7 +174,7 @@ builds:
     ldflags:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
-  - id: build-file-upload-deb
+  - id: build-file-upload-pkg
     dir: ./build-tmp/file-upload
     main:  ./
     binary: file-upload
@@ -221,7 +221,7 @@ builds:
     ldflags:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
-  - id: build-software-update-deb
+  - id: build-software-update-pkg
     dir: ./build-tmp/software-update
     main:  ./cmd/software-update
     binary: software-update
@@ -288,12 +288,12 @@ archives:
           mode: 0644
 nfpms:
   - builds:
-      - build-suite-connector-deb
-      - build-container-management-deb
-      - build-container-management-cli-deb
-      - build-file-upload-deb
-      - build-software-update-deb
-    bindir: /usr/local/bin
+      - build-suite-connector-pkg
+      - build-container-management-pkg
+      - build-container-management-cli-pkg
+      - build-file-upload-pkg
+      - build-software-update-pkg
+    bindir: /usr/bin
     replacements:
       amd64: x86_64
     maintainer: Contributors to the Eclipse Foundation, Kanto Project <kanto-dev@eclipse.org>
@@ -305,10 +305,7 @@ nfpms:
     license: EPL-2.0
     formats:
       - deb
-    dependencies:
-      - containerd.io | containerd
-      - mosquitto
-      - iptables
+      - rpm
     scripts:
       postinstall: "build/postinst"
       preremove: "build/prerm"
@@ -412,6 +409,17 @@ nfpms:
         dst: /usr/share/doc/software-update/LICENSE
         file_info:
           mode: 0644
+    overrides:
+      deb:
+        dependencies:
+          - containerd.io | containerd
+          - mosquitto
+          - iptables
+      rpm:
+        dependencies:
+          - containerd
+          - mosquitto
+          - iptables
 checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'
 snapshot:
