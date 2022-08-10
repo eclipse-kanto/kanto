@@ -29,6 +29,10 @@ To control all aspects of the file upload behavior.
 | broker | string | tcp://localhost:1883 | Address of the MQTT server/broker that the file upload will connect for the local communication, the format is: `scheme://host:port` |
 | username | string | | Username that is a part of the credentials |
 | password | string | | Password that is a part of the credentials |
+| **Local connectivity - TLS** | | | |
+| caCert | string | | PEM encoded CA certificates file |
+| cert | string | | PEM encoded certificate file to authenticate to the MQTT server/broker |
+| key | string | | PEM encoded unencrypted private key file to authenticate to the MQTT server/broker |
 | **Logging** | | | |
 | logFile | string | log/file-upload.log | Path to the file where log messages are written |
 | logLevel | string | INFO | All log messages at this or higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
@@ -70,6 +74,9 @@ The following template illustrates all possible properties with their default va
     "broker": "tcp://localhost:1883",
     "username": "",
     "password": "",
+    "caCert": "",
+    "cert": "",
+    "key": "",
     "logFile": "log/file-upload.log",
     "logLevel": "INFO",
     "logFileCount": 5,
