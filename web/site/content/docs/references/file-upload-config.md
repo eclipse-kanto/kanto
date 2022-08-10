@@ -20,6 +20,8 @@ To control all aspects of the file upload behavior.
 | checksum | bool | false | Send MD5 checksum for uploaded files to ensure data integrity |
 | stopTimeout | string | 30s | Time to wait for running uploads to finish as a sequence of decimal numbers, each with optional fraction and a unit suffix, such as: 300ms, 1.5h, 10m30s, etc., time units are: ns, us (or µs), ms, s, m, h |
 | delete | bool | false | Delete successfully uploaded files |
+| **Upload - TLS** | | | |
+| serverCert| string | | PEM encoded certificate file for secure uploads |
 | **Auto upload** | | | |
 | active | bool | false | Activate periodic uploads |
 | activeFrom | string | | Time from which periodic uploads should be active, in RFC 3339 format, if omitted (and `active` flag is set) current time will be used as start of the periodic uploads |
@@ -67,6 +69,7 @@ The following template illustrates all possible properties with their default va
     "checksum": false,
     "stopTimeout": "30s",
     "delete": false,
+    "serverCert": "",
     "active": false,
     "activeFrom": "",
     "activeTill": "",
