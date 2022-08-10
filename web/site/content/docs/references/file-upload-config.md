@@ -16,7 +16,7 @@ To control all aspects of the file upload behavior.
 | type | string | file | Type of the files that are uploaded by this feature |
 | context | string | edge | Context of the files that are uploaded by this feature, unique in the scope of the `type` |
 | files | string | | Glob pattern to select the files for upload |
-| mode | string | | Restrict files, that can be selected for upload through `upload.files` property of `trigger` operation. Following modes are supported: `strict`, `lax` and 'scoped` |
+| mode | string | strict | Restriction on files that can be dynamically selected for upload, the supported modes are: strict, lax and scoped |
 | singleUpload | bool | false | Forbid triggering of new uploads when there is an upload in progress |
 | checksum | bool | false | Send MD5 checksum for uploaded files to ensure data integrity |
 | stopTimeout | string | 30s | Time to wait for running uploads to finish as a sequence of decimal numbers, each with optional fraction and a unit suffix, such as: 300ms, 1.5h, 10m30s, etc., time units are: ns, us (or µs), ms, s, m, h |
