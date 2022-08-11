@@ -26,7 +26,7 @@ To control all aspects of the system metrics behavior.
 
 ### Example
 
-The minimal required configuration that enables reporting of system metrics.
+The minimal required configuration that enables the auto reporting of system metrics.
 
 ```json
 {
