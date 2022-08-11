@@ -42,7 +42,7 @@ The following template illustrates all possible properties with their default va
 
 ```json
 {
-    "frequency" : "0s"
+    "frequency" : ""
     "broker": "tcp://localhost:1883",
     "username": "",
     "password": "",
