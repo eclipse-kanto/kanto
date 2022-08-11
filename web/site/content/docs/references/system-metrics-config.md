@@ -2,17 +2,17 @@
 title: "System metrics configuration"
 type: docs
 description: >
-  Customize the system metrics generation and publishing to a backend storage.
+  Customize the reporting of system metrics.
 weight: 5
 ---
 
 ### Properties
 
-To control generation and publishing of system metrics.
+To control all aspects of the system metrics behavior.
 
 | Property | Type | Default | Description |
 | - | - | - | - |
-| frequency | string | | Initial frequency of publishing metrics to a backend storage as a sequence of decimal numbers, each with optional fraction and a unit suffix, such as: 300ms, 1.5h, 10m30s, etc., time units are: ns, us (or µs), ms, s, m, h |
+| frequency | string | | Initial frequency of reporting system metrics as a sequence of decimal numbers, each with optional fraction and a unit suffix, such as: 300ms, 1.5h, 10m30s, etc., time units are: ns, us (or µs), ms, s, m, h |
 | **Local connectivity** | | | |
 | broker | string | tcp://localhost:1883 | Address of the MQTT server/broker that the system metrics will connect for the local communication, the format is: `scheme://host:port` |
 | username | string | | Username that is a part of the credentials |
@@ -26,11 +26,12 @@ To control generation and publishing of system metrics.
 
 ### Example
 
-The minimal configuration to activate system metrics is an empty one, but at least a frequency can be specified.
+The minimal required configuration that enables reporting of system metrics.
 
 ```json
 {
-    "frequency": "60s"
+    "frequency": "60s",
+    "logFile": "/var/log/system-metrics/system-metrics.log"
 }
 ```
 
