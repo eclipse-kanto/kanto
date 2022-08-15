@@ -1,11 +1,10 @@
 ---
-title: "Suite Bootstrapping configuration"
+title: "Suite bootstrapping configuration"
 type: docs
 description: >
-  Customize the automatic provisioning of devices.
-weight: 6
+  Customize the automatic provisioning.
+weight: 2
 ---
-
 
 ### Properties
 
@@ -13,15 +12,15 @@ To control all aspects of the suite bootstrapping behavior.
 
 | Property | Type | Default | Description |
 | - | - | - | - |
-| provisioningFile | string | provisioning.json | Path to the provisioning file, if Bosch IoT Device Management is in use |
+| provisioningFile | string | provisioning.json | Path to the provisioning file, if {{% relrefn "dmp" %}}Bosch IoT Device Management{{% /relrefn %}} is in use |
 | **Remote connectivity** | | | |
+| address | string | mqtts://mqtt.bosch-iot-hub.com:8883 | Address of the MQTT endpoint that the suite connector will connect for the remote communication, the format is: `scheme://host:port` |
 | deviceId | string | | Device unique identifier |
-| address | string | mqtts://mqtt.bosch-iot-hub.com:8883 | Address of the MQTT endpoint that the suite connector will connect to the hub, the format is: `scheme://host:port` |
-| tenantId | string | | Tenant unique identifier that the device belongs to |
-| policyId | string | | Policy unique identifier of the digital twin |
 | authId | string | | Authentication unique identifier that is a part of the credentials |
-| clientId | string | | Hub client unique identifier |
+| tenantId | string | | Tenant unique identifier that the device belongs to |
 | password | string | | Password that is a part of the credentials |
+| clientId | string | | MQTT client unique identifier |
+| policyId | string | | Policy unique identifier of the digital twin |
 | **Remote connectivity - TLS** | | | |
 | cacert | string | iothub.crt | A PEM encoded CA certificates file |
 | cert | string | | A PEM encoded certificate file for cloud access |
@@ -37,12 +36,12 @@ To control all aspects of the suite bootstrapping behavior.
 | localUsername | string | | Username that is a part of the credentials |
 | localPassword | string | | Password that is a part of the credentials |
 | **Bootstrapping** | | | |
-| preBootstrapFile | string | | Pre-bootstrapping file |
-| preBootstrapScript | script | | Pre-bootstrapping script, space separated arguments if any |
-| postBootstrapFile | string | | Post-bootstrapping file |
-| postBootstrapScript | script | | Post-bootstrapping script, space separated arguments if any |
-| bootstrapProvisioningFile | string | | Location where bootstrapping provisioning JSON result is stored |
-| maxChunkSize | int | 46080 | Maximum request chunk size in bytes |
+| preBootstrapScript | string | | A file(s), containing pre-bootstrapping script(s), space separated arguments if any, executed before a bootstrapping request |
+| preBootstrapFile | string | | A file path, that is used for output of pre-bootstrapping script(s) |
+| postBootstrapScript | string | | A file(s), containing post-bootstrapping script(s), space separated arguments if any, executed after a bootstrapping request |
+| postBootstrapFile | string | | A file path, that is used for output of post-bootstrapping script(s) |
+| bootstrapProvisioningFile | string | | A file path, where bootstrapping response data is stored as JSON |
+| maxChunkSize | int | 46080 | Maximum chunk size of the request data in bytes |
 | **Logging** | | | |
 | logFile | string | log/suite-bootstrapping.log | Path to the file where log messages are written |
 | logLevel | string | INFO | All log messages at this or higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
@@ -52,17 +51,16 @@ To control all aspects of the suite bootstrapping behavior.
 
 **Example**
 
-The minimal required configuration that enables automatic provisioning of devices.
+The minimal required configuration that enables automatic provisioning.
 
 ```json
 {
+    "address":"hono.eclipseprojects.io:1883",
+    "cacert": "/etc/suite-bootstrapping/iothub.crt",
+    "tenantId": "org.eclipse.kanto",
     "deviceId": "org.eclipse.kanto:exampleDevice",
-    "tenantId": "t1b2d1efcd7d84ef4aee3951c2bb7a921_hub",
-    "policyId": "org.eclipse.kanto:exampleDevice",
     "authId": "org.eclipse.kanto_example",
-    "password": "example_password",
-    "preBootstrapScript": "do_something.bat",
-    "bootstrapProvisioningJson": "bootstrapping-provisioning.json",
+    "password": "secret",
     "logFile": "/var/log/suite-bootstrapping/suite-bootstrapping.log"
 }
 ```
@@ -71,6 +69,10 @@ The minimal required configuration that enables automatic provisioning of device
 
 The configuration can be further adjusted according to the use case.
 The following template illustrates all possible properties with their default values.
+
+{{% warn %}}
+Be aware that some combinations may be incompatible
+{{% /warn %}}
 
 ```json
 {
