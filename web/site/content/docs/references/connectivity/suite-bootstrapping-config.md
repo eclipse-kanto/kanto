@@ -12,9 +12,15 @@ To control all aspects of the suite bootstrapping behavior.
 
 | Property | Type | Default | Description |
 | - | - | - | - |
+| preBootstrapScript | string | | Path to the file and space separated arguments if any, containing pre-bootstrapping script that is executed before a bootstrapping request, producing preBootstrapFile as output |
+| preBootstrapFile | string | | Path to the file, that is used for output of pre-bootstrapping script |
+| postBootstrapScript | string | | Path to the file and space separated arguments if any, containing post-bootstrapping script that is executed after a bootstrapping request, producing postBootstrapFile as output |
+| postBootstrapFile | string | | Path to the file, that is used for output of post-bootstrapping script |
+| bootstrapProvisioningFile | string | | A file path, where bootstrapping response data is stored as JSON |
+| maxChunkSize | int | 46080 | Maximum chunk size of the request data in bytes |
 | provisioningFile | string | provisioning.json | Path to the provisioning file, if {{% relrefn "dmp" %}}Bosch IoT Device Management{{% /relrefn %}} is in use |
 | **Remote connectivity** | | | |
-| address | string | mqtts://mqtt.bosch-iot-hub.com:8883 | Address of the MQTT endpoint that the suite connector will connect for the remote communication, the format is: `scheme://host:port` |
+| address | string | mqtts://mqtt.bosch-iot-hub.com:8883 | Address of the MQTT endpoint that the suite bootstrapping will connect for the remote communication, the format is: `scheme://host:port` |
 | deviceId | string | | Device unique identifier |
 | authId | string | | Authentication unique identifier that is a part of the credentials |
 | tenantId | string | | Tenant unique identifier that the device belongs to |
@@ -31,17 +37,6 @@ To control all aspects of the suite bootstrapping behavior.
 | tpmHandle | int | | TPM 2.0 storage root key handle, the type is unsigned 64-bit integer |
 | tpmKeyPub | string | | File path to the public part of the TPM 2.0 key |
 | tpmKey | string | | File path to the private part of the TPM 2.0 key |
-| **Local connectivity** | | | |
-| localAddress | string | tcp://localhost:1883 | Address of the MQTT server/broker that the suite connector will connect for the local communication, the format is: `scheme://host:port` |
-| localUsername | string | | Username that is a part of the credentials |
-| localPassword | string | | Password that is a part of the credentials |
-| **Bootstrapping** | | | |
-| preBootstrapScript | string | | A file(s), containing pre-bootstrapping script(s), space separated arguments if any, executed before a bootstrapping request |
-| preBootstrapFile | string | | A file path, that is used for output of pre-bootstrapping script(s) |
-| postBootstrapScript | string | | A file(s), containing post-bootstrapping script(s), space separated arguments if any, executed after a bootstrapping request |
-| postBootstrapFile | string | | A file path, that is used for output of post-bootstrapping script(s) |
-| bootstrapProvisioningFile | string | | A file path, where bootstrapping response data is stored as JSON |
-| maxChunkSize | int | 46080 | Maximum chunk size of the request data in bytes |
 | **Logging** | | | |
 | logFile | string | log/suite-bootstrapping.log | Path to the file where log messages are written |
 | logLevel | string | INFO | All log messages at this or higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
@@ -76,31 +71,28 @@ Be aware that some combinations may be incompatible
 
 ```json
 {
+    "preBootstrapScript": "",
+    "preBootstrapFile": "",
+    "postBootstrapScript": "",
+    "postBootstrapFile": "",
+    "bootstrapProvisioningJson": "",
+    "maxChunkSize": 46080,
     "provisioningFile": "provisioning.json",
-    "deviceId": "",
-    "deviceIdPattern": "",
     "address": "mqtts://mqtt.bosch-iot-hub.com:8883",
-    "tenantId": "",
-    "policyId": "",
+    "deviceId": "",
     "authId": "",
-    "clientId": "",
-    "cacert": "iothub.crt",
+    "tenantId": "",
     "password": "",
+    "clientId": "",
+    "policyId": "",
+    "cacert": "iothub.crt",
     "cert": "",
     "key": "",
+    "deviceIdPattern": "",
     "tpmDevice": "",
     "tpmHandle": 0,
     "tpmKeyPub": "",
     "tpmKey": "",
-    "localAddress": "tcp://localhost:1883",
-    "localUsername": "",
-    "localPassword": "",
-    "preBootstrapFile": "",
-    "preBootstrapScript": "",
-    "postBootstrapFile": "",
-    "postBootstrapScript": "",
-    "bootstrapProvisioningJson": "",
-    "maxChunkSize": 46080,
     "logFile": "log/suite-bootstrapping.log",
     "logLevel": "INFO",
     "logFileCount": 5,
