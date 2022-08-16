@@ -29,8 +29,8 @@ To control all aspects of the suite bootstrapping behavior.
 | policyId | string | | Policy unique identifier of the digital twin |
 | **Remote connectivity - TLS** | | | |
 | cacert | string | iothub.crt | A PEM encoded CA certificates file |
-| cert | string | | A PEM encoded certificate file for cloud access |
-| key | string | | A PEM encoded unencrypted private key file for cloud access |
+| cert | string | | PEM encoded certificate file to authenticate to the MQTT endpoint |
+| key | string | | PEM encoded unencrypted private key file to authenticate to the MQTT endpoint |
 | deviceIdPattern | string | | Pattern to generate the device identifier, `{{subject-dn}}` and `{{subject-cn}}` placeholders can be part of it |
 | **Remote connectivity - TLS over TPM** | | | |
 | tpmDevice | string | | Path to the device file or the unix socket to access the TPM 2.0 |
