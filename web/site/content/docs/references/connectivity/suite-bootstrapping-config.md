@@ -12,9 +12,9 @@ To control all aspects of the suite bootstrapping behavior.
 
 | Property | Type | Default | Description |
 | - | - | - | - |
-| preBootstrapScript | string | | Path to the script/command with optional space-separated arguments that is executed before a bootstrapping request, producing `preBootstrapFile` as output |
+| preBootstrapScript | string | | Path to the script/command with optional space-separated arguments that is executed before a bootstrapping request, optionally producing `preBootstrapFile` |
 | preBootstrapFile | string | | Path to the file used as a bootstrapping request data |
-| postBootstrapScript | string | | Path to the script/command with optional space-separated arguments that is executed after a bootstrapping request, producing `postBootstrapFile` as output |
+| postBootstrapScript | string | | Path to the script/command with optional space-separated arguments that is executed after a bootstrapping response, optionally consuming `postBootstrapFile` |
 | postBootstrapFile | string | | Path to the file used for a bootstrapping response data |
 | bootstrapProvisioningFile | string | | Path to the file, that stores provisioning info from bootstrapping response data |
 | maxChunkSize | int | 46080 | Maximum chunk size of the request data in bytes |
@@ -28,7 +28,7 @@ To control all aspects of the suite bootstrapping behavior.
 | clientId | string | | MQTT client unique identifier |
 | policyId | string | | Policy unique identifier of the digital twin |
 | **Remote connectivity - TLS** | | | |
-| cacert | string | iothub.crt | A PEM encoded CA certificates file |
+| cacert | string | iothub.crt | PEM encoded CA certificates file |
 | cert | string | | PEM encoded certificate file to authenticate to the MQTT endpoint |
 | key | string | | PEM encoded unencrypted private key file to authenticate to the MQTT endpoint |
 | deviceIdPattern | string | | Pattern to generate the device identifier, `{{subject-dn}}` and `{{subject-cn}}` placeholders can be part of it |
