@@ -12,11 +12,11 @@ To control all aspects of the suite bootstrapping behavior.
 
 | Property | Type | Default | Description |
 | - | - | - | - |
-| preBootstrapScript | string | | Path to the file and space separated arguments if any, containing pre-bootstrapping script that is executed before a bootstrapping request, producing preBootstrapFile as output |
-| preBootstrapFile | string | | Path to the file, that is used for output of pre-bootstrapping script |
-| postBootstrapScript | string | | Path to the file and space separated arguments if any, containing post-bootstrapping script that is executed after a bootstrapping request, producing postBootstrapFile as output |
-| postBootstrapFile | string | | Path to the file, that is used for output of post-bootstrapping script |
-| bootstrapProvisioningFile | string | | A file path, where bootstrapping response data is stored as JSON |
+| preBootstrapScript | string | | Path to the script/command with optional space-separated arguments that is executed before a bootstrapping request, producing `preBootstrapFile` as output |
+| preBootstrapFile | string | | Path to the output file of pre-bootstrapping script |
+| postBootstrapScript | string | | Path to the script/command with optional space-separated arguments that is executed after a bootstrapping request, producing `postBootstrapFile` as output |
+| postBootstrapFile | string | | Path to the output file of post-bootstrapping script |
+| bootstrapProvisioningFile | string | | Path to the file, that stores provisioning info from bootstrapping response data |
 | maxChunkSize | int | 46080 | Maximum chunk size of the request data in bytes |
 | provisioningFile | string | provisioning.json | Path to the provisioning file, if {{% relrefn "dmp" %}}Bosch IoT Device Management{{% /relrefn %}} is in use |
 | **Remote connectivity** | | | |
@@ -46,7 +46,8 @@ To control all aspects of the suite bootstrapping behavior.
 
 **Example**
 
-The minimal required configuration that enables automatic provisioning.
+The minimal required configuration to connect the publicly available
+{{% refn "https://www.eclipse.org/hono/sandbox/" %}}Eclipse Hono sandbox{{% /refn %}} and request automatic provisioning.
 
 ```json
 {
@@ -75,7 +76,7 @@ Be aware that some combinations may be incompatible
     "preBootstrapFile": "",
     "postBootstrapScript": "",
     "postBootstrapFile": "",
-    "bootstrapProvisioningJson": "",
+    "bootstrapProvisioningFile": "",
     "maxChunkSize": 46080,
     "provisioningFile": "provisioning.json",
     "address": "mqtts://mqtt.bosch-iot-hub.com:8883",
