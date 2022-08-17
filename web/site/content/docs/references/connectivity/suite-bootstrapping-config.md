@@ -13,9 +13,9 @@ To control all aspects of the suite bootstrapping behavior.
 | Property | Type | Default | Description |
 | - | - | - | - |
 | preBootstrapScript | string | | Path to the script/command with optional space-separated arguments that is executed before a bootstrapping request, producing `preBootstrapFile` as output |
-| preBootstrapFile | string | | Path to the output file of pre-bootstrapping script |
+| preBootstrapFile | string | | Path to the file used as a bootstrapping request data |
 | postBootstrapScript | string | | Path to the script/command with optional space-separated arguments that is executed after a bootstrapping request, producing `postBootstrapFile` as output |
-| postBootstrapFile | string | | Path to the output file of post-bootstrapping script |
+| postBootstrapFile | string | | Path to the file used for a bootstrapping response data |
 | bootstrapProvisioningFile | string | | Path to the file, that stores provisioning info from bootstrapping response data |
 | maxChunkSize | int | 46080 | Maximum chunk size of the request data in bytes |
 | provisioningFile | string | provisioning.json | Path to the provisioning file, if {{% relrefn "dmp" %}}Bosch IoT Device Management{{% /relrefn %}} is in use |
