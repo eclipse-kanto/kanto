@@ -52,7 +52,6 @@ The minimal required configuration to connect the publicly available
 ```json
 {
     "address":"hono.eclipseprojects.io:1883",
-    "caCert": "/etc/suite-bootstrapping/iothub.crt",
     "tenantId": "org.eclipse.kanto",
     "deviceId": "org.eclipse.kanto:exampleDevice",
     "authId": "org.eclipse.kanto_example",
