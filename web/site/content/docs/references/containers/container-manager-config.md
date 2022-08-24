@@ -37,7 +37,6 @@ To control all aspects of the container manager behavior.
 | home_dir | string | /var/lib/container-management | Home directory for the network manager data |
 | exec_root_dir | string | /var/run/container-management | Root directory for the network manager's executable artifacts |
 | **Networking - bridge** | | | |
-| disable | bool | false | Forbid the bridge networking |
 | name | string | kanto-cm0 | Bridge name |
 | ip4 | string | | Bridge IPv4 address |
 | fcidr4 | string | | IPv4 address range for the bridge, using the standard CIDR notation |
@@ -136,7 +135,6 @@ Be aware that in the registry configuration the host (used as a key) has to be s
         "home_dir": "/var/lib/container-management",
         "exec_root_dir": "/var/run/container-management",
         "default_bridge": {
-            "disable": false,
             "name": "kanto-cm0",
             "ip4": "",
             "fcidr4": "",
