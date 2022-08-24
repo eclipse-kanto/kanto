@@ -35,6 +35,10 @@ To control all aspects of the suite connector behavior.
 | localAddress | string | tcp://localhost:1883 | Address of the MQTT server/broker that the suite connector will connect for the local communication, the format is: `scheme://host:port` |
 | localUsername | string | | Username that is a part of the credentials |
 | localPassword | string | | Password that is a part of the credentials |
+| **Local connectivity - TLS** | | | |
+| localCACert | string | | PEM encoded CA certificates file |
+| localCert | string | | PEM encoded certificate file to authenticate to the MQTT server/broker |
+| localKey | string | | PEM encoded unencrypted private key file to authenticate to the MQTT server/broker |
 | **Logging** | | | |
 | logFile | string | log/suite-connector.log | Path to the file where log messages are written |
 | logLevel | string | INFO | All log messages at this or higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
