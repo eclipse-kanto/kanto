@@ -21,7 +21,7 @@ To control all aspects of the container instance behavior.
 | **Networking** | | | |
 | domain_name | string | <container_name>-domain | Domain name inside the container, if omitted the `container_name` with suffix -domain will be set |
 | host_name | string | <container_name>-host | Host name for the container, if omitted the `container_name` with suffix -host will be set |
-| network_mode | string | bridge | The container's networking capabilities type based on the desired communication mode, the possible options are: bridge, host or none |
+| network_mode | string | bridge | The container's networking capabilities type based on the desired communication mode, the possible options are: bridge or host |
 | extra_hosts | string[] | | Extra host name to IP address mappings added to the container network configuration, the format is: `hostname:ip` |
 | **Networking - port mappings** | | | |
 | proto | string | tcp | Protocol used for the port mapping from the container to the host, the possible options are: tcp and udp |
