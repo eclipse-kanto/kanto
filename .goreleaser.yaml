@@ -24,7 +24,7 @@ builds:
     gcflags:
       - all=-trimpath={{ .Env.GOPATH }}
     ldflags:
-      - -s -w
+      - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
   - id: build-suite-connector-deb
     dir: ./build-tmp/suite-connector
@@ -47,7 +47,7 @@ builds:
     gcflags:
       - all=-trimpath={{ .Env.GOPATH }}
     ldflags:
-      - -s -w
+      - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
   # container-management builds
   - id: build-container-management
@@ -172,7 +172,7 @@ builds:
     gcflags:
       - all=-trimpath={{ .Env.GOPATH }}
     ldflags:
-      - -s -w
+      - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
   - id: build-file-upload-deb
     dir: ./build-tmp/file-upload
@@ -195,7 +195,7 @@ builds:
     gcflags:
       - all=-trimpath={{ .Env.GOPATH }}
     ldflags:
-      - -s -w
+      - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
   # software-update builds
   - id: build-software-update
@@ -219,7 +219,7 @@ builds:
     gcflags:
       - all=-trimpath={{ .Env.GOPATH }}
     ldflags:
-      - -s -w
+      - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
   - id: build-software-update-deb
     dir: ./build-tmp/software-update
@@ -242,7 +242,7 @@ builds:
     gcflags:
       - all=-trimpath={{ .Env.GOPATH }}
     ldflags:
-      - -s -w
+      - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
 archives:
   - id: kanto-archive-all
