@@ -12,9 +12,9 @@ To control all aspects of the suite bootstrapping behavior.
 
 | Property | Type | Default | Description |
 | - | - | - | - |
-| preBootstrapScript | string | | Path to the script/command with optional space-separated arguments that is executed before a bootstrapping request, optionally producing a `preBootstrapFile` |
+| preBootstrapScript | string[] | | Path to the script/command with an optional sequence of additional flags/parameters that is executed before a bootstrapping request, optionally producing a `preBootstrapFile` |
 | preBootstrapFile | string | | Path to the file used as a bootstrapping request data |
-| postBootstrapScript | string | | Path to the script/command with optional space-separated arguments that is executed after a bootstrapping response, optionally consuming a `postBootstrapFile` |
+| postBootstrapScript | string[] | | Path to the script/command with an optional sequence of additional flags/parameters that is executed after a bootstrapping response, optionally consuming a `postBootstrapFile` |
 | postBootstrapFile | string | | Path to the file used for a bootstrapping response data |
 | bootstrapProvisioningFile | string | | Path to the file that stores the provisioning information from a bootstrapping response |
 | maxChunkSize | int | 46080 | Maximum chunk size of the request data in bytes |
