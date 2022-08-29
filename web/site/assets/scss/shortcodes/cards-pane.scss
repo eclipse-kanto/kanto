@@ -1,0 +1,7 @@
+// This is a temporary workaround, which has to be removed after the project is migrated to a released version of docsy that contains the fix itself: https://github.com/google/docsy/pull/1157
+.card {
+	@extend .td-max-width-on-larger-screens;
+	.highlight {
+		border: none;
+	}
+}
