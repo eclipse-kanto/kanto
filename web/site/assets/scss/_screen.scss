@@ -3,10 +3,11 @@
   .w-lg-75 {
     width: 75% !important;
   }
-  // Sets the content width in blog and docs
-  .td-max-width-on-larger-screens {
-    max-width: 100% !important;
-  }
+}
+
+// Sets the content width in blog and docs
+.td-max-width-on-larger-screens {
+  max-width: 100% !important;
 }
 
 // Overwriting height and padding used for cover blocks
