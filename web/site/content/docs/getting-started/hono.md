@@ -82,6 +82,8 @@ authentication data to establish the remote connection. Update it with the follo
 }
 ```
 
+If you want to use your own Eclipse Hono instance, the value for `address` is replaced by `mqtt://<server-address>:1883`.
+
 Restart the Suite Connector service for the changes to take effect:
 
 ```shell
