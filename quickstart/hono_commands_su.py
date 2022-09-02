@@ -76,7 +76,13 @@ class CommandResponsesHandler(MessagingHandler):
             print('[ok]', "su")
         else:
             print('[error]')
+        event.receiver.close()
+        event.connection.close()
+
+    def on_connection_closed(self, event):
+        print('[closing]')
         os.kill(os.getpid(), signal.SIGINT)
+
 
 
 class CommandsInvoker(MessagingHandler):

@@ -57,7 +57,12 @@ class CommandResponsesHandler(MessagingHandler):
             print('[ok]', "fu")
         else:
             print('[error]')
-            os.kill(os.getpid(), signal.SIGINT)
+            event.receiver.close()
+            event.connection.close()
+
+    def on_connection_closed(self, event):
+        print('[closing]')
+        os.kill(os.getpid(), signal.SIGINT)
 
 
 class CommandsInvoker(MessagingHandler):
@@ -88,7 +93,7 @@ class CommandsInvoker(MessagingHandler):
                                                            value=value)
         print(payload)
         msg = Message(body=payload, address='{}/{}'.format(self.address, device_id), content_type="application/json",
-                      subject="fu", reply_to=reply_to_address, correlation_id=correlation_id, id=str(uuid.uuid4()))
+                      subject=self.action, reply_to=reply_to_address, correlation_id=correlation_id, id=str(uuid.uuid4()))
         event.sender.send(msg)
         event.sender.close()
         event.connection.close()
@@ -121,10 +126,16 @@ class EventsHandler(MessagingHandler):
                     print(json.dumps(body, indent=2))
                     if body["value"]["state"] == "SUCCESS":
                         print('[successful upload]')
-                        os.kill(os.getpid(), signal.SIGINT)
+                        event.receiver.close()
+                        event.connection.close()
                     elif body["value"]["state"] == "FAILED":
                         print('[failed upload]')
-                        os.kill(os.getpid(), signal.SIGINT)
+                        event.receiver.close()
+                        event.connection.close()
+
+    def on_connection_closed(self, event):
+        print('[closing]')
+        os.kill(os.getpid(), signal.SIGINT)
 
 
 # Parse command line args
