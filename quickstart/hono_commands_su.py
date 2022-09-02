@@ -80,9 +80,8 @@ class CommandResponsesHandler(MessagingHandler):
         event.connection.close()
 
     def on_connection_closed(self, event):
-        print('[closing]')
+        print('[connection closed]')
         os.kill(os.getpid(), signal.SIGINT)
-
 
 
 class CommandsInvoker(MessagingHandler):
