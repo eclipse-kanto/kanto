@@ -25,6 +25,7 @@ To control all aspects of the container manager behavior.
 | image_dec_keys | string[] | | Private keys (GPG private key ring, JWE or PKCS7) used for decrypting container images, the format is: `filepath_private_key[:password]` |
 | image_dec_recipients | string[] | | Recipients (only for PKCS7 and must be an x509) used for decrypting container images, the format is: `pkcs7:filepath_x509_certificate` |
 | runc_runtime | string | io.containerd.runc.v2 | Runc communication mode, the possible values are: io.containerd.runtime.v1.linux, io.containerd.runc.v1 and io.containerd.runc.v2 |
+| image_expiry | int | 31 | Expiry time for images, the number of days that an unused image would stay locally cached since it's creation |
 | **Registry access - secure** | | | |
 | user_id | string | | User unique identifier to authenticate to the image registry |
 | password | string | | Password to authenticate to the image registry |
@@ -114,6 +115,7 @@ Be aware that in the registry configuration the host (used as a key) has to be s
         "image_dec_keys": [],
         "image_dec_recipients": [],
         "runc_runtime": "io.containerd.runc.v2",
+        "image_expiry": 31,
         "registry_configurations": {
             "": {
                 "credentials": {
