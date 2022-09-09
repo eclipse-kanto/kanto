@@ -20,9 +20,8 @@ import uuid
 from string import Template
 
 from proton import Message
-from proton._reactor import AtLeastOnce
 from proton.handlers import MessagingHandler
-from proton.reactor import Container
+from proton.reactor import Container, AtLeastOnce
 
 ditto_live_inbox_msg_template = Template("""
 {
