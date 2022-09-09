@@ -302,7 +302,7 @@ nfpms:
       like cloud connectivity, digital twins, local communication, container management,
       and software updates - all configurable and remotely manageable by an IoT cloud ecosystem of choice.
     homepage: https://eclipse.org/kanto
-    license: EPL-2.0
+    license: EPL-2.0 or Apache-2.0
     formats:
       - deb
     dependencies:
