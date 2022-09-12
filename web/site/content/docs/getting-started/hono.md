@@ -81,8 +81,10 @@ authentication data to establish the remote connection. Update it with the follo
   "password":"secret"
 }
 ```
-
-If you want to use your own Eclipse Hono instance, the value for `address` is replaced by `mqtt://<server-address>:1883`.
+{{% tip %}}
+Instead of Eclipse Hono Sandbox a custom Eclipse Hono instance can be used by replacing the address value in accordance
+with the Suite Connector configuration reference
+{{% /tip %}}
 
 Restart the Suite Connector service for the changes to take effect:
 
