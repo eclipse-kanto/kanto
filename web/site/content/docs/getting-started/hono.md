@@ -71,7 +71,6 @@ authentication data to establish the remote connection. Update it with the follo
 
 ```json
 {
-  "caCert": "/etc/suite-connector/iothub.crt",
   "provisioningFile": "/etc/suite-connector/provisioning.json",
   "logFile": "/var/log/suite-connector/suite-connector.log",
   "address":"hono.eclipseprojects.io:1883",
