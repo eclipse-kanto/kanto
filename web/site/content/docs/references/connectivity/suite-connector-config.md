@@ -22,7 +22,7 @@ To control all aspects of the suite connector behavior.
 | clientId | string | | MQTT client unique identifier |
 | policyId | string | | Policy unique identifier of the digital twin |
 | **Remote connectivity - TLS** | | | |
-| cacert | string | iothub.crt | PEM encoded CA certificates file |
+| caCert | string | iothub.crt | PEM encoded CA certificates file |
 | cert | string | | PEM encoded certificate file to authenticate to the MQTT endpoint |
 | key | string | | PEM encoded unencrypted private key file to authenticate to the MQTT endpoint |
 | deviceIdPattern | string | | Pattern to generate the device identifier, `{{subject-dn}}` and `{{subject-cn}}` placeholders can be part of it |
@@ -54,7 +54,7 @@ The minimal required configuration to connect the publicly available
 ```json
 {
     "address":"hono.eclipseprojects.io:1883",
-    "cacert": "/etc/suite-connector/iothub.crt",
+    "caCert": "/etc/suite-connector/iothub.crt",
     "tenantId": "org.eclipse.kanto",
     "deviceId": "org.eclipse.kanto:exampleDevice",
     "authId": "org.eclipse.kanto_example",
@@ -82,7 +82,7 @@ Be aware that some combinations may be incompatible
     "password": "",
     "clientId": "",
     "policyId": "",
-    "cacert": "iothub.crt",
+    "caCert": "iothub.crt",
     "cert": "",
     "key": "",
     "deviceIdPattern": "",
