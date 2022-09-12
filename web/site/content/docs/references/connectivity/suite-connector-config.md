@@ -41,7 +41,7 @@ To control all aspects of the suite connector behavior.
 | localKey | string | | PEM encoded unencrypted private key file to authenticate to the MQTT server/broker |
 | **Logging** | | | |
 | logFile | string | log/suite-connector.log | Path to the file where log messages are written |
-| logLevel | string | INFO | All log messages at this or higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
+| logLevel | string | INFO | All log messages at this or a higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
 | logFileCount | int | 5 | Log file maximum rotations count |
 | logFileMaxAge | int | 28 | Log file rotations maximum age in days, use 0 to not remove old log files |
 | logFileSize | int | 2 | Log file size in MB before it gets rotated |
@@ -54,7 +54,6 @@ The minimal required configuration to connect the publicly available
 ```json
 {
     "address":"hono.eclipseprojects.io:1883",
-    "caCert": "/etc/suite-connector/iothub.crt",
     "tenantId": "org.eclipse.kanto",
     "deviceId": "org.eclipse.kanto:exampleDevice",
     "authId": "org.eclipse.kanto_example",
