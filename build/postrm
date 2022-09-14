@@ -11,6 +11,7 @@ if [ "$1" = "remove" ]; then
         deb-systemd-helper mask 'container-management.service' >/dev/null || true
         deb-systemd-helper mask 'suite-connector.service' >/dev/null || true
         deb-systemd-helper mask 'local-digital-twins.service' >/dev/null || true
+        deb-systemd-helper mask 'suite-bootstrapping.service' >/dev/null || true
         deb-systemd-helper mask 'file-backup.service' >/dev/null || true
         deb-systemd-helper mask 'system-metrics.service' >/dev/null || true
     fi
@@ -28,6 +29,8 @@ if [ "$1" = "purge" ]; then
         deb-systemd-helper unmask 'suite-connector.service' >/dev/null || true
         deb-systemd-helper purge 'local-digital-twins.service' >/dev/null || true
         deb-systemd-helper unmask 'local-digital-twins.service' >/dev/null || true
+        deb-systemd-helper purge 'suite-bootstrapping.service' >/dev/null || true
+        deb-systemd-helper unmask 'suite-bootstrapping.service' >/dev/null || true
         deb-systemd-helper purge 'file-backup.service' >/dev/null || true
         deb-systemd-helper unmask 'file-backup.service' >/dev/null || true
         deb-systemd-helper purge 'system-metrics.service' >/dev/null || true
