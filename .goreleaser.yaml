@@ -553,6 +553,8 @@ nfpms:
           - iptables
         scripts:
           postinstall: "build/postinst_rpm"
+          preremove: "build/prerm_rpm"
+          postremove: "build/postrm_rpm"
     contents:
       # kanto systemd preset file
       - src: ./build/80-kanto.preset

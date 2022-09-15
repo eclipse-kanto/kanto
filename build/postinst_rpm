@@ -1,18 +1,24 @@
+if [ $1 -eq 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
+    # Initial installation
 
-echo "include_dir /etc/mosquitto/conf.d" >> /etc/mosquitto/mosquitto.conf
+    # Configure Mosquitto to look for the suite-connector config file
+    echo "include_dir /etc/mosquitto/conf.d" >> /etc/mosquitto/mosquitto.conf
 
-# use "systemctl preset"
-# instead of "systemctl enable"
-# as per Fedora's guidelines
+    # Use a systemctl preset
+    # instead of "systemctl enable"
+    # as per Fedora's guidelines
 
-# containerd and mosquitto
-systemctl preset containerd.service
-systemctl preset mosquitto.service
+    # Use `:` instead of `true` as this is the usual expansion of rpm scriptlets
 
-# the Kanto services
-systemctl preset suite-connector.service
-systemctl preset container-management.service
-systemctl preset file-upload.service
-systemctl preset software-update.service
-systemctl preset file-backup.service
-systemctl preset system-metrics.service
+    # containerd and mosquitto
+    /usr/lib/systemd/systemd-update-helper install-system-units containerd.service || :
+    /usr/lib/systemd/systemd-update-helper install-system-units mosquitto.service || :
+
+    # The Kanto services
+    /usr/lib/systemd/systemd-update-helper install-system-units suite-connector.service || :
+    /usr/lib/systemd/systemd-update-helper install-system-units container-management.service || :
+    /usr/lib/systemd/systemd-update-helper install-system-units file-upload.service || :
+    /usr/lib/systemd/systemd-update-helper install-system-units software-update.service || :
+    /usr/lib/systemd/systemd-update-helper install-system-units file-backup.service || :
+    /usr/lib/systemd/systemd-update-helper install-system-units system-metrics.service || :
+fi
