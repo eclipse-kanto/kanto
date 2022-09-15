@@ -48,6 +48,34 @@ jobs:
           path: ${{ env.BUILD_TMP }}/software-update
           ref: ${{ github.ref }}
           token: ${{ secrets.WF_AUTH }}
+      - name: Checkout local-digital-twins
+        uses: actions/checkout@v2
+        with:
+          repository: eclipse-kanto/local-digital-twins
+          path: ${{ env.BUILD_TMP }}/local-digital-twins
+          ref: ${{ github.ref }}
+          token: ${{ secrets.WF_AUTH }}
+      - name: Checkout suite-bootstrapping
+        uses: actions/checkout@v2
+        with:
+          repository: eclipse-kanto/suite-bootstrapping
+          path: ${{ env.BUILD_TMP }}/suite-bootstrapping
+          ref: ${{ github.ref }}
+          token: ${{ secrets.WF_AUTH }}
+      - name: Checkout file-backup
+        uses: actions/checkout@v2
+        with:
+          repository: eclipse-kanto/file-backup
+          path: ${{ env.BUILD_TMP }}/file-backup
+          ref: ${{ github.ref }}
+          token: ${{ secrets.WF_AUTH }}
+      - name: Checkout system-metrics
+        uses: actions/checkout@v2
+        with:
+          repository: eclipse-kanto/system-metrics
+          path: ${{ env.BUILD_TMP }}/system-metrics
+          ref: ${{ github.ref }}
+          token: ${{ secrets.WF_AUTH }}
       - name: Set up Go
         uses: actions/setup-go@v2
         with:

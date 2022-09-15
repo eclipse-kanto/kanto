@@ -4,5 +4,9 @@ if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
     deb-systemd-invoke stop 'file-upload.service' >/dev/null || true
     deb-systemd-invoke stop 'container-management.service' >/dev/null || true
     deb-systemd-invoke stop 'suite-connector.service' >/dev/null || true
+    deb-systemd-invoke stop 'local-digital-twins.service' >/dev/null || true
+    deb-systemd-invoke stop 'suite-bootstrapping.service' >/dev/null || true
+    deb-systemd-invoke stop 'file-backup.service' >/dev/null || true
+    deb-systemd-invoke stop 'system-metrics.service' >/dev/null || true
 fi
 # End automatically added section
