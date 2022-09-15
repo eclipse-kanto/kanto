@@ -546,11 +546,11 @@ nfpms:
           - containerd.io | containerd
           - mosquitto
           - iptables
-       rpm:
-         dependencies:
-           - containerd
-           - mosquitto
-           - iptables
+      rpm:
+        dependencies:
+          - containerd
+          - mosquitto
+          - iptables
     contents:
       # suite-connector additional resources
       - src: ./build-tmp/suite-connector/resources/suite-connector.service
