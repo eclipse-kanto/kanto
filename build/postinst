@@ -57,6 +57,35 @@ if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-decon
         # cleaned up on purge. Also remove old symlinks.
         deb-systemd-helper update-state 'software-update.service' >/dev/null || true
     fi
+
+    # This will only remove masks created by d-s-h on package removal.
+    deb-systemd-helper unmask 'file-backup.service' >/dev/null || true
+
+    # was-enabled defaults to true, so new installations run enable.
+    if deb-systemd-helper --quiet was-enabled 'file-backup.service'; then
+        # Enables the unit on first installation, creates new
+        # symlinks on upgrades if the unit file has changed.
+        deb-systemd-helper enable 'file-backup.service' >/dev/null || true
+    else
+        # Update the statefile to add new symlinks (if any), which need to be
+        # cleaned up on purge. Also remove old symlinks.
+        deb-systemd-helper update-state 'file-backup.service' >/dev/null || true
+    fi
+
+    # This will only remove masks created by d-s-h on package removal.
+    deb-systemd-helper unmask 'system-metrics.service' >/dev/null || true
+
+    # was-enabled defaults to true, so new installations run enable.
+    if deb-systemd-helper --quiet was-enabled 'system-metrics.service'; then
+        # Enables the unit on first installation, creates new
+        # symlinks on upgrades if the unit file has changed.
+        deb-systemd-helper enable 'system-metrics.service' >/dev/null || true
+    else
+        # Update the statefile to add new symlinks (if any), which need to be
+        # cleaned up on purge. Also remove old symlinks.
+        deb-systemd-helper update-state 'system-metrics.service' >/dev/null || true
+    fi
+    
 fi
 # End automatically added section
 # Automatically added by dh_systemd_start/12.1.1bv2019.0b1
@@ -72,6 +101,10 @@ if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-decon
         deb-systemd-invoke $_dh_action 'container-management.service' >/dev/null || true
         deb-systemd-invoke $_dh_action 'file-upload.service' >/dev/null || true
         deb-systemd-invoke $_dh_action 'software-update.service' >/dev/null || true
+        deb-systemd-invoke $_dh_action 'local-digital-twins.service' >/dev/null || true
+        deb-systemd-invoke $_dh_action 'suite-bootstrapping.service' >/dev/null || true
+        deb-systemd-invoke $_dh_action 'file-backup.service' >/dev/null || true
+        deb-systemd-invoke $_dh_action 'system-metrics.service' >/dev/null || true
     fi
 fi
 # End automatically added section

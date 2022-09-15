@@ -167,7 +167,7 @@ sidebar_menu_truncate = 80
   name = "Legal"
 
 [[params.links.eclipse]]
-  url = "https://eclipse.org/legal/epl-2.0/"
+  url = "https://github.com/eclipse-kanto/kanto/raw/main/LICENSE"
   name = "License"
 
 [[params.links.eclipse]]

@@ -71,7 +71,6 @@ authentication data to establish the remote connection. Update it with the follo
 
 ```json
 {
-  "cacert": "/etc/suite-connector/iothub.crt",
   "provisioningFile": "/etc/suite-connector/provisioning.json",
   "logFile": "/var/log/suite-connector/suite-connector.log",
   "address":"hono.eclipseprojects.io:1883",
@@ -81,6 +80,10 @@ authentication data to establish the remote connection. Update it with the follo
   "password":"secret"
 }
 ```
+{{% tip %}}
+Instead of Eclipse Hono Sandbox a custom Eclipse Hono instance can be used by replacing the address value in accordance
+with the Suite Connector configuration reference
+{{% /tip %}}
 
 Restart the Suite Connector service for the changes to take effect:
 

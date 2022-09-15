@@ -244,6 +244,194 @@ builds:
     ldflags:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
+    # local-digital-twins builds
+  - id: build-local-digital-twins
+    dir: ./build-tmp/local-digital-twins
+    main:  ./cmd/twins
+    binary: local-digital-twins/local-digital-twins
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  - id: build-local-digital-twins-deb
+    dir: ./build-tmp/local-digital-twins
+    main:  ./cmd/twins
+    binary: local-digital-twins
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+    # suite-bootstrapping builds
+  - id: build-suite-bootstrapping
+    dir: ./build-tmp/suite-bootstrapping
+    main:  ./cmd/bootstrapping
+    binary: suite-bootstrapping/suite-bootstrapping
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  - id: build-suite-bootstrapping-deb
+    dir: ./build-tmp/suite-bootstrapping
+    main:  ./cmd/bootstrapping
+    binary: suite-bootstrapping
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+    # file-backup builds
+  - id: build-file-backup
+    dir: ./build-tmp/file-backup
+    main:  ./
+    binary: file-backup/file-backup
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  - id: build-file-backup-deb
+    dir: ./build-tmp/file-backup
+    main:  ./
+    binary: file-backup
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+    # system-metrics builds
+  - id: build-system-metrics
+    dir: ./build-tmp/system-metrics
+    main:  ./cmd/metrics
+    binary: system-metrics/system-metrics
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  - id: build-system-metrics-deb
+    dir: ./build-tmp/system-metrics
+    main:  ./cmd/metrics
+    binary: system-metrics
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
 archives:
   - id: kanto-archive-all
     builds:
@@ -252,6 +440,10 @@ archives:
       - build-container-management-cli
       - build-file-upload
       - build-software-update
+      - build-local-digital-twins
+      - build-suite-bootstrapping
+      - build-file-backup
+      - build-system-metrics
     replacements:
       amd64: x86_64
     files:
@@ -286,6 +478,40 @@ archives:
         strip_parent: true
         info:
           mode: 0644
+      # local-digital-twins additional files
+      - src: ./build-tmp/local-digital-twins/NOTICE.md
+        dst: local-digital-twins
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/local-digital-twins/cmd/twins/iothub.crt
+        dst: local-digital-twins
+        strip_parent: true
+        info:
+          mode: 0644
+      # suite-bootstrapping additional files
+      - src: ./build-tmp/suite-bootstrapping/NOTICE.md
+        dst: suite-bootstrapping
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/suite-bootstrapping/cmd/bootstrapping/iothub.crt
+        dst: suite-bootstrapping
+        strip_parent: true
+        info:
+          mode: 0644
+      # file-backup additional files
+      - src: ./build-tmp/file-backup/NOTICE.md
+        dst: file-backup
+        strip_parent: true
+        info:
+          mode: 0644
+      # system-metrics additional files
+      - src: ./build-tmp/system-metrics/NOTICE.md
+        dst: system-metrics
+        strip_parent: true
+        info:
+          mode: 0644
 nfpms:
   - builds:
       - build-suite-connector-pkg
@@ -293,6 +519,10 @@ nfpms:
       - build-container-management-cli-pkg
       - build-file-upload-pkg
       - build-software-update-pkg
+      - build-local-digital-twins-deb
+      - build-suite-bootstrapping-deb
+      - build-file-backup-deb
+      - build-system-metrics-deb
     bindir: /usr/bin
     replacements:
       amd64: x86_64
@@ -302,7 +532,7 @@ nfpms:
       like cloud connectivity, digital twins, local communication, container management,
       and software updates - all configurable and remotely manageable by an IoT cloud ecosystem of choice.
     homepage: https://eclipse.org/kanto
-    license: EPL-2.0
+    license: EPL-2.0 or Apache-2.0
     formats:
       - deb
       - rpm
@@ -310,6 +540,17 @@ nfpms:
       postinstall: "build/postinst"
       preremove: "build/prerm"
       postremove: "build/postrm"
+    overrides:
+      deb:
+        dependencies:
+          - containerd.io | containerd
+          - mosquitto
+          - iptables
+       rpm:
+         dependencies:
+           - containerd
+           - mosquitto
+           - iptables
     contents:
       # suite-connector additional resources
       - src: ./build-tmp/suite-connector/resources/suite-connector.service
@@ -409,17 +650,104 @@ nfpms:
         dst: /usr/share/doc/software-update/LICENSE
         file_info:
           mode: 0644
-    overrides:
-      deb:
-        dependencies:
-          - containerd.io | containerd
-          - mosquitto
-          - iptables
-      rpm:
-        dependencies:
-          - containerd
-          - mosquitto
-          - iptables
+        # local-digital-twins additional resources
+      - src: ./build-tmp/local-digital-twins/resources/local-digital-twins.service
+        dst: /etc/systemd/system/local-digital-twins.service
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/local-digital-twins/resources/config.json
+        dst: /etc/local-digital-twins/config.json
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/local-digital-twins/cmd/twins/iothub.crt
+        dst: /etc/local-digital-twins/iothub.crt
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/local-digital-twins/NOTICE.md
+        dst: /usr/share/doc/local-digital-twins/NOTICE.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/local-digital-twins/README.md
+        dst: /usr/share/doc/local-digital-twins/README.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/local-digital-twins/LICENSE
+        dst: /usr/share/doc/local-digital-twins/LICENSE
+        file_info:
+          mode: 0644
+        # suite-bootstrapping additional resources
+      - src: ./build-tmp/suite-bootstrapping/resources/suite-bootstrapping.service
+        dst: /etc/systemd/system/suite-bootstrapping.service
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/suite-bootstrapping/resources/config.json
+        dst: /etc/suite-bootstrapping/config.json
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/suite-bootstrapping/cmd/bootstrapping/iothub.crt
+        dst: /etc/suite-bootstrapping/iothub.crt
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/suite-bootstrapping/NOTICE.md
+        dst: /usr/share/doc/suite-bootstrapping/NOTICE.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/suite-bootstrapping/README.md
+        dst: /usr/share/doc/suite-bootstrapping/README.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/suite-bootstrapping/LICENSE
+        dst: /usr/share/doc/suite-bootstrapping/LICENSE
+        file_info:
+          mode: 0644
+        # file-backup additional resources
+      - src: ./build-tmp/file-backup/resources/file-backup.service
+        dst: /etc/systemd/system/file-backup.service
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/file-backup/resources/config.json
+        dst: /etc/file-backup/config.json
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/file-backup/NOTICE.md
+        dst: /usr/share/doc/file-backup/NOTICE.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/file-backup/README.md
+        dst: /usr/share/doc/file-backup/README.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/file-backup/LICENSE
+        dst: /usr/share/doc/file-backup/LICENSE
+        file_info:
+          mode: 0644
+        # system-metrics additional resources
+      - src: ./build-tmp/system-metrics/resources/system-metrics.service
+        dst: /etc/systemd/system/system-metrics.service
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/system-metrics/resources/config.json
+        dst: /etc/system-metrics/config.json
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/system-metrics/NOTICE.md
+        dst: /usr/share/doc/system-metrics/NOTICE.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/system-metrics/README.md
+        dst: /usr/share/doc/system-metrics/README.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/system-metrics/LICENSE
+        dst: /usr/share/doc/system-metrics/LICENSE
+        file_info:
+          mode: 0644
 checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_checksums.txt'
 snapshot:

@@ -39,7 +39,7 @@ To control all aspects of the suite bootstrapping behavior.
 | tpmKey | string | | File path to the private part of the TPM 2.0 key |
 | **Logging** | | | |
 | logFile | string | log/suite-bootstrapping.log | Path to the file where log messages are written |
-| logLevel | string | INFO | All log messages at this or higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
+| logLevel | string | INFO | All log messages at this or a higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
 | logFileCount | int | 5 | Log file maximum rotations count |
 | logFileMaxAge | int | 28 | Log file rotations maximum age in days, use 0 to not remove old log files |
 | logFileSize | int | 2 | Log file size in MB before it gets rotated |

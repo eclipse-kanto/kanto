@@ -5,9 +5,10 @@
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License 2.0 which is available at
-# http://www.eclipse.org/legal/epl-2.0
+# https://www.eclipse.org/legal/epl-2.0, or the Apache License, Version 2.0
+# which is available at https://www.apache.org/licenses/LICENSE-2.0.
 #
-# SPDX-License-Identifier: EPL-2.0
+# SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
 
 import getopt
 import json
@@ -20,9 +21,8 @@ import uuid
 from string import Template
 
 from proton import Message
-from proton._reactor import AtLeastOnce
 from proton.handlers import MessagingHandler
-from proton.reactor import Container
+from proton.reactor import Container, AtLeastOnce
 
 ditto_live_inbox_msg_template = Template("""
 {
@@ -57,7 +57,12 @@ class CommandResponsesHandler(MessagingHandler):
             print('[ok]', "fu")
         else:
             print('[error]')
-            os.kill(os.getpid(), signal.SIGINT)
+            event.receiver.close()
+            event.connection.close()
+
+    def on_connection_closed(self, event):
+        print('[connection closed]')
+        os.kill(os.getpid(), signal.SIGINT)
 
 
 class CommandsInvoker(MessagingHandler):
@@ -88,7 +93,7 @@ class CommandsInvoker(MessagingHandler):
                                                            value=value)
         print(payload)
         msg = Message(body=payload, address='{}/{}'.format(self.address, device_id), content_type="application/json",
-                      subject="fu", reply_to=reply_to_address, correlation_id=correlation_id, id=str(uuid.uuid4()))
+                      subject=self.action, reply_to=reply_to_address, correlation_id=correlation_id, id=str(uuid.uuid4()))
         event.sender.send(msg)
         event.sender.close()
         event.connection.close()
@@ -121,10 +126,16 @@ class EventsHandler(MessagingHandler):
                     print(json.dumps(body, indent=2))
                     if body["value"]["state"] == "SUCCESS":
                         print('[successful upload]')
-                        os.kill(os.getpid(), signal.SIGINT)
+                        event.receiver.close()
+                        event.connection.close()
                     elif body["value"]["state"] == "FAILED":
                         print('[failed upload]')
-                        os.kill(os.getpid(), signal.SIGINT)
+                        event.receiver.close()
+                        event.connection.close()
+
+    def on_connection_closed(self, event):
+        print('[connection closed]')
+        os.kill(os.getpid(), signal.SIGINT)
 
 
 # Parse command line args
