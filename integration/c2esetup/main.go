@@ -28,6 +28,9 @@ type c2eConfig struct {
 	RegistryHost string
 	RegistryPort int
 
+	RegistryUser     string `def:""`
+	RegistryPassword string `def:""`
+
 	DittoHost string
 	DittoPort int
 
@@ -73,6 +76,9 @@ type resource struct {
 	method string
 	body   string
 
+	user string
+	pass string
+
 	delete bool
 }
 
@@ -113,18 +119,22 @@ func main() {
 	devicePath := fmt.Sprintf("%s/%s", tenantID, deviceID)
 
 	resources := make([]*resource, 0, 4)
-	resources = append(resources, &resource{base: registryAPI, path: devices + devicePath, method: http.MethodPost, body: deviceJSON, delete: true})
+	resources = append(resources, &resource{base: registryAPI, path: devices + devicePath, method: http.MethodPost,
+		body: deviceJSON, user: c2eCfg.RegistryUser, pass: c2eCfg.RegistryPassword, delete: true})
 
 	authID = strings.ReplaceAll(deviceID, ":", "_")
 	auth := fmt.Sprintf(authJSON, authID, devicePass)
-	resources = append(resources, &resource{base: registryAPI, path: credentials + devicePath, method: http.MethodPut, body: auth, delete: false})
+	resources = append(resources, &resource{base: registryAPI, path: credentials + devicePath, method: http.MethodPut,
+		body: auth, user: c2eCfg.RegistryUser, pass: c2eCfg.RegistryPassword, delete: false})
 
 	dittoAPI := fmt.Sprintf("http://%s:%d/api/2", c2eCfg.DittoHost, c2eCfg.DittoPort)
 	policy := fmt.Sprintf(policyJSON, connectionID)
-	resources = append(resources, &resource{base: dittoAPI, path: policies + deviceID, method: http.MethodPut, body: policy, delete: true})
+	resources = append(resources, &resource{base: dittoAPI, path: policies + deviceID, method: http.MethodPut,
+		body: policy, user: c2eCfg.DittoUser, pass: c2eCfg.DittoPassword, delete: true})
 
 	thing := fmt.Sprintf(thingJSON, deviceID)
-	resources = append(resources, &resource{base: dittoAPI, path: things + deviceID, method: http.MethodPut, body: thing, delete: true})
+	resources = append(resources, &resource{base: dittoAPI, path: things + deviceID, method: http.MethodPut,
+		body: thing, user: c2eCfg.DittoUser, pass: c2eCfg.DittoPassword, delete: true})
 
 	if *cleanup {
 		performCleanUp(resources)
@@ -148,7 +158,7 @@ func performSetUp(resources []*resource) int {
 	for i, r := range resources {
 		url := fmt.Sprintf("%s/%s", r.base, r.path)
 
-		if b, err := doRequest(r.method, url, ([]byte)(r.body)); err != nil {
+		if b, err := doRequest(r.method, url, ([]byte)(r.body), r.user, r.pass); err != nil {
 			fmt.Println(err)
 			if b != nil {
 				fmt.Println(b)
@@ -190,7 +200,7 @@ func performCleanUp(resources []*resource) {
 
 		url := fmt.Sprintf("%s/%s", r.base, r.path)
 
-		if _, err := doRequest(http.MethodDelete, url, nil); err != nil {
+		if _, err := doRequest(http.MethodDelete, url, nil, r.user, r.pass); err != nil {
 			fmt.Println(err)
 		} else {
 			fmt.Printf("%s '%s' deleted\n", indent, r.path)
@@ -228,7 +238,7 @@ func writeConfig(path string) error {
 	return ioutil.WriteFile(path, b, 666)
 }
 
-func doRequest(method string, url string, payload []byte) ([]byte, error) {
+func doRequest(method string, url string, payload []byte, user string, pass string) ([]byte, error) {
 	var r io.Reader
 
 	if payload != nil {
@@ -240,7 +250,10 @@ func doRequest(method string, url string, payload []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	req.SetBasicAuth(c2eCfg.DittoUser, c2eCfg.DittoPassword)
+	if user != "" {
+		req.SetBasicAuth(user, pass)
+	}
+
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)

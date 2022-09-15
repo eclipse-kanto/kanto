@@ -28,14 +28,14 @@ func initConfigFromEnv(cfg interface{}, prefix string) error {
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
 
-		configValue := f.Tag.Get("def")
+		configValue, ok := f.Tag.Lookup("def")
 
 		envName := toSnakeCase(f.Name, prefix)
 		if env, ok := os.LookupEnv(envName); ok {
 			configValue = env
 		}
 
-		if configValue == "" {
+		if !ok && configValue == "" {
 			return fmt.Errorf("env variable %s not set", envName)
 		}
 
