@@ -1,0 +1,18 @@
+
+echo "include_dir /etc/mosquitto/conf.d" >> /etc/mosquitto/mosquitto.conf
+
+# use "systemctl preset"
+# instead of "systemctl enable"
+# as per Fedora's guidelines
+
+# containerd and mosquitto
+systemctl preset containerd.service
+systemctl preset mosquitto.service
+
+# the Kanto services
+systemctl preset suite-connector.service
+systemctl preset container-management.service
+systemctl preset file-upload.service
+systemctl preset software-update.service
+systemctl preset file-backup.service
+systemctl preset system-metrics.service
