@@ -60,6 +60,8 @@ var (
 	authID string
 
 	configFile string
+	certFile   string
+	logFile    string
 
 	envVariablesPrefix string
 )
@@ -82,6 +84,8 @@ func main() {
 	flag.StringVar(&devicePass, "devicePass", "123456", "Test device password")
 
 	flag.StringVar(&configFile, "configFile", "/etc/suite-connector/config.json", "Path to Suite Connector config file")
+	flag.StringVar(&certFile, "certFile", "/etc/suite-connector/iothub.crt", "Path to Suite Connector CA certificates file")
+	flag.StringVar(&logFile, "logFile", "/var/log/suite-connector/suite-connector.log", "Path for Suite Connector log file")
 
 	flag.StringVar(&envVariablesPrefix, "envprefix", "SCT", "Test environmental variables prefix")
 
@@ -208,8 +212,8 @@ func writeConfig(path string) error {
 	}
 
 	cfg := &connectorConfig{}
-	cfg.CaCert = "/etc/suite-connector/iothub.crt"
-	cfg.LogFile = "/var/log/suite-connector/suite-connector.log"
+	cfg.CaCert = certFile
+	cfg.LogFile = logFile
 	cfg.Address = fmt.Sprintf("tcp://%s:%d", c2eCfg.MqttAdapterHost, c2eCfg.MqttAdapterPort)
 	cfg.DeviceID = deviceID
 	cfg.TenantID = tenantID
