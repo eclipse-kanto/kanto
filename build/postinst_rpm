@@ -10,7 +10,10 @@ if [ $1 -eq 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
 
     # Use `:` instead of `true` as this is the usual expansion of rpm scriptlets
 
-    # containerd and mosquitto
+    # if mosquitto is already running, restart it to pick up the new configuration
+    /usr/lib/systemd/systemd-update-helper mark-restart-system-units suite-connector.service || :
+
+    # if containerd and mosquitto aren't enabled, enable them
     /usr/lib/systemd/systemd-update-helper install-system-units containerd.service || :
     /usr/lib/systemd/systemd-update-helper install-system-units mosquitto.service || :
 

@@ -16,3 +16,12 @@ if [ $1 -ge 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
     /usr/lib/systemd/systemd-update-helper mark-restart-system-units file-backup.service || :
     /usr/lib/systemd/systemd-update-helper mark-restart-system-units system-metrics.service || :
 fi
+
+# $1 is 0 on uninstall, 1 on upgrade
+
+if [ $1 -eq 0 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
+    # Package uninstall, not upgrade
+
+    # if mosquitto is already running, restart it to pick up the fact that our configs have been removed
+    /usr/lib/systemd/systemd-update-helper mark-restart-system-units suite-connector.service || :
+fi
