@@ -561,6 +561,7 @@ nfpms:
         dst: /usr/lib/systemd/system-preset/80-kanto.preset
         file_info:
           mode: 0644
+        packager: rpm
       # suite-connector additional resources
       - src: ./build-tmp/suite-connector/resources/suite-connector.service
         dst: /etc/systemd/system/suite-connector.service
