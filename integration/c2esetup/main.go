@@ -25,20 +25,17 @@ import (
 )
 
 type c2eConfig struct {
-	RegistryHost string
-	RegistryPort int
+	RegistryAddress string
 
 	RegistryUser     string `def:""`
 	RegistryPassword string `def:""`
 
-	DittoHost string
-	DittoPort int
+	DittoAddress string
 
 	DittoUser     string `def:"ditto"`
 	DittoPassword string `def:"ditto"`
 
-	MqttAdapterHost string
-	MqttAdapterPort int
+	MqttAdapterAddress string
 }
 
 const (
@@ -115,7 +112,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	registryAPI := fmt.Sprintf("http://%s:%d/v1", c2eCfg.RegistryHost, c2eCfg.RegistryPort)
+	registryAPI := fmt.Sprintf("%s/v1", strings.TrimSuffix(c2eCfg.RegistryAddress, "/"))
 	devicePath := fmt.Sprintf("%s/%s", tenantID, deviceID)
 
 	resources := make([]*resource, 0, 4)
@@ -127,7 +124,7 @@ func main() {
 	resources = append(resources, &resource{base: registryAPI, path: credentials + devicePath, method: http.MethodPut,
 		body: auth, user: c2eCfg.RegistryUser, pass: c2eCfg.RegistryPassword, delete: false})
 
-	dittoAPI := fmt.Sprintf("http://%s:%d/api/2", c2eCfg.DittoHost, c2eCfg.DittoPort)
+	dittoAPI := fmt.Sprintf("%s/api/2", strings.TrimSuffix(c2eCfg.DittoAddress, "/"))
 	policy := fmt.Sprintf(policyJSON, connectionID)
 	resources = append(resources, &resource{base: dittoAPI, path: policies + deviceID, method: http.MethodPut,
 		body: policy, user: c2eCfg.DittoUser, pass: c2eCfg.DittoPassword, delete: true})
@@ -224,7 +221,7 @@ func writeConfig(path string) error {
 	cfg := &connectorConfig{}
 	cfg.CaCert = certFile
 	cfg.LogFile = logFile
-	cfg.Address = fmt.Sprintf("tcp://%s:%d", c2eCfg.MqttAdapterHost, c2eCfg.MqttAdapterPort)
+	cfg.Address = c2eCfg.MqttAdapterAddress
 	cfg.DeviceID = deviceID
 	cfg.TenantID = tenantID
 	cfg.AuthID = authID
