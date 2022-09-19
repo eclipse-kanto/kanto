@@ -17,19 +17,27 @@ if [ $1 -eq 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
 
     # Use `:` instead of `true` as this is the usual expansion of rpm scriptlets
 
-    # If mosquitto is already running, restart it to pick up the new configuration
-    /usr/lib/systemd/systemd-update-helper mark-restart-system-units suite-connector.service || :
-
     # If containerd and mosquitto aren't enabled, enable them
+    systemctl unmask containerd.service >/dev/null || :
     /usr/lib/systemd/systemd-update-helper install-system-units containerd.service || :
+    systemctl unmask mosquitto.service >/dev/null || :
     /usr/lib/systemd/systemd-update-helper install-system-units mosquitto.service || :
 
+    # If mosquitto is already running, restart it to pick up the new configuration
+    /usr/lib/systemd/systemd-update-helper mark-restart-system-units mosquitto.service || :
+
     # Enable the Kanto services
+    systemctl unmask suite-connector.service >/dev/null || :
     /usr/lib/systemd/systemd-update-helper install-system-units suite-connector.service || :
+    systemctl unmask container-management.service >/dev/null || :
     /usr/lib/systemd/systemd-update-helper install-system-units container-management.service || :
+    systemctl unmask file-upload.service >/dev/null || :
     /usr/lib/systemd/systemd-update-helper install-system-units file-upload.service || :
+    systemctl unmask software-update.service >/dev/null || :
     /usr/lib/systemd/systemd-update-helper install-system-units software-update.service || :
+    systemctl unmask file-backup.service >/dev/null || :
     /usr/lib/systemd/systemd-update-helper install-system-units file-backup.service || :
+    systemctl unmask system-metrics.service >/dev/null || :
     /usr/lib/systemd/systemd-update-helper install-system-units system-metrics.service || :
 
     # Start the containerd and mosquitto services, if enabled
