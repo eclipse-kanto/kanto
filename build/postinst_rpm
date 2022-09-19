@@ -1,3 +1,10 @@
+systemctl_start_if_enabled () {
+    if (systemctl -q is-enabled "$1"); then
+        echo "Starting $1"
+        systemctl start "$1" || :
+    fi
+}
+
 if [ $1 -eq 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
     # Initial installation
 
@@ -10,18 +17,30 @@ if [ $1 -eq 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
 
     # Use `:` instead of `true` as this is the usual expansion of rpm scriptlets
 
-    # if mosquitto is already running, restart it to pick up the new configuration
+    # If mosquitto is already running, restart it to pick up the new configuration
     /usr/lib/systemd/systemd-update-helper mark-restart-system-units suite-connector.service || :
 
-    # if containerd and mosquitto aren't enabled, enable them
+    # If containerd and mosquitto aren't enabled, enable them
     /usr/lib/systemd/systemd-update-helper install-system-units containerd.service || :
     /usr/lib/systemd/systemd-update-helper install-system-units mosquitto.service || :
 
-    # The Kanto services
+    # Enable the Kanto services
     /usr/lib/systemd/systemd-update-helper install-system-units suite-connector.service || :
     /usr/lib/systemd/systemd-update-helper install-system-units container-management.service || :
     /usr/lib/systemd/systemd-update-helper install-system-units file-upload.service || :
     /usr/lib/systemd/systemd-update-helper install-system-units software-update.service || :
     /usr/lib/systemd/systemd-update-helper install-system-units file-backup.service || :
     /usr/lib/systemd/systemd-update-helper install-system-units system-metrics.service || :
+
+    # Start the containerd and mosquitto services, if enabled
+    systemctl_start_if_enabled containerd.service || :
+    systemctl_start_if_enabled mosquitto.service || :
+
+    # Start the Kanto services, if enabled
+    systemctl_start_if_enabled suite-connector.service || :
+    systemctl_start_if_enabled container-management.service || :
+    systemctl_start_if_enabled file-upload.service || :
+    systemctl_start_if_enabled software-update.service || :
+    systemctl_start_if_enabled file-backup.service || :
+    systemctl_start_if_enabled system-metrics.service || :
 fi

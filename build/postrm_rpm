@@ -22,6 +22,6 @@ fi
 if [ $1 -eq 0 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
     # Package uninstall, not upgrade
 
-    # if mosquitto is already running, restart it to pick up the fact that our configs have been removed
-    /usr/lib/systemd/systemd-update-helper mark-restart-system-units suite-connector.service || :
+    # If mosquitto is already running, mark it for restarting to pick up the fact that our configs have been removed
+    /usr/lib/systemd/systemd-update-helper mark-restart-system-units mosquitto.service || :
 fi
