@@ -17,6 +17,20 @@ if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-decon
     fi
 
     # This will only remove masks created by d-s-h on package removal.
+    deb-systemd-helper unmask 'local-digital-twins.service' >/dev/null || true
+
+    # Update the statefile to add new symlinks (if any), which need to be
+    # cleaned up on purge. Also remove old symlinks.
+    deb-systemd-helper update-state 'local-digital-twins.service' >/dev/null || true
+
+    # This will only remove masks created by d-s-h on package removal.
+    deb-systemd-helper unmask 'suite-bootstrapping.service' >/dev/null || true
+
+    # Update the statefile to add new symlinks (if any), which need to be
+    # cleaned up on purge. Also remove old symlinks.
+    deb-systemd-helper update-state 'suite-bootstrapping.service' >/dev/null || true
+
+    # This will only remove masks created by d-s-h on package removal.
     deb-systemd-helper unmask 'container-management.service' >/dev/null || true
 
     # was-enabled defaults to true, so new installations run enable.
@@ -98,11 +112,11 @@ if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-decon
             _dh_action=start
         fi
         deb-systemd-invoke $_dh_action 'suite-connector.service' >/dev/null || true
+        deb-systemd-invoke $_dh_action 'local-digital-twins.service' >/dev/null || true
+        deb-systemd-invoke $_dh_action 'suite-bootstrapping.service' >/dev/null || true
         deb-systemd-invoke $_dh_action 'container-management.service' >/dev/null || true
         deb-systemd-invoke $_dh_action 'file-upload.service' >/dev/null || true
         deb-systemd-invoke $_dh_action 'software-update.service' >/dev/null || true
-        deb-systemd-invoke $_dh_action 'local-digital-twins.service' >/dev/null || true
-        deb-systemd-invoke $_dh_action 'suite-bootstrapping.service' >/dev/null || true
         deb-systemd-invoke $_dh_action 'file-backup.service' >/dev/null || true
         deb-systemd-invoke $_dh_action 'system-metrics.service' >/dev/null || true
     fi
