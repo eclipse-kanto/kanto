@@ -41,7 +41,7 @@ ditto_live_inbox_msg_template = Template("""
             },
             "artifacts": [{
                 "checksums": {
-                    "SHA256": "03a105509663680d6d5db0e2b5939a77fab68429fca4dd5d181924a73e82b5d9"
+                    "SHA256": "db954c633393c1402f145a60fd58d312f5af96ce49422fcfd6ce42a3c4cceeca"
                 },
                 "download": {
                     "HTTPS": {
@@ -49,7 +49,7 @@ ditto_live_inbox_msg_template = Template("""
                     }
                 },
                 "filename": "install.sh",
-                "size": 	424
+                "size": 544
             }]
         }],
         "correlationId": "$correlation_id"
