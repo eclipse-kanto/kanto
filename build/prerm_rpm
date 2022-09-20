@@ -1,21 +1,16 @@
 if [ $1 -eq 0 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
     # Package removal, not upgrade
 
-    # Do not call remove-system-units on containerd and mosquitto,
-    # they have their own scripts
-
-    # Use `:` instead of `true` as this is the usual expansion of rpm scriptlets
-
-    # /usr/lib/systemd/systemd-update-helper remove-system-units does the following:
-    # Stops the service and disables it from automatically running.
-
-    # The Kanto services, including ones that are usually disabled by default
+    # Remove the Kanto services, including ones that are usually disabled by default
     /usr/lib/systemd/systemd-update-helper remove-system-units system-metrics.service || :
     /usr/lib/systemd/systemd-update-helper remove-system-units file-backup.service || :
     /usr/lib/systemd/systemd-update-helper remove-system-units software-update.service || :
     /usr/lib/systemd/systemd-update-helper remove-system-units file-upload.service || :
     /usr/lib/systemd/systemd-update-helper remove-system-units container-management.service || :
-    /usr/lib/systemd/systemd-update-helper remove-system-units suite-connector.service || :
-    /usr/lib/systemd/systemd-update-helper remove-system-units local-digital-twins.service || :
     /usr/lib/systemd/systemd-update-helper remove-system-units suite-bootstrapping.service || :
+    /usr/lib/systemd/systemd-update-helper remove-system-units local-digital-twins.service || :
+    /usr/lib/systemd/systemd-update-helper remove-system-units suite-connector.service || :
+
+    # Reload systemd
+    /usr/lib/systemd/systemd-update-helper system-reload
 fi

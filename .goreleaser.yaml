@@ -567,6 +567,12 @@ nfpms:
         dst: /etc/systemd/system/suite-connector.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/suite-connector/resources/suite-connector.service
+        dst: /usr/lib/systemd/system/suite-connector.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/suite-connector/resources/config.json
         dst: /etc/suite-connector/config.json
         type: config
@@ -599,6 +605,12 @@ nfpms:
         dst: /etc/systemd/system/container-management.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/container-management/containerm/resources/container-management.service
+        dst: /usr/lib/systemd/system/container-management.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/container-management/containerm/resources/config.json
         dst: /etc/container-management/config.json
         type: config
@@ -621,6 +633,12 @@ nfpms:
         dst: /etc/systemd/system/file-upload.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/file-upload/resources/file-upload.service
+        dst: /usr/lib/systemd/system/file-upload.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/file-upload/resources/config.json
         dst: /etc/file-upload/config.json
         type: config
@@ -643,6 +661,12 @@ nfpms:
         dst: /etc/systemd/system/software-update.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/software-update/resources/software-update.service
+        dst: /usr/lib/systemd/system/software-update.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/software-update/resources/config.json
         dst: /etc/software-update/config.json
         type: config
@@ -665,6 +689,12 @@ nfpms:
         dst: /etc/systemd/system/local-digital-twins.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/local-digital-twins/resources/local-digital-twins.service
+        dst: /usr/lib/systemd/system/local-digital-twins.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/local-digital-twins/resources/config.json
         dst: /etc/local-digital-twins/config.json
         type: config
@@ -692,6 +722,12 @@ nfpms:
         dst: /etc/systemd/system/suite-bootstrapping.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/suite-bootstrapping/resources/suite-bootstrapping.service
+        dst: /usr/lib/systemd/system/suite-bootstrapping.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/suite-bootstrapping/resources/config.json
         dst: /etc/suite-bootstrapping/config.json
         type: config
@@ -719,6 +755,12 @@ nfpms:
         dst: /etc/systemd/system/file-backup.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/file-backup/resources/file-backup.service
+        dst: /usr/lib/systemd/system/file-backup.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/file-backup/resources/config.json
         dst: /etc/file-backup/config.json
         type: config
@@ -741,6 +783,12 @@ nfpms:
         dst: /etc/systemd/system/system-metrics.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/system-metrics/resources/system-metrics.service
+        dst: /usr/lib/systemd/system/system-metrics.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/system-metrics/resources/config.json
         dst: /etc/system-metrics/config.json
         type: config
