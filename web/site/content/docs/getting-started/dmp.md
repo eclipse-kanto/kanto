@@ -39,6 +39,7 @@ on the right-hand side
     * ConnectionStatus
     * ContainerFactory
     * SoftwareUpdatable
+    * Metrics
 
 ### What's next
 

@@ -57,7 +57,7 @@ To control all aspects of the container manager behavior.
 | **Digital twin** | | | |
 | enable | bool | true | Permit the container manager digital twin representation |
 | home_dir | string | /var/lib/container-management | Home directory for the digital twin data |
-| features | string[] | ContainerFactory, SoftwareUpdatable | Features that will be registered for the container manager digital twin, the possible values are: ContainerFactory and SoftwareUpdatable |
+| features | string[] | ContainerFactory, SoftwareUpdatable, Metrics | Features that will be registered for the container manager digital twin, the possible values are: ContainerFactory, SoftwareUpdatable and Metrics |
 | **Digital twin - connectivity** | | | |
 | broker_url | string | tcp://localhost:1883 | Address of the MQTT server/broker that the container manager will connect for the local communication, the format is: `scheme://host:port` |
 | keep_alive | int | 20000 | Keep alive duration in milliseconds for the MQTT requests |
@@ -162,7 +162,8 @@ Be aware that in the registry configuration the host (used as a key) has to be s
         "home_dir": "/var/lib/container-management",
         "features": [
             "ContainerFactory",
-            "SoftwareUpdatable"
+            "SoftwareUpdatable",
+            "Metrics"
         ],
         "connection": {
             "broker_url": "tcp://localhost:1883",
