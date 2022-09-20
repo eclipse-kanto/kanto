@@ -49,7 +49,7 @@ ditto_live_inbox_msg_template = Template("""
                     }
                 },
                 "filename": "install.sh",
-                "size": 	 544
+                "size": 544
             }]
         }],
         "correlationId": "$correlation_id"
