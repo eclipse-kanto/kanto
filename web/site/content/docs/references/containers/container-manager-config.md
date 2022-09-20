@@ -162,7 +162,8 @@ Be aware that in the registry configuration the host (used as a key) has to be s
         "home_dir": "/var/lib/container-management",
         "features": [
             "ContainerFactory",
-            "SoftwareUpdatable"
+            "SoftwareUpdatable",
+            "Metrics"
         ],
         "connection": {
             "broker_url": "tcp://localhost:1883",
