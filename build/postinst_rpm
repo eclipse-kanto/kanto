@@ -1,0 +1,33 @@
+if [ $1 -eq 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
+    # Initial installation
+
+    # Handle dependent services installation and start up
+    /usr/lib/systemd/systemd-update-helper install-system-units mosquitto.service || :
+    /usr/lib/systemd/systemd-update-helper install-system-units containerd.service || :
+
+    # Configure Mosquitto to look for the suite-connector config file
+    echo "include_dir /etc/mosquitto/conf.d" >> /etc/mosquitto/mosquitto.conf
+    /usr/lib/systemd/systemd-update-helper mark-restart-system-units mosquitto.service || :
+
+    # Install the Kanto services
+    /usr/lib/systemd/systemd-update-helper install-system-units suite-connector.service || :
+    /usr/lib/systemd/systemd-update-helper install-system-units local-digital-twins.service || :
+    /usr/lib/systemd/systemd-update-helper install-system-units suite-bootstrapping.service || :
+    /usr/lib/systemd/systemd-update-helper install-system-units container-management.service || :
+    /usr/lib/systemd/systemd-update-helper install-system-units file-upload.service || :
+    /usr/lib/systemd/systemd-update-helper install-system-units software-update.service || :
+    /usr/lib/systemd/systemd-update-helper install-system-units file-backup.service || :
+    /usr/lib/systemd/systemd-update-helper install-system-units system-metrics.service || :
+
+    # Start the Kanto services if enabled
+    if [ -d /run/systemd/system ]; then
+        systemctl is-enabled -q suite-connector.service && systemctl start suite-connector.service >/dev/null || :
+        systemctl is-enabled -q local-digital-twins.service && systemctl start local-digital-twins.service >/dev/null || :
+        systemctl is-enabled -q suite-bootstrapping.service && systemctl start suite-bootstrapping.service >/dev/null || :
+        systemctl is-enabled -q container-management.service && systemctl start container-management.service >/dev/null || :
+        systemctl is-enabled -q file-upload.service && systemctl start file-upload.service >/dev/null || :
+        systemctl is-enabled -q software-update.service && systemctl start software-update.service >/dev/null || :
+        systemctl is-enabled -q file-backup.service && systemctl start file-backup.service >/dev/null || :
+        systemctl is-enabled -q system-metrics.service && systemctl start system-metrics.service >/dev/null || :
+    fi
+fi

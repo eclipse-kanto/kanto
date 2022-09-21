@@ -268,7 +268,7 @@ builds:
     ldflags:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
-  - id: build-local-digital-twins-deb
+  - id: build-local-digital-twins-pkg
     dir: ./build-tmp/local-digital-twins
     main:  ./cmd/twins
     binary: local-digital-twins
@@ -315,7 +315,7 @@ builds:
     ldflags:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
-  - id: build-suite-bootstrapping-deb
+  - id: build-suite-bootstrapping-pkg
     dir: ./build-tmp/suite-bootstrapping
     main:  ./cmd/bootstrapping
     binary: suite-bootstrapping
@@ -362,7 +362,7 @@ builds:
     ldflags:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
-  - id: build-file-backup-deb
+  - id: build-file-backup-pkg
     dir: ./build-tmp/file-backup
     main:  ./
     binary: file-backup
@@ -409,7 +409,7 @@ builds:
     ldflags:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
-  - id: build-system-metrics-deb
+  - id: build-system-metrics-pkg
     dir: ./build-tmp/system-metrics
     main:  ./cmd/metrics
     binary: system-metrics
@@ -519,10 +519,10 @@ nfpms:
       - build-container-management-cli-pkg
       - build-file-upload-pkg
       - build-software-update-pkg
-      - build-local-digital-twins-deb
-      - build-suite-bootstrapping-deb
-      - build-file-backup-deb
-      - build-system-metrics-deb
+      - build-local-digital-twins-pkg
+      - build-suite-bootstrapping-pkg
+      - build-file-backup-pkg
+      - build-system-metrics-pkg
     bindir: /usr/bin
     replacements:
       amd64: x86_64
@@ -536,27 +536,43 @@ nfpms:
     formats:
       - deb
       - rpm
-    scripts:
-      postinstall: "build/postinst"
-      preremove: "build/prerm"
-      postremove: "build/postrm"
     overrides:
       deb:
         dependencies:
           - containerd.io | containerd
           - mosquitto
           - iptables
+        scripts:
+          postinstall: "build/postinst"
+          preremove: "build/prerm"
+          postremove: "build/postrm"
       rpm:
         dependencies:
           - containerd
           - mosquitto
           - iptables
+        scripts:
+          postinstall: "build/postinst_rpm"
+          preremove: "build/prerm_rpm"
+          postremove: "build/postrm_rpm"
     contents:
+      # kanto systemd preset file
+      - src: ./build/80-kanto.preset
+        dst: /usr/lib/systemd/system-preset/80-kanto.preset
+        file_info:
+          mode: 0644
+        packager: rpm
       # suite-connector additional resources
       - src: ./build-tmp/suite-connector/resources/suite-connector.service
         dst: /etc/systemd/system/suite-connector.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/suite-connector/resources/suite-connector.service
+        dst: /usr/lib/systemd/system/suite-connector.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/suite-connector/resources/config.json
         dst: /etc/suite-connector/config.json
         type: config
@@ -589,6 +605,12 @@ nfpms:
         dst: /etc/systemd/system/container-management.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/container-management/containerm/resources/container-management.service
+        dst: /usr/lib/systemd/system/container-management.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/container-management/containerm/resources/config.json
         dst: /etc/container-management/config.json
         type: config
@@ -611,6 +633,12 @@ nfpms:
         dst: /etc/systemd/system/file-upload.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/file-upload/resources/file-upload.service
+        dst: /usr/lib/systemd/system/file-upload.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/file-upload/resources/config.json
         dst: /etc/file-upload/config.json
         type: config
@@ -633,6 +661,12 @@ nfpms:
         dst: /etc/systemd/system/software-update.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/software-update/resources/software-update.service
+        dst: /usr/lib/systemd/system/software-update.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/software-update/resources/config.json
         dst: /etc/software-update/config.json
         type: config
@@ -650,11 +684,17 @@ nfpms:
         dst: /usr/share/doc/software-update/LICENSE
         file_info:
           mode: 0644
-        # local-digital-twins additional resources
+      # local-digital-twins additional resources
       - src: ./build-tmp/local-digital-twins/resources/local-digital-twins.service
         dst: /etc/systemd/system/local-digital-twins.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/local-digital-twins/resources/local-digital-twins.service
+        dst: /usr/lib/systemd/system/local-digital-twins.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/local-digital-twins/resources/config.json
         dst: /etc/local-digital-twins/config.json
         type: config
@@ -677,11 +717,17 @@ nfpms:
         dst: /usr/share/doc/local-digital-twins/LICENSE
         file_info:
           mode: 0644
-        # suite-bootstrapping additional resources
+      # suite-bootstrapping additional resources
       - src: ./build-tmp/suite-bootstrapping/resources/suite-bootstrapping.service
         dst: /etc/systemd/system/suite-bootstrapping.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/suite-bootstrapping/resources/suite-bootstrapping.service
+        dst: /usr/lib/systemd/system/suite-bootstrapping.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/suite-bootstrapping/resources/config.json
         dst: /etc/suite-bootstrapping/config.json
         type: config
@@ -704,11 +750,17 @@ nfpms:
         dst: /usr/share/doc/suite-bootstrapping/LICENSE
         file_info:
           mode: 0644
-        # file-backup additional resources
+      # file-backup additional resources
       - src: ./build-tmp/file-backup/resources/file-backup.service
         dst: /etc/systemd/system/file-backup.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/file-backup/resources/file-backup.service
+        dst: /usr/lib/systemd/system/file-backup.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/file-backup/resources/config.json
         dst: /etc/file-backup/config.json
         type: config
@@ -726,11 +778,17 @@ nfpms:
         dst: /usr/share/doc/file-backup/LICENSE
         file_info:
           mode: 0644
-        # system-metrics additional resources
+      # system-metrics additional resources
       - src: ./build-tmp/system-metrics/resources/system-metrics.service
         dst: /etc/systemd/system/system-metrics.service
         file_info:
           mode: 0644
+        packager: deb
+      - src: ./build-tmp/system-metrics/resources/system-metrics.service
+        dst: /usr/lib/systemd/system/system-metrics.service
+        file_info:
+          mode: 0644
+        packager: rpm
       - src: ./build-tmp/system-metrics/resources/config.json
         dst: /etc/system-metrics/config.json
         type: config

@@ -1,0 +1,13 @@
+# Enable all Kanto-related services
+
+# Enable containerd and mosquitto
+enable containerd.service
+enable mosquitto.service
+
+# Enable the Kanto services
+enable suite-connector.service
+enable container-management.service
+enable file-upload.service
+enable software-update.service
+enable file-backup.service
+enable system-metrics.service
