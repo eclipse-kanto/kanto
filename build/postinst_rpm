@@ -6,7 +6,7 @@ if [ $1 -eq 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
     /usr/lib/systemd/systemd-update-helper install-system-units containerd.service || :
 
     # Configure Mosquitto to look for the suite-connector config file
-    echo "include_dir /etc/mosquitto/conf.d" >> /etc/mosquitto/mosquitto.conf
+    echo "include_dir /etc/mosquitto/conf.d" >> /etc/mosquitto/mosquitto.conf || :
     /usr/lib/systemd/systemd-update-helper mark-restart-system-units mosquitto.service || :
 
     # Install the Kanto services
