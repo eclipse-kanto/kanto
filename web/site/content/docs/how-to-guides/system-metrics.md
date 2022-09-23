@@ -18,10 +18,10 @@ To ensure that all steps in this guide can be executed, you need:
 * {{% refn "https://plotly.com/" %}}`Plotly`{{% /refn %}} and
   {{% refn "https://plotly.com/dash/" %}}`Dash`{{% /refn %}} installed
 
-  Plotly is an interactive, open-source plotting library used in the example to visualize the system metrics.
-  Dash is a low-code framework for rapidly building data applications in Python used in the example
-  to deploy a simple HTTP server for displaying the graph and updating it in real time.
-  They do not have to be running on your edge device, but they have to be accessible from there.
+  {{% refn "https://plotly.com/" %}}`Plotly`{{% /refn %}} is an open-source plotting library and
+  {{% refn "https://plotly.com/dash/" %}}`Dash`{{% /refn %}} is a framework for building data application in Python.
+  They are used in this example to deploy a simple HTTP server and visualize the incoming system metrics data
+  in real time. They do not have to be running on your edge device, but they have to be accessible from there.
   You can install them by executing:
 
   ```shell
@@ -60,4 +60,4 @@ python3 hono_commands_sm.py -t demo -d demo:device
 ### Verify
 
 You can check out that the CPU and memory utilization metrics are properly received and displayed
-by checking out the application dashboard (by default - `127.0.0.1:8050`).
+by checking out the application dashboard (by default - {{% refn "http://127.0.0.1:8050" %}}http://127.0.0.1:8050{{% /refn %}}).

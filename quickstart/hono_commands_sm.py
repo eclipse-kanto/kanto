@@ -72,7 +72,6 @@ class CommandResponsesHandler(MessagingHandler):
             print('[error]')
             event.receiver.close()
             event.connection.close()
-            exit(1)
 
     def on_connection_closed(self, event):
         print("[connection closed]")
