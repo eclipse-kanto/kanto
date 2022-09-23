@@ -71,8 +71,8 @@ func getConfigHelp(cfg interface{}, prefix string) string {
 		result.WriteString("\n\t - ")
 		result.WriteString(name)
 
-		def := f.Tag.Get("def")
-		if len(def) > 0 {
+		def, ok := f.Tag.Lookup("def")
+		if ok {
 			result.WriteString(fmt.Sprintf(" (default '%s')", def))
 		}
 	}
