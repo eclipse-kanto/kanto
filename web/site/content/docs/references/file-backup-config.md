@@ -22,7 +22,7 @@ To control all aspects of the file backup behavior.
 | singleUpload | bool | false | Forbid triggering of new backups when there is a backup in progress |
 | checksum | bool | false | Send MD5 checksum for backed up files to ensure data integrity |
 | stopTimeout | string | 30s | Time to wait for running backups to finish as a sequence of decimal numbers, each with optional fraction and a unit suffix, such as: 300ms, 1.5h, 10m30s, etc., time units are: ns, us (or µs), ms, s, m, h |
-| keepUploaded | bool | false | Keep locally successfully uploaded backups |
+| keepUploaded | bool | false | Keep successfully uploaded backups locally |
 | storage | string | ./storage | Directory where backups and downloads will be stored |
 | **Upload/Download - TLS** | | | |
 | serverCert| string | | PEM encoded certificate file for secure uploads and downloads |
@@ -41,7 +41,7 @@ To control all aspects of the file backup behavior.
 | key | string | | PEM encoded unencrypted private key file to authenticate to the MQTT server/broker |
 | **Logging** | | | |
 | logFile | string | log/file-backup.log | Path to the file where log messages are written |
-| logLevel | string | INFO | All log messages at this or higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
+| logLevel | string | INFO | All log messages at this or a higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
 | logFileCount | int | 5 | Log file maximum rotations count |
 | logFileMaxAge | int | 28 | Log file rotations maximum age in days, use 0 to not remove old log files |
 | logFileSize | int | 2 | Log file size in MB before it gets rotated |
