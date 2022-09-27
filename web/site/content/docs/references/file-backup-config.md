@@ -2,7 +2,7 @@
 title: "File backup configuration"
 type: docs
 description: >
-  Customize the file backup and recovery to and from a backend storage.
+  Customize the files backup and restore to and from a backend storage.
 weight: 6
 ---
 
@@ -13,17 +13,19 @@ To control all aspects of the file backup behavior.
 | Property | Type | Default | Description |
 | - | - | - | - |
 | featureId | string | BackupAndRestore | Feature unique identifier in the scope of the edge digital twin |
+| type | string | file | Type of the files that are backed up by this feature |
+| context | string | edge | Context of the files backed up by this feature, unique in the scope of the `type` |
 | dir | string | | Directory to be backed up |
-| storage | string | ./storage | Directory where backups and downloads will be stored |
+| mode | string | strict | Restriction on directories that can be dynamically selected for a backup, the supported modes are: strict, lax and scoped |
 | backupCmd | string | | Command to be executed before the backup is done |
 | restoreCmd | string | | Command to be executed after the restore |
-| keepUploaded | bool | false | Keep locally successfully uploaded backups |
-| type | string | file | Type of the files that are backed up by this feature |
-| context | string | edge | Context of the files backed up by the feature, unique in the scope of the type |
-| mode | string | strict | Restriction on files that can be dynamically selected for a backup, the supported modes are: strict, lax and scoped |
 | singleUpload | bool | false | Forbid triggering of new backups when there is a backup in progress |
 | checksum | bool | false | Send MD5 checksum for backed up files to ensure data integrity |
 | stopTimeout | string | 30s | Time to wait for running backups to finish as a sequence of decimal numbers, each with optional fraction and a unit suffix, such as: 300ms, 1.5h, 10m30s, etc., time units are: ns, us (or µs), ms, s, m, h |
+| keepUploaded | bool | false | Keep locally successfully uploaded backups |
+| storage | string | ./storage | Directory where backups and downloads will be stored |
+| **Upload/Download - TLS** | | | |
+| serverCert| string | | PEM encoded certificate file for secure uploads and downloads |
 | **Auto backup** | | | |
 | active | bool | false | Activate periodic backups |
 | activeFrom | string | | Time from which periodic backups should be active, in RFC 3339 format, if omitted (and `active` flag is set) current time will be used as start of the periodic backups |
@@ -33,6 +35,10 @@ To control all aspects of the file backup behavior.
 | broker | string | tcp://localhost:1883 | Address of the MQTT server/broker that the file backup will connect for the local communication, the format is: `scheme://host:port` |
 | username | string | | Username that is a part of the credentials |
 | password | string | | Password that is a part of the credentials |
+| **Local connectivity - TLS** | | | |
+| caCert | string | | PEM encoded CA certificates file |
+| cert | string | | PEM encoded certificate file to authenticate to the MQTT server/broker |
+| key | string | | PEM encoded unencrypted private key file to authenticate to the MQTT server/broker |
 | **Logging** | | | |
 | logFile | string | log/file-backup.log | Path to the file where log messages are written |
 | logLevel | string | INFO | All log messages at this or higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
@@ -42,11 +48,14 @@ To control all aspects of the file backup behavior.
 
 ### Example
 
-The minimal required configuration that enables backing up a directory from the file system.
+The minimal required configuration that enables backing up a directory and sets the file type to config.
 
 ```json
 {
+    "type": "config",
     "dir": "/var/tmp/file-backup",
+    "mode": "scoped",
+    "storage": "/var/lib/file-backup",
     "logFile": "/var/log/file-backup/file-backup.log"
 }
 ```
@@ -63,17 +72,18 @@ Be aware that some combinations may be incompatible.
 ```json
 {
   "featureId": "BackupAndRestore",
-  "dir": "",
-  "storage": "./storage",
-  "backupCmd": "",
-  "restoreCmd": "",
-  "keepUploaded": false,
   "type": "file",
   "context": "edge",
+  "dir": "",
   "mode": "strict",
+  "backupCmd": "",
+  "restoreCmd": "",
   "singleUpload": false,
   "checksum": false,
   "stopTimeout": "30s",
+  "keepUploaded": false,
+  "storage": "./storage",
+  "serverCert": "",
   "active": false,
   "activeFrom": "",
   "activeTill": "",
@@ -81,6 +91,9 @@ Be aware that some combinations may be incompatible.
   "broker": "tcp://localhost:1883",
   "username": "",
   "password": "",
+  "caCert": "",
+  "cert": "",
+  "key": "",
   "logFile": "log/file-backup.log",
   "logLevel": "INFO",
   "logFileCount": 5,
