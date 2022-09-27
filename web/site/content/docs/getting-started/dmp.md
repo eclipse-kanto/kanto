@@ -33,8 +33,10 @@ on the right-hand side
 
 * **\<your-namespace\>:\<gateway-name\>** - the gateway you have provisioned with _Features_, e.g.
     * ConnectionStatus 
-    * Autouploadable
     * SoftwareUpdatable
+    * AutoUploadable
+    * BackupAndRestore
+    * Metrics
 * **\<your-namespace\>:\<gateway-name\>:edge:containers** - a virtual one that provides the edge container management _Features_, e.g.
     * ConnectionStatus
     * ContainerFactory
