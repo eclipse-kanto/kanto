@@ -17,6 +17,9 @@ To control all aspects of the software update behavior.
 | artifactType | string | archive | Type of the artifact that is to be processed: archive or plain |
 | install | string[] | | Absolute path to the install script/command and an optional sequence of additional flags/parameters |
 | storageLocation | string | ./ | Path to the storage directory where the working files are stored |
+| **Download** | | | |
+| downloadRetryCount | int| 0 | Number of retries, in case of a failed download |
+| downloadRetryInterval | durationTime | 5s | Interval between retries, in case of a failed download |
 | **Local connectivity** | | | |
 | broker | string | tcp://localhost:1883 | Address of the MQTT server/broker that the software update will connect for the local communication, the format is: `scheme://host:port` |
 | username | string | | Username that is a part of the credentials |
@@ -52,6 +55,8 @@ The following template illustrates all possible properties with their default va
     "artifactType": "archive",
     "install": [],
     "storageLocation": "./",
+    "downloadRetryCount": 0,
+    "downloadRetryInterval": "5s",
     "broker": "tcp://localhost:1883",
     "username": "",
     "password": "",
