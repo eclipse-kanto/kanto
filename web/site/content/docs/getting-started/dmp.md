@@ -7,7 +7,7 @@ weight: 3
 ---
 
 {{% refn "https://bosch-iot-suite.com/service/bosch-iot-device-management/" %}}Bosch IoT Device
-Management{{% /refn %}}enables remote data, management and configuration of devices and fleets of devices in a unified and
+Management{{% /refn %}} enables remote data, management and configuration of devices and fleets of devices in a unified and
 flexible manner. Eclipse Kanto is Bosch IoT Device Management integrated out-of-the-box.
 
 ### Before you begin
