@@ -53,7 +53,7 @@ The minimal required configuration to connect the publicly available
 
 ```json
 {
-    "address":"hono.eclipseprojects.io:1883",
+    "address": "hono.eclipseprojects.io:1883",
     "tenantId": "org.eclipse.kanto",
     "deviceId": "org.eclipse.kanto:exampleDevice",
     "authId": "org.eclipse.kanto_example",
