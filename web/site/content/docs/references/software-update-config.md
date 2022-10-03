@@ -19,7 +19,7 @@ To control all aspects of the software update behavior.
 | storageLocation | string | ./ | Path to the storage directory where the working files are stored |
 | **Download** | | | |
 | downloadRetryCount | int| 0 | Number of retries, in case of a failed download |
-| downloadRetryInterval | string | 5s | Interval between retries, in case of a failed download, where the format is a sequence of decimal numbers, each with optional fraction and a unit suffix, such as '300ms', '1.5h', '10m30s', and the valid time units are 'ns', 'us' (or 'µs'), 'ms', 's', 'm', 'h' |
+| downloadRetryInterval | string | 5s | Interval between retries, in case of a failed download as a sequence of decimal numbers, each with optional fraction and a unit suffix, such as: 300ms, 1.5h, 10m30s, etc., time units are: ns, us (or µs), ms, s, m, h |
 | **Local connectivity** | | | |
 | broker | string | tcp://localhost:1883 | Address of the MQTT server/broker that the software update will connect for the local communication, the format is: `scheme://host:port` |
 | username | string | | Username that is a part of the credentials |
