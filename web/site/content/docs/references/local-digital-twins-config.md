@@ -53,11 +53,12 @@ The minimal required configuration to enable the local digital twins and their s
 
 ```json
 {
-    "address":"hono.eclipseprojects.io:1883",
+    "address": "hono.eclipseprojects.io:1883",
     "tenantId": "org.eclipse.kanto",
     "deviceId": "org.eclipse.kanto:exampleDevice",
     "authId": "org.eclipse.kanto_example",
     "password": "secret",
+    "thingsDb": "/var/lib/local-digital-twins/thing.db",
     "logFile": "/var/log/local-digital-twins/local-digital-twins.log"
 }
 ```
