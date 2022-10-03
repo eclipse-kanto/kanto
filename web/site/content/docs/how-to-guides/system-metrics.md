@@ -20,8 +20,8 @@ To ensure that all steps in this guide can be executed, you need:
 
   {{% refn "https://plotly.com/" %}}`Plotly`{{% /refn %}} is an open-source plotting library and
   {{% refn "https://plotly.com/dash/" %}}`Dash`{{% /refn %}} is a framework for building data application in Python.
-  They are used in this example to deploy a simple HTTP server and visualize the incoming system metrics data
-  in real time. They do not have to be running on your edge device, but they have to be accessible from there.
+  They are used in this example to run a simple HTTP server and visualize the incoming system metrics data
+  in real time, and they do not have to be running on your edge device.
   You can install them by executing:
 
   ```shell

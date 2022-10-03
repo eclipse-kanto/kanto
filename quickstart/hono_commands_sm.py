@@ -38,11 +38,12 @@ ditto_live_inbox_msg_template = Template("""
     "headers": {
         "content-type": "application/json",
         "correlation-id": "$correlation_id",
-        "response-required": true
+        "response-required": $response_required,
+        "timeout": "$timeout"
     },
     "path": "/features/Metrics/inbox/messages/request",
     "value": {
-        "frequency": "$timeout"
+        "frequency": "$frequency"
     }
 }
 """)
@@ -65,9 +66,6 @@ class CommandResponsesHandler(MessagingHandler):
         print(json.dumps(response, indent=2))
         if response["status"] == 204:
             print('[ok]', "sm")
-            if response["headers"]["correlation-id"] == stop_metrics_correlation_id:
-                event.receiver.close()
-                event.connection.close()
         else:
             print('[error]')
             event.receiver.close()
@@ -75,14 +73,15 @@ class CommandResponsesHandler(MessagingHandler):
 
     def on_connection_closed(self, event):
         print("[connection closed]")
+        os.kill(os.getpid(), signal.SIGINT)
 
 
 class CommandsInvoker(MessagingHandler):
-    def __init__(self, server, address, timeout, correlation_id):
+    def __init__(self, server, address, frequency, correlation_id):
         super(CommandsInvoker, self).__init__()
         self.server = server
         self.address = address
-        self.timeout = timeout
+        self.frequency = frequency
         self.correlation_id = correlation_id
 
     def on_start(self, event):
@@ -93,8 +92,12 @@ class CommandsInvoker(MessagingHandler):
     def on_sendable(self, event):
         print('[sending command]')
         namespaced_id = device_id.split(':', 1)
+        response_required = "false" if self.frequency == "0s" else "true"
+        timeout = "0s" if self.frequency == "0s" else "60s"
         payload = ditto_live_inbox_msg_template.substitute(namespace=namespaced_id[0], name=namespaced_id[1],
-                                                           correlation_id=self.correlation_id, timeout=self.timeout)
+                                                           correlation_id=self.correlation_id,
+                                                           response_required=response_required,
+                                                           timeout=timeout, frequency=self.frequency)
         print(payload)
         msg = Message(body=payload, address='{}/{}'.format(self.address, device_id), content_type="application/json",
                       subject="sm", reply_to=reply_to_address, correlation_id=self.correlation_id, id=str(uuid.uuid4()))
@@ -237,9 +240,8 @@ response_thread = threading.Thread(target=lambda: response_handler.run(), daemon
 
 # Create start and stop metrics messages
 start_metrics_correlation_id = str(uuid.uuid4())
-stop_metrics_correlation_id = str(uuid.uuid4())
 start_metrics_message = Container(CommandsInvoker(uri, command_address, "5s", start_metrics_correlation_id))
-stop_metrics_message = Container(CommandsInvoker(uri, command_address, "0s", stop_metrics_correlation_id))
+stop_metrics_message = Container(CommandsInvoker(uri, command_address, "0s", str(uuid.uuid4())))
 
 # Start threads
 events_thread.start()
@@ -257,6 +259,7 @@ def handler(signum, frame):
     stop_metrics_message.run()
     # Stop handlers
     events_handler.stop()
+    response_handler.stop()
     # Wait for threads to finish execution
     events_thread.join(timeout=5)
     response_thread.join(timeout=5)
