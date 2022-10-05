@@ -23,13 +23,19 @@ import paho.mqtt.client as mqtt
 
 ditto_receive_thing_template = Template("""
 {
-    "topic": "$namespace/$name/things/twin/commands/retrieve",
+    "topic": "_/_/things/twin/commands/retrieve",
     "headers": {
         "correlation-id": "$correlation_id",
         "reply-to": "command/$tenant_id",
         "response-required": true
     },
-    "path": "/"
+    "path": "/",
+    "value": {
+			"thingIds": [
+				"$namespace:$name",
+				"$namespace:$name:edge:containers"
+			]
+		}
 }
 """)
 

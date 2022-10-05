@@ -28,7 +28,7 @@ To ensure that all steps in this guide can be executed, you need:
 * Only the Local Digital Twins service must running. If there are running suite-connector, please stop it for correct executing
 
 ```shell
-sudo systemctl stop suite-connector.service
+sudo systemctl stop suite-connector.service && \
 sudo systemctl restart local-digital-twins.service
 ```
 
@@ -43,7 +43,7 @@ sudo systemctl restart local-digital-twins.service
 ### Configure Local digital twins
 
 Local digital twins uses the `/etc/local-digital-twins/config.json` to acquire all the remote communication, identification and
-authentication data to establish the remote connection. Update it with the following:
+authentication data to establish the remote connection. Because there is no such remote connection the Local digital twins will work offline. Update it with the following:
 
 
 ```json
@@ -78,7 +78,7 @@ A command with a similar value will be received in the terminal and status 200.
 
 ```json
 {
-  "topic": "demo/device/things/twin/commands/retrieve",
+  "topic": "_/_/things/twin/commands/retrieve",
   "headers": {
     "content-type": "application/vnd.eclipse.ditto+json",
     "correlation-id": "correlation-id",
@@ -86,64 +86,25 @@ A command with a similar value will be received in the terminal and status 200.
     "response-required": false
   },
   "path": "/",
-  "value": {
-    "thingId": "demo:device",
-    "features": {
-      "AutoUploadable": {
-        "definition": [
-          "com.bosch.iot.suite.manager.upload:AutoUploadable:1.0.0",
-          "com.bosch.iot.suite.manager.upload:Uploadable:1.0.0"
-        ],
-        "properties": {
-          "autoUpload": {
-            "active": false,
-            "endTime": null,
-            "startTime": null
-          },
-          "context": "edge",
-          "info": {
-            "supportedProviders": "aws,azure,generic"
-          },
-          "type": "file"
-        }
-      },
-      "BackupAndRestore": {
-        "definition": [
-          "com.bosch.iot.suite.manager.backup:BackupAndRestore:1.0.0",
-          "com.bosch.iot.suite.manager.upload:Uploadable:1.0.0"
-        ],
-        "properties": {
-          "autoUpload": {
-            "active": false,
-            "endTime": null,
-            "startTime": null
-          },
-          "context": "edge",
-          "info": {
-            "supportedProviders": "aws,azure,generic"
-          },
-          "type": "file"
-        }
-      },
-      "Metrics": {
-        "definition": [
-          "com.bosch.iot.suite.edge.metric:Metrics:1.0.0"
-        ]
-      },
-      "SoftwareUpdatable": {
-        "definition": [
-          "org.eclipse.hawkbit.swupdatable:SoftwareUpdatable:2.0.0"
-        ],
-        "properties": {
-          "status": {
-            "lastFailedOperation": null,
-            "lastOperation": null,
-            "softwareModuleType": "software"
-          }
-        }
+  "value": [
+    {
+      "thingId": "demo:device",
+      "features": {
+        "AutoUploadable": {...},
+        "BackupAndRestore": {...},
+        "Metrics": {...},
+        "SoftwareUpdatable": {...}
+      }
+    },
+    {
+      "thingId": "demo:device:edge:containers",
+      "features": {
+        "ContainerFactory": {...},
+        "Metrics": {...},
+        "SoftwareUpdatable": {...}
       }
     }
-  },
+  ],
   "status": 200
 }
 ```
