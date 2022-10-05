@@ -128,22 +128,46 @@ sidebar_menu_truncate = 80
 [params.links]
 # End user relevant links. These will show up on left side of footer and in the community page if you have one.
 [[params.links.user]]
-    name = "Eclipse Kanto Project"
+    name = "Eclipse Kanto project"
     url = "https://projects.eclipse.org/projects/iot.kanto"
     icon = "fas fa-external-link-alt"
-    desc = "Eclipse Kanto project home page"
-
+    desc = "Welcome to our Eclipse IoT home"
+[[params.links.user]]
+  name = "Stack Overflow"
+  url = "https://stackoverflow.com/questions/tagged/eclipse-kanto"
+  icon = "fab fa-stack-overflow"
+  desc = "Ask practical questions for eclipse-kanto"
+[[params.links.user]]
+    name = "YouTube"
+    url = "https://www.youtube.com/watch?v=bMN_ZiUS3Bc"
+    icon = "fab fa-youtube"
+    desc = "From \"Can't\" to \"Can\" with Kanto"
+[[params.links.user]]
+    name = "Newsletter"
+    url = "https://newsroom.eclipse.org/eclipse-newsletter/2022/february/five-ways-eclipse-kanto-accelerates-iot-edge-development"
+    icon = "fas fa-book-open"
+    desc = "Five Ways Eclipse Kanto Accelerates IoT Edge Development"
 # Developer relevant links. These will show up on right side of footer and in the community page if you have one.
 [[params.links.developer]]
     name = "GitHub"
     url = "https://github.com/eclipse-kanto"
     icon = "fab fa-github"
-    desc = "Eclipse Kanto GitHub organization"
+    desc = "Development takes place here!"
+[[params.links.developer]]
+    name = "Releases"
+    url = "https://github.com/eclipse-kanto/kanto/releases"
+    icon = "fas fa-rocket"
+    desc = "Try out the latest release!"
+[[params.links.developer]]
+    name = "Task board"
+    url = "https://github.com/orgs/eclipse-kanto/projects/1/views/1"
+    icon = "fas fa-clipboard-list"
+    desc = "Check out the roadmap and ongoing work"
 [[params.links.developer]]
     name = "Developer mailing list"
     url = "https://accounts.eclipse.org/mailing-list/kanto-dev"
     icon = "fa fa-envelope"
-    desc = "Eclipse Kanto developer discussions"
+    desc = "Join developer discussions"
 
 # Eclipse relevant links. These will show up at the bottom footer line.
 [[params.links.eclipse]]
@@ -173,13 +197,6 @@ sidebar_menu_truncate = 80
 [[params.links.eclipse]]
   url = "https://eclipse.org/security/"
   name = "Report a Vulnerability"
-
-# Additional menu items
-[[menu.main]]
-identifier = "GitHub"
-name = "GitHub"
-url = "https://github.com/eclipse-kanto"
-weight = 60
 
 [taxonomies]
 tag = "tags"
