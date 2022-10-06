@@ -84,18 +84,19 @@ class CommandsInvoker(MessagingHandler):
         namespaced_id = device_id.split(':', 1)
         if self.action == CLI_OPT_BACKUP_CMD:
             # backup command
-            value = json.dumps(dict(correlationId=self.correlation_id, dir="./", storage="storage"))
+            value = json.dumps(dict(correlationId=self.correlation_id))
         else:
             # start and restore command
-            upload_options = {"https.url": "http://localhost:8080/data.zip"}
-            value = json.dumps(dict(correlationId=self.correlation_id, options=upload_options))
+            opts = {"https.url": "http://{}:8080/data.zip".format(host)}
+            value = json.dumps(dict(correlationId=self.correlation_id, options=opts))
 
         payload = ditto_live_inbox_msg_template.substitute(namespace=namespaced_id[0], name=namespaced_id[1],
                                                            action=self.action, correlation_id=correlation_id,
                                                            value=value)
         print(payload)
         msg = Message(body=payload, address='{}/{}'.format(self.address, device_id), content_type="application/json",
-                      subject=self.action, reply_to=reply_to_address, correlation_id=correlation_id, id=str(uuid.uuid4()))
+                      subject=self.action, reply_to=reply_to_address, correlation_id=correlation_id,
+                      id=str(uuid.uuid4()))
         event.sender.send(msg)
         event.sender.close()
         event.connection.close()
@@ -159,10 +160,11 @@ CLI_OPT_BACKUP_CMD = "backup"
 CLI_OPT_RESTORE_CMD = "restore"
 
 # Parse command line args
-options, reminder = getopt.getopt(sys.argv[2:], 't:d:')
+options, reminder = getopt.getopt(sys.argv[2:], 't:d:h:')
 opts_dict = dict(options)
 tenant_id = os.environ.get("TENANT") or opts_dict['-t']
 device_id = os.environ.get("DEVICE_ID") or opts_dict['-d']
+host = os.environ.get("HOST") or opts_dict['-h']
 command = sys.argv[1]
 if command == CLI_OPT_BACKUP_CMD:
     action = "backup"
@@ -178,7 +180,8 @@ command_address = 'command/{}'.format(tenant_id)
 event_address = 'event/{}'.format(tenant_id)
 reply_to_address = 'command_response/{}/replies'.format(tenant_id)
 
-print('[starting] demo file upload app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
+print('[starting] demo file backup and restore app for tenant [{}], device [{}] at [{}]'
+      .format(tenant_id, device_id, uri))
 
 # Create command invoker and handler
 upload_correlation_id = "demo.backup.and.restore" + str(uuid.uuid4())
@@ -197,7 +200,8 @@ commands_invoker.run()
 
 
 def handler(signum, frame):
-    print('[stopping] demo file upload app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
+    print('[stopping] demo file backup and restore app for tenant [{}], device [{}] at [{}]'
+          .format(tenant_id, device_id, uri))
     events_handler.stop()
     response_handler.stop()
     events_thread.join(timeout=5)
