@@ -14,3 +14,7 @@
 @import "logo";
 @import "screen";
 @import "shortcodes";
+
+html {
+    overflow-y: scroll;
+}
