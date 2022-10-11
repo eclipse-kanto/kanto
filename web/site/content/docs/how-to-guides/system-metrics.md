@@ -3,7 +3,7 @@ title: "Monitor system metrics"
 type: docs
 description: >
     Monitor system metrics from your edge device.
-weight: 3
+weight: 4
 ---
 
 Following the steps below you will be able to monitor the system metrics from your edge device

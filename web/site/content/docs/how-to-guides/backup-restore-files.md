@@ -2,8 +2,8 @@
 title: "Back up and restore files"
 type: docs
 description: >
-    Back up and restore a file to and from your edge device.
-weight: 5
+    Back up and restore a file from and to your edge device.
+weight: 3
 ---
 
 Following the steps below you will back up a simple text file to an HTTP file server
@@ -30,19 +30,19 @@ To ensure that all steps in this guide can be executed, you need:
 * If you don't have a connected Eclipse Kanto to Eclipse Hono sandbox,
   follow {{% relrefn "hono" %}} Explore via Eclipse Hono {{% /relrefn %}}
 
-* The {{% refn "https://github.com/eclipse-kanto/kanto/blob/main/quickstart/hono_commands_fb.py" %}} 
+* The {{% refn "https://github.com/eclipse-kanto/kanto/blob/main/quickstart/hono_commands_fb.py" %}}
   file backup and restore application {{% /refn %}}
 
-  Navigate to the `quickstart` folder where the resources from the {{% relrefn "hono" %}} Explore via Eclipse Hono 
+  Navigate to the `quickstart` folder where the resources from the {{% relrefn "hono" %}} Explore via Eclipse Hono
   {{% /relrefn %}} guide are located and execute the following script:
-  
+
   ```shell
   wget https://github.com/eclipse-kanto/kanto/raw/main/quickstart/hono_commands_fb.py
   ```
 
-### Back up a text file
+### Back up
 
-By default, all directories in `/var/tmp/file-backup/` directory or the directory itself can be backed up.
+By default, all directories in `/var/tmp/file-backup/` or the directory itself can be backed up.
 For this example, create a file `data.txt` which will be later backed up:
 
 ```shell
@@ -57,8 +57,8 @@ cat /var/tmp/file-backup/data.txt
 
 This should produce `This is the first line in the file!` as an output.
 
-Choose a directory where the text file will be uploaded, open a new terminal there and run servefile
-with the flag `-u` to enable file upload to the HTTP server:
+Choose a directory where the text file will be uploaded, open a new terminal there and run `servefile`
+with the flag `-u` to enable a file upload:
 
 ```shell
 servefile -u .
@@ -70,24 +70,21 @@ with Eclipse Hono only.
 
 Now we are ready to request the text file backup from the edge via executing the application that requires the command
 to execute (`backup`), Eclipse Hono tenant (`-t`), the device identifier (`-d`) and the host where the backup will
-be downloaded from:
+be uploaded to:
 
 ```shell
 python3 hono_commands_fb.py backup -t demo -d demo:device -h localhost
 ```
 
-### Check the backup file
+You can check out that the backup file `data.zip` is on your HTTP file server by
+listing the content of the `servefile` working directory.
 
-You can check out that the backup file `data.zip` is on your HTTP file
-server listing the content of the `storage` directory.
-
-### Modify and restore a text file
+### Restore
 
 To explore the restore capabilities you will first modify the `data.txt` file, and then you will restore it to
 the version before the changes by using the backup, that was created earlier.
 
-Modify the `data.txt` file, created in the backup process, so that you can verify
-later that it is restored to its initial state:
+You can modify the `data.txt` file with the following command:
 
 ```shell
 sudo echo "This is the second line in the file!" >> /var/tmp/file-backup/data.txt
@@ -99,14 +96,14 @@ You can verify that the file was successfully updated by executing the following
 cat /var/tmp/file-backup/data.txt
 ```
 
-This output should be: 
+This output should be:
 ```text
 This is the first line in the file!
 This is the second line in the file!
 ```
 
 Navigate to the terminal where `servefile` was started and terminate it.
-Start it again with the flag `-l` to enable file download from the HTTP server:
+Start it again with the flag `-l` to enable a file download:
 
 ```shell
 servefile -l .
@@ -118,7 +115,7 @@ with Eclipse Hono only.
 
 Now we are ready to request the text file restore from the edge via executing the application that requires the command
 to execute (`restore`), Eclipse Hono tenant (`-t`), the device identifier (`-d`) and the host where the backup file
-will be uploaded:
+will be downloaded from:
 
 ```shell
 python3 hono_commands_fb.py restore -t demo -d demo:device -h localhost
