@@ -13,15 +13,14 @@
 import getopt
 import json
 import os
-# import signal
+import signal
 import sys
-# import threading
 import time
 import uuid
 from string import Template
 import paho.mqtt.client as mqtt
 
-ditto_receive_thing_template = Template("""
+ditto_retrieve_things_template = Template("""
 {
     "topic": "_/_/things/twin/commands/retrieve",
     "headers": {
@@ -39,7 +38,7 @@ ditto_receive_thing_template = Template("""
 }
 """)
 
-class MQTTClientClass(mqtt.Client):
+class MQTTClient(mqtt.Client):
 
     def on_connect(self, mqttc, obj, flags, rc):
         print('[client connected]')
@@ -57,10 +56,10 @@ class MQTTClientClass(mqtt.Client):
         while rc == 0:
             rc = self.loop_start()
             namespaced_id = device_id.split(':', 1)
-            payload = ditto_receive_thing_template.substitute(
+            payload = ditto_retrieve_things_template.substitute(
                 namespace=namespaced_id[0], name=namespaced_id[1],
                 tenant_id=tenant_id, correlation_id=str(uuid.uuid4()))
-            pub_topic = 'e/{}/{}'.format(tenant_id, device_id)
+            pub_topic = 'event/{}/{}'.format(tenant_id, device_id)
             self.publish(pub_topic, payload)
             time.sleep(1)
             rc = self.loop_stop()
@@ -73,13 +72,15 @@ tenant_id = os.environ.get("TENANT") or opts_dict['-t']
 device_id = os.environ.get("DEVICE_ID") or opts_dict['-d']
 
 uri = 'localhost'
-print('[starting] local-digital-twins commands app for tenant [{}], device [{}] at [{}]'.format(
+print('[starting] demo local digital twins app for tenant [{}], device [{}] at [{}]'.format(
     tenant_id, device_id, uri))
 
+def handler(signum, frame):
+    print('[stopped] demo local digital twins app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id, uri))
+    exit(0)
 
-mqttc = MQTTClientClass()
+signal.signal(signal.SIGINT, handler)
+mqttc = MQTTClient()
 mqttc.run()
-# time.sleep(1)
-print('[stopped] local-digital-twins commands app for tenant [{}], device [{}] at [{}]'.format(
-        tenant_id, device_id, uri))
-exit(0)
+print('[stopped] demo local digital twins app for tenant [{}], device [{}] at [{}]'.format(
+    tenant_id, device_id, uri))
