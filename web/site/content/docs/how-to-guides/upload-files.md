@@ -6,7 +6,7 @@ description: >
 weight: 2
 ---
 
-Following the steps below you will upload an example log file to your HTTP file server
+By following the steps below you will upload an example log file to your HTTP file server
 via a publicly available Eclipse Hono sandbox using Eclipse Kanto.
 A simple Eclipse Hono northbound business application written in Python is
 provided to explore the capabilities for remotely uploading and monitoring.
@@ -40,7 +40,6 @@ To ensure that all steps in this guide can be executed, you need:
   wget https://github.com/eclipse-kanto/kanto/raw/main/quickstart/hono_commands_fu.py
   ```
 
-
 ### Upload log file
 
 By default, all files in `/var/tmp/file-upload/` directory can be uploaded.
@@ -69,7 +68,7 @@ python3 hono_commands_fu.py -t demo -d demo:device
 
 ### Verify
 
-You can check out that the log file is on your HTTP file server listing the content of `servefile` working directory.
+You can check out that the log file is on your HTTP file server by listing the content of `servefile` working directory.
 
 ### Clean up
 

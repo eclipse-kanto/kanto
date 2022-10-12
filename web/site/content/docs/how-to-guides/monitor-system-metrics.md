@@ -6,7 +6,7 @@ description: >
 weight: 4
 ---
 
-Following the steps below you will be able to monitor the system metrics from your edge device
+By following the steps below you will be able to monitor the system metrics from your edge device
 via a publicly available Eclipse Hono sandbox using Eclipse Kanto. A simple Eclipse Hono
 northbound business application written in Python is provided to explore the capabilities
 for remotely monitoring the CPU and memory utilization.
@@ -43,8 +43,7 @@ To ensure that all steps in this guide can be executed, you need:
   wget https://github.com/eclipse-kanto/kanto/raw/main/quickstart/hono_commands_sm.py
   ```
 
-
-### Monitor System Metrics
+### Monitor system metrics
 
 To explore the system metrics, we will use a Python script to request and monitor the
 CPU and memory utilization. The location where the Python application will run does

@@ -6,7 +6,7 @@ description: >
 weight: 3
 ---
 
-Following the steps below you will back up a simple text file to an HTTP file server
+By following the steps below you will back up a simple text file to an HTTP file server
 and then restore it back via a publicly available Eclipse Hono sandbox using Eclipse Kanto.
 A simple Eclipse Hono northbound business application written in Python is
 provided to explore the capabilities for remotely backing up and restoring files.

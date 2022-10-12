@@ -6,7 +6,7 @@ description: >
 weight: 1
 ---
 
-Following the steps below you will install a{{% refn "https://www.gnu.org/software/hello/" %}}`hello`{{% /refn %}}
+By following the steps below you will install a{{% refn "https://www.gnu.org/software/hello/" %}}`hello`{{% /refn %}}
 Debian package via a publicly available Eclipse Hono sandbox using Eclipse Kanto.
 A couple of simple Eclipse Hono northbound business applications written in Python are provided to explore
 the capabilities for remotely installing and monitoring.
