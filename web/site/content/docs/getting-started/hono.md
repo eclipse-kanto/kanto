@@ -6,7 +6,7 @@ description: >
 weight: 2
 ---
 
-Following the steps below you will connect your first device to a publicly
+By following the steps below you will connect your first device to a publicly
 available {{% refn "https://www.eclipse.org/hono/sandbox/" %}}Eclipse Hono sandbox{{% /refn %}} using Eclipse Kanto.
 A couple of simple Eclipse Hono northbound business applications written in Python are provided to explore the capabilities for
 remotely managing and monitoring your edge device.

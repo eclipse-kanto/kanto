@@ -6,7 +6,7 @@ description: >
 weight: 2
 ---
 
-Following the steps below you will upload an example log file to your HTTP file server
+By following the steps below you will upload an example log file to your HTTP file server
 via a publicly available Eclipse Hono sandbox using Eclipse Kanto.
 A simple Eclipse Hono northbound business application written in Python is
 provided to explore the capabilities for remotely uploading and monitoring.
