@@ -43,8 +43,7 @@ To ensure that all steps in this guide can be executed, you need:
   wget https://github.com/eclipse-kanto/kanto/raw/main/quickstart/hono_commands_sm.py
   ```
 
-
-### Monitor System Metrics
+### Monitor system metrics
 
 To explore the system metrics, we will use a Python script to request and monitor the
 CPU and memory utilization. The location where the Python application will run does
