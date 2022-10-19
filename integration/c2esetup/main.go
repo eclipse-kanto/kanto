@@ -288,18 +288,6 @@ func performCleanUp(resources []*resource) {
 		return
 	}
 
-	type honoThing struct {
-		Id string `json:"id"`
-	}
-
-	type honoThings struct {
-		Things []*honoThing `json:"result"`
-	}
-
-	type dittoThing struct {
-		ThingId string `json:"thingId"`
-	}
-
 	fmt.Println("performing cleanup of initially created things...")
 	for i := len(resources) - 1; i >= 0; i-- {
 		r := resources[i]
@@ -316,6 +304,25 @@ func performCleanUp(resources []*resource) {
 			fmt.Printf("%s '%s' deleted\n", indent, r.path)
 		}
 	}
+	// Dependent devices use the same deviceID as prefix, followed by colon ':'
+	deleteDependentDevices(deviceID + ":")
+	fmt.Println("cleanup done")
+}
+
+func deleteDependentDevices(deviceIDPrefix string) {
+	deleteHonoDevices(deviceIDPrefix)
+	deleteDittoDevices(deviceIDPrefix)
+}
+
+func deleteHonoDevices(deviceIDPrefix string) {
+	type honoThing struct {
+		Id string `json:"id"`
+	}
+
+	type honoThings struct {
+		Things []*honoThing `json:"result"`
+	}
+
 	// Delete Hono devices
 	fmt.Println("performing additional cleanup in hono...")
 	honoAPI := fmt.Sprintf(
@@ -329,7 +336,7 @@ func performCleanUp(resources []*resource) {
 			fmt.Println(err)
 		}
 		for _, thing := range honoDevices.Things {
-			if strings.HasPrefix(thing.Id, deviceID) {
+			if strings.HasPrefix(thing.Id, deviceIDPrefix) {
 				if _, err = doRequest(http.MethodDelete, honoAPI+thing.Id, nil, c2eCfg.RegistryUser, c2eCfg.RegistryPassword); err != nil {
 					fmt.Println(err)
 				} else {
@@ -338,10 +345,17 @@ func performCleanUp(resources []*resource) {
 			}
 		}
 	}
+}
+
+func deleteDittoDevices(deviceIDPrefix string) {
+	type dittoThing struct {
+		ThingId string `json:"thingId"`
+	}
+
 	// Delete Ditto devices
 	fmt.Println("performing additional cleanup in ditto...")
 	dittoAPI := fmt.Sprintf("%s/api/2/%s", strings.TrimSuffix(c2eCfg.DittoAddress, "/"), things)
-	thingsJson, err = doRequest("GET", dittoAPI, nil, c2eCfg.DittoUser, c2eCfg.DittoPassword)
+	thingsJson, err := doRequest("GET", dittoAPI, nil, c2eCfg.DittoUser, c2eCfg.DittoPassword)
 	if err != nil {
 		fmt.Println(err)
 	} else {
@@ -350,7 +364,7 @@ func performCleanUp(resources []*resource) {
 			fmt.Println(err)
 		}
 		for _, thing := range dittoDevices {
-			if strings.HasPrefix(thing.ThingId, deviceID) {
+			if strings.HasPrefix(thing.ThingId, deviceIDPrefix) {
 				if _, err = doRequest(http.MethodDelete, dittoAPI+thing.ThingId, nil, c2eCfg.DittoUser, c2eCfg.DittoPassword); err != nil {
 					fmt.Println(err)
 				} else {
@@ -359,7 +373,6 @@ func performCleanUp(resources []*resource) {
 			}
 		}
 	}
-	fmt.Println("cleanup done")
 }
 
 func writeConfig(path string) error {
