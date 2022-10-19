@@ -106,6 +106,42 @@ eclipse/ditto-clients-golang (0.0.0-20220225085802-cf3b306280d3)
 * Project: https://github.com/eclipse/ditto-clients-golang
 * Source:  https://github.com/eclipse/ditto-clients-golang/tree/cf3b306280d3453473ae8dd65e78f978e2c838ea
 
+gorilla/websocket (1.4.2)
+
+* License: BSD 2-Clause "Simplified" License
+* Project: https://github.com/gorilla/websocket
+* Source:  https://github.com/gorilla/websocket/releases/tag/v1.4.2
+
+golang.org/x/crypto (v0.0.0-20190308221718-c2843e01d9a2)
+
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/golang/net
+* Source:  https://github.com/golang/crypto/tree/c2843e01d9a2bc60bb26ad24e09734fdc2d9ec58
+
+golang.org/x/net (v0.0.0-20200425230154-ff2c4b7c35a0)
+
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/golang/net
+* Source:  https://github.com/golang/net/tree/ff2c4b7c35a07b0c1e90ce72aa7bfe41bb66a3cb
+
+golang.org/x/sync (v0.0.0-20210220032951-036812b2e83c)
+
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/golang/sync
+* Source:  https://github.com/golang/sync/tree/036812b2e83c0ddf193dd5a34e034151da389d09
+
+golang.org/x/sys (v0.0.0-20190215142949-d0b11bdaac8a)
+
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/golang/sys
+* Source:  https://github.com/golang/sys/tree/d0b11bdaac8adb652bff00e49bcacf992835621a
+
+golang.org/x/text (v0.3.0)
+
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/golang/text
+* Source:  https://github.com/golang/text/releases/tag/v0.3.0
+
 ## Cryptography
 
 Content may contain encryption software. The country in which you are currently
