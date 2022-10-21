@@ -49,8 +49,8 @@ const (
 var (
 	c2eCfg c2eConfig
 
-	connectionID string
-	tenantID     string
+	tenantID string
+	policyID string
 
 	deviceID   string
 	devicePass string
@@ -99,17 +99,17 @@ type c2eConfig struct {
 type thingConfig struct {
 	DeviceID string `json:"deviceId"`
 	TenantID string `json:"tenantId"`
-	PolicyID string `json:"policyId"`
 }
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	flag.StringVar(&tenantID, "tenant", "", "Hono tenant ID")
-	flag.StringVar(&connectionID, "conn", "", "Hono connection ID")
 
 	flag.StringVar(&deviceID, "deviceID", "", "Test device ID, defaults to randomly generated. You should not use this param in a LAVA setting")
 	flag.StringVar(&devicePass, "devicePass", "123456", "Test device password")
+
+	flag.StringVar(&policyID, "policyID", "", "Test device's policy ID")
 
 	flag.StringVar(&configFile, "configFile", "/etc/suite-connector/config.json", "Path to Suite Connector config file")
 	flag.StringVar(&configFileBackup, "configFileBackup", "/etc/suite-connector/configBackup.json", "Path to Suite Connector config file backup")
@@ -122,14 +122,8 @@ func main() {
 
 	flag.Parse()
 
-	assertFlag(tenantID, "Hono tenant ID")
-	assertFlag(connectionID, "Hono connection ID")
-
-	if tenantID == "" {
-		fmt.Println("tenant can not be empty")
-
-		os.Exit(1)
-	}
+	assertFlag(tenantID, "tenantID")
+	assertFlag(policyID, "policyID")
 
 	err := initConfigFromEnv(&c2eCfg, envVariablesPrefix)
 	if err != nil {
@@ -159,11 +153,7 @@ func main() {
 		body: auth, user: c2eCfg.RegistryUser, pass: c2eCfg.RegistryPassword, delete: false})
 
 	dittoAPI := fmt.Sprintf("%s/api/2", strings.TrimSuffix(c2eCfg.DittoAddress, "/"))
-	policy := fmt.Sprintf(policyJSON, connectionID)
-	resources = append(resources, &resource{base: dittoAPI, path: policies + deviceID, method: http.MethodPut,
-		body: policy, user: c2eCfg.DittoUser, pass: c2eCfg.DittoPassword, delete: true})
-
-	thing := fmt.Sprintf(thingJSON, deviceID)
+	thing := fmt.Sprintf(thingJSON, policyID)
 	resources = append(resources, &resource{base: dittoAPI, path: things + deviceID, method: http.MethodPut,
 		body: thing, user: c2eCfg.DittoUser, pass: c2eCfg.DittoPassword, delete: true})
 
@@ -232,7 +222,7 @@ func generateRandomDeviceID() string {
 
 func assertFlag(value string, name string) {
 	if value == "" {
-		fmt.Printf("'%s' not specified\n", name)
+		fmt.Printf("'%s' must not be empty, but is not specified\n", name)
 		flag.Usage()
 		os.Exit(1)
 	}
