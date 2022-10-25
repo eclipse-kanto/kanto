@@ -21,7 +21,7 @@ import (
 	"unicode"
 )
 
-func initConfigFromEnv(cfg interface{}, prefix string) error {
+func initConfigFromEnv(cfg interface{}) error {
 	v := reflect.ValueOf(cfg).Elem()
 	t := v.Type()
 
@@ -30,7 +30,7 @@ func initConfigFromEnv(cfg interface{}, prefix string) error {
 
 		configValue, ok := f.Tag.Lookup("def")
 
-		envName := toSnakeCase(f.Name, prefix)
+		envName := toSnakeCase(f.Name)
 		if env, ok := os.LookupEnv(envName); ok {
 			configValue = env
 		}
@@ -57,7 +57,7 @@ func initConfigFromEnv(cfg interface{}, prefix string) error {
 	return nil
 }
 
-func getConfigHelp(cfg interface{}, prefix string) string {
+func getConfigHelp(cfg interface{}) string {
 	result := strings.Builder{}
 
 	result.WriteString("config environmental variables:")
@@ -66,7 +66,7 @@ func getConfigHelp(cfg interface{}, prefix string) string {
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
 
-		name := toSnakeCase(f.Name, prefix)
+		name := toSnakeCase(f.Name)
 
 		result.WriteString("\n\t - ")
 		result.WriteString(name)
@@ -80,10 +80,8 @@ func getConfigHelp(cfg interface{}, prefix string) string {
 	return result.String()
 }
 
-func toSnakeCase(name string, prefix string) string {
+func toSnakeCase(name string) string {
 	var result, word strings.Builder
-
-	result.WriteString(prefix)
 
 	for i, ch := range name {
 		if i > 0 && unicode.IsUpper(ch) {

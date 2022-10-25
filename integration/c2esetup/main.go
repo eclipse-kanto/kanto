@@ -61,8 +61,6 @@ var (
 	configFileBackup string
 	certFile         string
 	logFile          string
-
-	envVariablesPrefix string
 )
 
 type resource struct {
@@ -116,8 +114,6 @@ func main() {
 	flag.StringVar(&certFile, "certFile", "/etc/suite-connector/iothub.crt", "Path to Suite Connector CA certificates file")
 	flag.StringVar(&logFile, "logFile", "/var/log/suite-connector/suite-connector.log", "Path for Suite Connector log file")
 
-	flag.StringVar(&envVariablesPrefix, "envprefix", "SCT", "Test environmental variables prefix")
-
 	cleanup := flag.Bool("cleanup", false, "Clean up test resources")
 
 	flag.Parse()
@@ -125,10 +121,10 @@ func main() {
 	assertFlag(tenantID, "tenantID")
 	assertFlag(policyID, "policyID")
 
-	err := initConfigFromEnv(&c2eCfg, envVariablesPrefix)
+	err := initConfigFromEnv(&c2eCfg)
 	if err != nil {
 		fmt.Println(err)
-		fmt.Println(getConfigHelp(c2eCfg, envVariablesPrefix))
+		fmt.Println(getConfigHelp(c2eCfg))
 		os.Exit(1)
 	}
 
