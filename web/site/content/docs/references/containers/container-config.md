@@ -42,7 +42,7 @@ To control all aspects of the container instance behavior.
 | env | string[] | | Environment variables that are set into the container |
 | cmd | string[] | | Command with arguments that is executed upon the container's start |
 | **I/O**| | | |
-| open_stdin | bool | | Open the terminal's standard input for interaction with the current container |
+| open_stdin | bool | | Open the terminal's standard input for an interaction with the current container |
 | tty | bool | | Attach standard streams to a TTY|
 | **Resource management** | | | |
 | memory | string | | Hard memory limitation of the container as a number with a unit suffix of B, K, M and G, the minimum allowed value is 3M |
