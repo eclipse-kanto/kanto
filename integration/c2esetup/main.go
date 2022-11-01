@@ -15,6 +15,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -26,7 +27,7 @@ import (
 	"strings"
 	"time"
 
-	mqtt "github.com/eclipse/paho.mqtt.golang"
+	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/google/uuid"
 )
 
@@ -49,13 +50,13 @@ const (
 var (
 	c2eCfg c2eConfig
 
-	tenantID string
-	policyID string
+	tenantId string
+	policyId string
 
-	deviceID   string
+	deviceId   string
 	devicePass string
 
-	authID string
+	authId string
 
 	configFile       string
 	configFileBackup string
@@ -81,45 +82,42 @@ type c2eConfig struct {
 	MqttQuiesceMs            int    `def:"500"`
 	MqttAcknowledgeTimeoutMs int    `def:"3000"`
 
-	RegistryAddress string
+	DeviceRegistryApiAddress string
 
-	RegistryUser     string `def:""`
-	RegistryPassword string `def:""`
+	DeviceRegistryApiUser     string `def:""`
+	DeviceRegistryApiPassword string `def:""`
 
-	DittoAddress string
+	DigitalTwinApiAddress string
 
-	DittoUser     string `def:"ditto"`
-	DittoPassword string `def:"ditto"`
+	DigitalTwinApiUser     string `def:"ditto"`
+	DigitalTwinApiPassword string `def:"ditto"`
 
 	MqttAdapterAddress string
 }
 
 type thingConfig struct {
-	DeviceID string `json:"deviceId"`
-	TenantID string `json:"tenantId"`
+	DeviceId string `json:"deviceId"`
+	TenantId string `json:"tenantId"`
 }
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	flag.StringVar(&tenantID, "tenant", "", "Hono tenant ID")
+	flag.StringVar(&tenantId, "tenant", "", "Hono tenant id")
 
-	flag.StringVar(&deviceID, "deviceID", "", "Test device ID, defaults to randomly generated. You should not use this param in a LAVA setting")
+	flag.StringVar(&deviceId, "device", "", "Test device id, defaults to randomly generated")
 	flag.StringVar(&devicePass, "devicePass", "123456", "Test device password")
 
-	flag.StringVar(&policyID, "policyID", "", "Test device's policy ID")
+	flag.StringVar(&policyId, "policy", "", "Test device's policy id")
 
-	flag.StringVar(&configFile, "configFile", "/etc/suite-connector/config.json", "Path to Suite Connector config file")
-	flag.StringVar(&configFileBackup, "configFileBackup", "/etc/suite-connector/configBackup.json", "Path to Suite Connector config file backup")
+	flag.StringVar(&configFile, "configFile", "/etc/suite-connector/config.json", "Path to Suite Connector configuration file")
+	flag.StringVar(&configFileBackup, "configFileBackup", "/etc/suite-connector/configBackup.json", "Path to Suite Connector configuration file backup")
 	flag.StringVar(&certFile, "certFile", "/etc/suite-connector/iothub.crt", "Path to Suite Connector CA certificates file")
-	flag.StringVar(&logFile, "logFile", "/var/log/suite-connector/suite-connector.log", "Path for Suite Connector log file")
+	flag.StringVar(&logFile, "logFile", "/var/log/suite-connector/suite-connector.log", "Path to Suite Connector log file")
 
-	cleanup := flag.Bool("cleanup", false, "Clean up test resources")
+	clean := flag.Bool("clean", false, "Clean up test resources")
 
 	flag.Parse()
-
-	assertFlag(tenantID, "tenantID")
-	assertFlag(policyID, "policyID")
 
 	err := initConfigFromEnv(&c2eCfg)
 	if err != nil {
@@ -128,88 +126,86 @@ func main() {
 		os.Exit(1)
 	}
 
-	configureDeviceID(*cleanup)
-
-	if deviceID == "" {
-		fmt.Println("can't find device id")
-
-		os.Exit(1)
+	if !*clean {
+		if deviceId == "" {
+			deviceId = generateRandomDeviceID()
+			fmt.Printf("generating a random device id: \"%s\"\n", deviceId)
+		} else {
+			fmt.Printf("forcing device id: \"%s\"\n", deviceId)
+		}
+	} else {
+		readIdsFromMQTT()
 	}
 
-	registryAPI := fmt.Sprintf("%s/v1", strings.TrimSuffix(c2eCfg.RegistryAddress, "/"))
-	devicePath := fmt.Sprintf("%s/%s", tenantID, deviceID)
+	if !*clean {
+		assertFlag(tenantId, "tenant id")
+		assertFlag(policyId, "policy id")
+	}
+
+	registryAPI := fmt.Sprintf("%s/v1", strings.TrimSuffix(c2eCfg.DeviceRegistryApiAddress, "/"))
+	devicePath := fmt.Sprintf("%s/%s", tenantId, deviceId)
 
 	resources := make([]*resource, 0, 4)
 	resources = append(resources, &resource{base: registryAPI, path: devices + devicePath, method: http.MethodPost,
-		body: deviceJSON, user: c2eCfg.RegistryUser, pass: c2eCfg.RegistryPassword, delete: true})
+		body: deviceJSON, user: c2eCfg.DeviceRegistryApiUser, pass: c2eCfg.DeviceRegistryApiPassword, delete: true})
 
-	authID = strings.ReplaceAll(deviceID, ":", "_")
-	auth := fmt.Sprintf(authJSON, authID, devicePass)
+	authId = strings.ReplaceAll(deviceId, ":", "_")
+	auth := fmt.Sprintf(authJSON, authId, devicePass)
 	resources = append(resources, &resource{base: registryAPI, path: credentials + devicePath, method: http.MethodPut,
-		body: auth, user: c2eCfg.RegistryUser, pass: c2eCfg.RegistryPassword, delete: false})
+		body: auth, user: c2eCfg.DeviceRegistryApiUser, pass: c2eCfg.DeviceRegistryApiPassword, delete: false})
 
-	dittoAPI := fmt.Sprintf("%s/api/2", strings.TrimSuffix(c2eCfg.DittoAddress, "/"))
-	thing := fmt.Sprintf(thingJSON, policyID)
-	resources = append(resources, &resource{base: dittoAPI, path: things + deviceID, method: http.MethodPut,
-		body: thing, user: c2eCfg.DittoUser, pass: c2eCfg.DittoPassword, delete: true})
+	dittoAPI := fmt.Sprintf("%s/api/2", strings.TrimSuffix(c2eCfg.DigitalTwinApiAddress, "/"))
+	thing := fmt.Sprintf(thingJSON, policyId)
+	resources = append(resources, &resource{base: dittoAPI, path: things + deviceId, method: http.MethodPut,
+		body: thing, user: c2eCfg.DigitalTwinApiUser, pass: c2eCfg.DigitalTwinApiPassword, delete: true})
 
-	code := 0
-	if *cleanup {
-		fmt.Printf("performing cleanup on device id: %s\n", deviceID)
-		performCleanUp(resources)
-		if err := copyFile(configFileBackup, configFile); err != nil {
-			fmt.Printf(
-				"unable to restore the backup copy of config file %s to %s: %v\n",
-				configFileBackup, configFile, err)
-			code = 1
-		} else {
-			code = restartSuiteConnector()
-		}
+	var code int
+	if *clean {
+		code = performCleanUp(resources)
+		fmt.Println("cleanup complete")
 	} else {
 		code = performSetUp(resources)
-		if code == 0 {
-			code = restartSuiteConnector()
-		}
 		fmt.Println("setup complete")
 	}
 	os.Exit(code)
 }
 
-func configureDeviceID(cleanup bool) {
-	if !cleanup {
-		if deviceID == "" {
-			deviceID = generateRandomDeviceID()
-			fmt.Printf("generating a random device id, use mqtt to read it and use it later: \"%s\"\n", deviceID)
-		} else {
-			fmt.Printf("forcing deviceID \"%s\"\n", deviceID)
-		}
+func readIdsFromMQTT() {
+	deviceId = ""
+	policyId = ""
+
+	opts := MQTT.NewClientOptions().
+		AddBroker(c2eCfg.Broker).
+		SetClientID(uuid.New().String()).
+		SetKeepAlive(30 * time.Second).
+		SetCleanSession(true).
+		SetAutoReconnect(true)
+
+	mqttClient := MQTT.NewClient(opts)
+
+	if token := mqttClient.Connect(); token.Wait() && token.Error() != nil {
+		fmt.Printf("can't connect to MQTT broker: %v\n", token.Error())
 	} else {
-		opts := mqtt.NewClientOptions().
-			AddBroker(c2eCfg.Broker).
-			SetClientID(uuid.New().String()).
-			SetKeepAlive(30 * time.Second).
-			SetCleanSession(true).
-			SetAutoReconnect(true)
-
-		mqttClient := mqtt.NewClient(opts)
-
-		if token := mqttClient.Connect(); token.Wait() && token.Error() != nil {
-			fmt.Printf("can't connect to MQTT broker: %v\n", token.Error())
+		defer mqttClient.Disconnect(uint(c2eCfg.MqttQuiesceMs))
+		thingCfg, err := getThingConfig(mqttClient)
+		if err != nil {
+			fmt.Printf("can't get thing configuration from MQTT broker: %v\n", err)
 		} else {
-			defer mqttClient.Disconnect(uint(c2eCfg.MqttQuiesceMs))
-			thingCfg, err := getThingConfig(mqttClient)
-			if err != nil {
-				fmt.Printf("can't get thing config from MQTT broker: %v\n", err)
-			} else {
-				fmt.Printf("found thing id from MQTT broker: %s", thingCfg.DeviceID)
-				if deviceID != "" {
-					fmt.Printf(", overriding %s", deviceID)
-				}
-				fmt.Println()
-				deviceID = thingCfg.DeviceID
-			}
+			deviceId = thingCfg.DeviceId
+			tenantId = thingCfg.TenantId
 		}
 	}
+
+	if deviceId == "" {
+		fmt.Println("can't find device id")
+		os.Exit(1)
+	}
+	fmt.Printf("found thing id from MQTT broker: %s\n", deviceId)
+	if tenantId == "" {
+		fmt.Println("can't find tenant id")
+		os.Exit(1)
+	}
+	fmt.Printf("found tenant id from MQTT broker: %s\n", tenantId)
 }
 
 func generateRandomDeviceID() string {
@@ -237,7 +233,7 @@ func performSetUp(resources []*resource) int {
 			}
 
 			if i > 0 {
-				performCleanUp(resources[:i])
+				deleteResources(resources[:i])
 			}
 
 			return 1
@@ -248,33 +244,60 @@ func performSetUp(resources []*resource) int {
 
 	if err := copyFile(configFile, configFileBackup); err != nil {
 		fmt.Printf(
-			"unable to save backup copy of config file %s to %s: %v\n",
+			"unable to save backup copy of configuration file %s to %s: %v\n",
 			configFile, configFileBackup, err)
 
-		performCleanUp(resources)
+		deleteResources(resources)
 		return 1
 	}
 
 	if err := writeConfig(configFile); err != nil {
 		fmt.Println(err)
 
-		performCleanUp(resources)
+		deleteResources(resources)
 		return 1
 	}
 
-	fmt.Printf("%s config file '%s' written\n", indent, configFile)
+	fmt.Printf("%s configuration file '%s' written\n", indent, configFile)
 
-	fmt.Println("setup successful")
+	code := restartSuiteConnector()
 
-	return 0
-}
-
-func performCleanUp(resources []*resource) {
-	if deviceID == "" {
-		return
+	if code == 0 {
+		fmt.Println("setup successful")
 	}
 
-	fmt.Println("performing cleanup of initially created things...")
+	return code
+}
+
+func performCleanUp(resources []*resource) int {
+	var code int
+	fmt.Println("restoring suite-connector configuration file and restarting suite-connector")
+	if err := copyFile(configFileBackup, configFile); err != nil {
+		fmt.Printf(
+			"unable to restore the backup copy of configuration file %s to %s: %v\n",
+			configFileBackup, configFile, err)
+		code = 1
+	} else {
+		code = restartSuiteConnector()
+	}
+	if code == 0 {
+		// Delete suite-connector configuration backup file
+		if _, err := os.Stat(configFileBackup); errors.Is(err, os.ErrNotExist) {
+			fmt.Printf("unable to delete configuration file backup %s, file does not exist: %v", configFileBackup, err)
+		} else if err := os.Remove(configFileBackup); err != nil {
+			fmt.Printf("unable to delete configuration file backup %s, error: %v", configFileBackup, err)
+		}
+	}
+	// Delete devices and things
+	fmt.Printf("performing cleanup on device id: %s\n", deviceId)
+	deleteResources(resources)
+	return code
+}
+
+func deleteResources(resources []*resource) {
+	deleteRelatedDevices(deviceId)
+	fmt.Println("deleting initially created things...")
+	// Delete in reverse order of creation
 	for i := len(resources) - 1; i >= 0; i-- {
 		r := resources[i]
 
@@ -290,73 +313,83 @@ func performCleanUp(resources []*resource) {
 			fmt.Printf("%s '%s' deleted\n", indent, r.path)
 		}
 	}
-	// Dependent devices use the same deviceID as prefix, followed by colon ':'
-	deleteDependentDevices(deviceID + ":")
-	fmt.Println("cleanup done")
 }
 
-func deleteDependentDevices(deviceIDPrefix string) {
-	deleteHonoDevices(deviceIDPrefix)
-	deleteDittoDevices(deviceIDPrefix)
+func deleteRelatedDevices(viaDeviceId string) {
+	devicesVia := findHonoDevicesVia(viaDeviceId)
+	// Ditto things are created after Hono devices, so delete them first
+	deleteDittoThings(devicesVia)
+	// Then delete Hono devices
+	deleteHonoDevices(devicesVia)
 }
 
-func deleteHonoDevices(deviceIDPrefix string) {
-	type honoThing struct {
-		Id string `json:"id"`
+func findHonoDevicesVia(viaDeviceId string) []string {
+	var relations []string
+
+	type honoDevice struct {
+		Id  string   `json:"id"`
+		Via []string `json:"via"`
 	}
 
-	type honoThings struct {
-		Things []*honoThing `json:"result"`
+	type honoDevices struct {
+		Devices []*honoDevice `json:"result"`
 	}
 
-	// Delete Hono devices
-	fmt.Println("performing additional cleanup in hono...")
+	contains := func(where []string, what string) bool {
+		for _, item := range where {
+			if item == what {
+				return true
+			}
+		}
+		return false
+	}
+
 	honoAPI := fmt.Sprintf(
-		"%s/v1/%s%s/", strings.TrimSuffix(c2eCfg.RegistryAddress, "/"), devices, tenantID)
-	thingsJson, err := doRequest("GET", honoAPI, nil, c2eCfg.RegistryUser, c2eCfg.RegistryPassword)
+		"%s/v1/%s%s/", strings.TrimSuffix(c2eCfg.DeviceRegistryApiAddress, "/"), devices, tenantId)
+	devicesJson, err := doRequest("GET", honoAPI, nil, c2eCfg.DeviceRegistryApiUser, c2eCfg.DeviceRegistryApiPassword)
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		honoDevices := &honoThings{}
-		if err = json.Unmarshal(thingsJson, honoDevices); err != nil {
+		devices := &honoDevices{}
+		err = json.Unmarshal(devicesJson, devices)
+		if err != nil {
 			fmt.Println(err)
+			devices.Devices = nil
 		}
-		for _, thing := range honoDevices.Things {
-			if strings.HasPrefix(thing.Id, deviceIDPrefix) {
-				if _, err = doRequest(http.MethodDelete, honoAPI+thing.Id, nil, c2eCfg.RegistryUser, c2eCfg.RegistryPassword); err != nil {
-					fmt.Println(err)
-				} else {
-					fmt.Printf("%s '%s' deleted\n", indent, thing.Id)
-				}
+		for _, device := range devices.Devices {
+			if contains(device.Via, viaDeviceId) {
+				relations = append(relations, device.Id)
 			}
+		}
+	}
+
+	return relations
+}
+
+func deleteDittoThings(relations []string) {
+	// Delete related Ditto things
+	fmt.Println("deleting automatically created things in ditto...")
+	dittoAPI := fmt.Sprintf("%s/api/2/", strings.TrimSuffix(c2eCfg.DigitalTwinApiAddress, "/"))
+	for _, thingId := range relations {
+		_, err := doRequest(http.MethodDelete, dittoAPI+thingId, nil, c2eCfg.DigitalTwinApiUser, c2eCfg.DigitalTwinApiPassword)
+		if err != nil {
+			fmt.Printf("error deleting thing: %v\n", err)
+		} else {
+			fmt.Printf("%s '%s' deleted\n", indent, thingId)
 		}
 	}
 }
 
-func deleteDittoDevices(deviceIDPrefix string) {
-	type dittoThing struct {
-		ThingId string `json:"thingId"`
-	}
-
-	// Delete Ditto devices
-	fmt.Println("performing additional cleanup in ditto...")
-	dittoAPI := fmt.Sprintf("%s/api/2/%s", strings.TrimSuffix(c2eCfg.DittoAddress, "/"), things)
-	thingsJson, err := doRequest("GET", dittoAPI, nil, c2eCfg.DittoUser, c2eCfg.DittoPassword)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		dittoDevices := []dittoThing{}
-		if err = json.Unmarshal(thingsJson, &dittoDevices); err != nil {
-			fmt.Println(err)
-		}
-		for _, thing := range dittoDevices {
-			if strings.HasPrefix(thing.ThingId, deviceIDPrefix) {
-				if _, err = doRequest(http.MethodDelete, dittoAPI+thing.ThingId, nil, c2eCfg.DittoUser, c2eCfg.DittoPassword); err != nil {
-					fmt.Println(err)
-				} else {
-					fmt.Printf("%s '%s' deleted\n", indent, thing.ThingId)
-				}
-			}
+func deleteHonoDevices(relations []string) {
+	// Delete related Hono devices
+	fmt.Println("deleting automatically created devices in hono...")
+	honoAPI := fmt.Sprintf(
+		"%s/v1/%s%s/", strings.TrimSuffix(c2eCfg.DeviceRegistryApiAddress, "/"), devices, tenantId)
+	for _, device := range relations {
+		if _, err := doRequest(http.MethodDelete, honoAPI+device, nil, c2eCfg.DeviceRegistryApiUser, c2eCfg.DeviceRegistryApiPassword); err != nil {
+			fmt.Printf("error deleting device: %v\n", err)
+		} else {
+			fmt.Printf("%s '%s' deleted\n", indent, device)
 		}
 	}
 }
@@ -376,9 +409,9 @@ func writeConfig(path string) error {
 	cfg.CaCert = certFile
 	cfg.LogFile = logFile
 	cfg.Address = c2eCfg.MqttAdapterAddress
-	cfg.DeviceID = deviceID
-	cfg.TenantID = tenantID
-	cfg.AuthID = authID
+	cfg.DeviceID = deviceId
+	cfg.TenantID = tenantId
+	cfg.AuthID = authId
 	cfg.Password = devicePass
 
 	b, err := json.MarshalIndent(cfg, "", "\t")
@@ -423,7 +456,7 @@ func doRequest(method string, url string, payload []byte, user string, pass stri
 	return body, err
 }
 
-func getThingConfig(mqttClient mqtt.Client) (*thingConfig, error) {
+func getThingConfig(mqttClient MQTT.Client) (*thingConfig, error) {
 	type result struct {
 		cfg *thingConfig
 		err error
@@ -431,7 +464,7 @@ func getThingConfig(mqttClient mqtt.Client) (*thingConfig, error) {
 
 	ch := make(chan result)
 
-	if token := mqttClient.Subscribe("edge/thing/response", 1, func(client mqtt.Client, message mqtt.Message) {
+	if token := mqttClient.Subscribe("edge/thing/response", 1, func(client MQTT.Client, message MQTT.Message) {
 		var cfg thingConfig
 		if err := json.Unmarshal(message.Payload(), &cfg); err != nil {
 			ch <- result{nil, err}
@@ -450,7 +483,7 @@ func getThingConfig(mqttClient mqtt.Client) (*thingConfig, error) {
 	case result := <-ch:
 		return result.cfg, result.err
 	case <-time.After(timeout):
-		return nil, fmt.Errorf("thing config not received in %v", timeout)
+		return nil, fmt.Errorf("thing configuration not received in %v", timeout)
 	}
 }
 
