@@ -44,7 +44,7 @@ const (
 	restart               = "restart"
 	suiteConnectorService = "suite-connector.service"
 
-	fileFlags = 0666
+	configDefaultMode = 0666
 )
 
 var (
@@ -251,7 +251,7 @@ func performSetUp(resources []*resource) int {
 		return 1
 	}
 
-	if err := writeConfig(configFile); err != nil {
+	if err := writeConfigFile(configFile); err != nil {
 		fmt.Println(err)
 
 		deleteResources(resources)
@@ -394,7 +394,7 @@ func deleteHonoDevices(relations []string) {
 	}
 }
 
-func writeConfig(path string) error {
+func writeConfigFile(path string) error {
 	type connectorConfig struct {
 		CaCert   string `json:"caCert"`
 		LogFile  string `json:"logFile"`
@@ -405,21 +405,37 @@ func writeConfig(path string) error {
 		Password string `json:"password"`
 	}
 
-	cfg := &connectorConfig{}
-	cfg.CaCert = certFile
-	cfg.LogFile = logFile
-	cfg.Address = c2eCfg.MqttAdapterAddress
-	cfg.DeviceID = deviceId
-	cfg.TenantID = tenantId
-	cfg.AuthID = authId
-	cfg.Password = devicePass
-
-	b, err := json.MarshalIndent(cfg, "", "\t")
-	if err != nil {
-		return err
+	cfg := &connectorConfig{
+		CaCert:   certFile,
+		LogFile:  logFile,
+		Address:  c2eCfg.MqttAdapterAddress,
+		DeviceID: deviceId,
+		TenantID: tenantId,
+		AuthID:   authId,
+		Password: devicePass,
 	}
 
-	return ioutil.WriteFile(path, b, fileFlags)
+	jsonContents, err := json.MarshalIndent(cfg, "", "\t")
+	if err != nil {
+		return fmt.Errorf("unable to marshal to json: %v", err)
+	}
+
+	// Preserve the file mode if the file already exists
+	mode := getFileModeOrDefault(path, configDefaultMode)
+	err = ioutil.WriteFile(path, jsonContents, mode)
+	if err != nil {
+		return fmt.Errorf("unable to save suite-connector configuration json file %s: %v", path, err)
+	}
+	return nil
+}
+
+func getFileModeOrDefault(path string, defaultMode os.FileMode) os.FileMode {
+	mode := defaultMode
+	fileInfo, err := os.Stat(path)
+	if err == nil {
+		mode = fileInfo.Mode()
+	}
+	return mode
 }
 
 func doRequest(method string, url string, payload []byte, user string, pass string) ([]byte, error) {
@@ -508,5 +524,7 @@ func copyFile(src, dst string) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(dst, data, fileFlags)
+	// Preserve the file mode if the file already exists
+	mode := getFileModeOrDefault(dst, configDefaultMode)
+	return ioutil.WriteFile(dst, data, mode)
 }
