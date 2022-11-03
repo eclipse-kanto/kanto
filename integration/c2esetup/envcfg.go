@@ -81,6 +81,8 @@ func getConfigHelp(cfg interface{}) string {
 }
 
 func toSnakeCase(name string) string {
+	name = strings.ReplaceAll(name, "API", "Api")
+
 	var result, word strings.Builder
 
 	for i, ch := range name {
