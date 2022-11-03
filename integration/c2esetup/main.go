@@ -133,7 +133,7 @@ func main() {
 		} else {
 			fmt.Printf("forcing device id: \"%s\"\n", deviceId)
 		}
-	} else {
+	} else if deviceId == "" || tenantId == "" {
 		readIdsFromMQTT()
 	}
 
@@ -146,8 +146,9 @@ func main() {
 	devicePath := fmt.Sprintf("%s/%s", tenantId, deviceId)
 
 	resources := make([]*resource, 0, 4)
-	resources = append(resources, &resource{base: registryAPI, path: devices + devicePath, method: http.MethodPost,
-		body: deviceJSON, user: c2eCfg.DeviceRegistryApiUser, pass: c2eCfg.DeviceRegistryApiPassword, delete: true})
+	deviceResource := &resource{base: registryAPI, path: devices + devicePath, method: http.MethodPost,
+		body: deviceJSON, user: c2eCfg.DeviceRegistryApiUser, pass: c2eCfg.DeviceRegistryApiPassword, delete: true}
+	resources = append(resources, deviceResource)
 
 	authId = strings.ReplaceAll(deviceId, ":", "_")
 	auth := fmt.Sprintf(authJSON, authId, devicePass)
@@ -160,12 +161,12 @@ func main() {
 		body: thing, user: c2eCfg.DigitalTwinApiUser, pass: c2eCfg.DigitalTwinApiPassword, delete: true})
 
 	var code int
-	if *clean {
+	if !*clean {
+		code = performSetUp(deviceResource, resources)
+		fmt.Println("setup complete")
+	} else {
 		code = performCleanUp(resources)
 		fmt.Println("cleanup complete")
-	} else {
-		code = performSetUp(resources)
-		fmt.Println("setup complete")
 	}
 	os.Exit(code)
 }
@@ -220,15 +221,38 @@ func assertFlag(value string, name string) {
 	}
 }
 
-func performSetUp(resources []*resource) int {
+func checkDeviceInRegistry(deviceId string, deviceResource *resource) error {
+	url := fmt.Sprintf("%s/%s", deviceResource.base, deviceResource.path)
+	devicesBytes, err := doRequest("GET", url, nil, c2eCfg.DeviceRegistryApiUser, c2eCfg.DeviceRegistryApiPassword)
+	if err == nil {
+		devicesJson := string(devicesBytes)
+		if strings.Contains(devicesJson, "status") &&
+			strings.Contains(devicesJson, "created") &&
+			strings.Contains(devicesJson, "authorities") {
+			return nil
+		}
+	}
+	if err == nil {
+		return fmt.Errorf("device %s hasn't been created", deviceId)
+	}
+	return err
+}
+
+func performSetUp(deviceResource *resource, resources []*resource) int {
+	if err := checkDeviceInRegistry(deviceId, deviceResource); err == nil {
+		fmt.Printf("device %s already exists in registry, aborting...\n", deviceId)
+		os.Exit(1)
+	}
+
 	fmt.Println("performing setup...")
+
 	for i, r := range resources {
 		url := fmt.Sprintf("%s/%s", r.base, r.path)
 
 		if b, err := doRequest(r.method, url, ([]byte)(r.body), r.user, r.pass); err != nil {
 			fmt.Println(err)
 			if b != nil {
-				fmt.Println(b)
+				fmt.Println(string(b))
 				fmt.Println()
 			}
 
@@ -238,8 +262,14 @@ func performSetUp(resources []*resource) int {
 
 			return 1
 		}
-
 		fmt.Printf("%s '%s' created\n", indent, r.path)
+	}
+
+	fmt.Println("checking if the device was successfully created in the registry")
+	if err := checkDeviceInRegistry(deviceId, deviceResource); err != nil {
+		fmt.Printf("%v\n", err)
+		deleteResources(resources)
+		return 1
 	}
 
 	if err := copyFile(configFile, configFileBackup); err != nil {
@@ -326,13 +356,13 @@ func deleteRelatedDevices(viaDeviceId string) {
 func findHonoDevicesVia(viaDeviceId string) []string {
 	var relations []string
 
-	type honoDevice struct {
+	type registryDevice struct {
 		Id  string   `json:"id"`
 		Via []string `json:"via"`
 	}
 
-	type honoDevices struct {
-		Devices []*honoDevice `json:"result"`
+	type registryDevices struct {
+		Devices []*registryDevice `json:"result"`
 	}
 
 	contains := func(where []string, what string) bool {
@@ -350,7 +380,7 @@ func findHonoDevicesVia(viaDeviceId string) []string {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		devices := &honoDevices{}
+		devices := &registryDevices{}
 		err = json.Unmarshal(devicesJson, devices)
 		if err != nil {
 			fmt.Println(err)
