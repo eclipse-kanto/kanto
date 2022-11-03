@@ -15,7 +15,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -246,6 +245,16 @@ func performSetUp(deviceResource *resource, resources []*resource) int {
 
 	fmt.Println("performing setup...")
 
+	if configFile != "" && configFileBackup != "" {
+		fmt.Println("saving a backup of the suite-connector configuration file...")
+		if err := copyFile(configFile, configFileBackup); err != nil {
+			fmt.Printf(
+				"unable to save backup copy of configuration file %s to %s: %v\n",
+				configFile, configFileBackup, err)
+			return 1
+		}
+	}
+
 	for i, r := range resources {
 		url := fmt.Sprintf("%s/%s", r.base, r.path)
 
@@ -272,25 +281,18 @@ func performSetUp(deviceResource *resource, resources []*resource) int {
 		return 1
 	}
 
-	if err := copyFile(configFile, configFileBackup); err != nil {
-		fmt.Printf(
-			"unable to save backup copy of configuration file %s to %s: %v\n",
-			configFile, configFileBackup, err)
+	var code int
+	if configFile != "" {
+		if err := writeConfigFile(configFile); err != nil {
+			fmt.Println(err)
 
-		deleteResources(resources)
-		return 1
+			deleteResources(resources)
+			return 1
+		}
+
+		fmt.Printf("%s configuration file '%s' written\n", indent, configFile)
+		code = restartSuiteConnector()
 	}
-
-	if err := writeConfigFile(configFile); err != nil {
-		fmt.Println(err)
-
-		deleteResources(resources)
-		return 1
-	}
-
-	fmt.Printf("%s configuration file '%s' written\n", indent, configFile)
-
-	code := restartSuiteConnector()
 
 	if code == 0 {
 		fmt.Println("setup successful")
@@ -301,21 +303,21 @@ func performSetUp(deviceResource *resource, resources []*resource) int {
 
 func performCleanUp(resources []*resource) int {
 	var code int
-	fmt.Println("restoring suite-connector configuration file and restarting suite-connector")
-	if err := copyFile(configFileBackup, configFile); err != nil {
-		fmt.Printf(
-			"unable to restore the backup copy of configuration file %s to %s: %v\n",
-			configFileBackup, configFile, err)
-		code = 1
-	} else {
-		code = restartSuiteConnector()
-	}
-	if code == 0 {
-		// Delete suite-connector configuration backup file
-		if _, err := os.Stat(configFileBackup); errors.Is(err, os.ErrNotExist) {
-			fmt.Printf("unable to delete configuration file backup %s, file does not exist: %v", configFileBackup, err)
-		} else if err := os.Remove(configFileBackup); err != nil {
-			fmt.Printf("unable to delete configuration file backup %s, error: %v", configFileBackup, err)
+	if configFile != "" && configFileBackup != "" {
+		fmt.Println("restoring suite-connector configuration file and restarting suite-connector")
+		if err := copyFile(configFileBackup, configFile); err != nil {
+			fmt.Printf(
+				"unable to restore the backup copy of configuration file %s to %s: %v\n",
+				configFileBackup, configFile, err)
+			code = 1
+		} else {
+			code = restartSuiteConnector()
+		}
+		if code == 0 {
+			// Delete suite-connector configuration backup file
+			if err := os.Remove(configFileBackup); err != nil {
+				fmt.Printf("unable to delete configuration file backup %s, error: %v", configFileBackup, err)
+			}
 		}
 	}
 	// Delete devices and things
