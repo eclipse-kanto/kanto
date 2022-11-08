@@ -102,12 +102,12 @@ type thingConfig struct {
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	flag.StringVar(&tenantID, "tenant", "", "Hono tenant id")
+	flag.StringVar(&tenantID, "tenantId", "", "Hono tenant unique identifier")
 
-	flag.StringVar(&deviceID, "device", "", "Test device id, defaults to randomly generated")
+	flag.StringVar(&deviceID, "deviceId", "", "Test device unique identifier, defaults to randomly generated")
 	flag.StringVar(&devicePass, "devicePass", "123456", "Test device password")
 
-	flag.StringVar(&policyID, "policy", "", "Test device's policy id")
+	flag.StringVar(&policyID, "policyId", "", "Test device's policy unique identifier")
 
 	flag.StringVar(&configFile, "configFile", "/etc/suite-connector/config.json", "Path to Suite Connector configuration file")
 	flag.StringVar(&configFileBackup, "configFileBackup", "/etc/suite-connector/configBackup.json", "Path to Suite Connector configuration file backup")
