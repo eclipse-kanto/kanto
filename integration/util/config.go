@@ -22,13 +22,12 @@ import (
 
 // TestConfig is common IT configuration
 type TestConfig struct {
-	Broker                   string `env:"BROKER" envDefault:"tcp://localhost:1883"`
+	Broker                   string `env:"LOCAL_BROKER" envDefault:"tcp://localhost:1883"`
 	MqttQuiesceMs            int    `env:"MQTT_QUIESCE_MS" envDefault:"500"`
 	MqttAcknowledgeTimeoutMs int    `env:"MQTT_QUIESCE_MS" envDefault:"3000"`
 
-	DigitalTwinAPIAddress string `env:"DIGITAL_TWIN_API_ADDRESS"`
-
-	DigitalTwinAPIUser     string `env:"DIGITAL_TWIN_API_USER" envDefault:"ditto"`
+	DigitalTwinAPIAddress  string `env:"DIGITAL_TWIN_API_ADDRESS"`
+	DigitalTwinAPIUserName string `env:"DIGITAL_TWIN_API_USERNAME" envDefault:"ditto"`
 	DigitalTwinAPIPassword string `env:"DIGITAL_TWIN_API_PASSWORD" envDefault:"ditto"`
 
 	EventTimeoutMs  int `env:"EVENT_TIMEOUT_MS" envDefault:"30000"`

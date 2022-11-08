@@ -64,11 +64,11 @@ github.com/caarlos0/env (1.7.0)
 * Project: https://github.com/caarlos0/env
 * Source:  https://github.com/caarlos0/env/releases/tag/v6.10.1
 
-github.com/stretchr/testify (1.7.0)
+github.com/stretchr/testify (1.8.1)
 
 * License: MIT License
 * Project: https://github.com/stretchr/testify
-* Source:  https://github.com/stretchr/testify/releases/tag/v1.7.0
+* Source:  https://github.com/stretchr/testify/releases/tag/v1.8.1
 
 eclipse/paho.mqtt.golang (1.4.1)
 

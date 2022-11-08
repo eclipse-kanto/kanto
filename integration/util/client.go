@@ -20,19 +20,19 @@ import (
 
 	"github.com/eclipse/ditto-clients-golang"
 
-	mqtt "github.com/eclipse/paho.mqtt.golang"
+	MQTT "github.com/eclipse/paho.mqtt.golang"
 )
 
 // NewMQTTClient creates new MQTT client and connects it to the broker from the test config
-func NewMQTTClient(cfg *TestConfig) (mqtt.Client, error) {
-	opts := mqtt.NewClientOptions().
+func NewMQTTClient(cfg *TestConfig) (MQTT.Client, error) {
+	opts := MQTT.NewClientOptions().
 		AddBroker(cfg.Broker).
 		SetClientID(uuid.New().String()).
 		SetKeepAlive(30 * time.Second).
 		SetCleanSession(true).
 		SetAutoReconnect(true)
 
-	mqttClient := mqtt.NewClient(opts)
+	mqttClient := MQTT.NewClient(opts)
 
 	if token := mqttClient.Connect(); token.Wait() && token.Error() != nil {
 		return nil, token.Error()
@@ -42,7 +42,7 @@ func NewMQTTClient(cfg *TestConfig) (mqtt.Client, error) {
 }
 
 // SendMessage sends a message to a topic using specified client
-func SendMessage(cfg *TestConfig, client mqtt.Client, topic string, message interface{}) error {
+func SendMessage(cfg *TestConfig, client MQTT.Client, topic string, message interface{}) error {
 	payload, err := json.Marshal(message)
 	if err != nil {
 		return err

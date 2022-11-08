@@ -1,4 +1,4 @@
-module kanto/integration/testutil
+module github.com/eclipse-kanto/kanto/integration/util
 
 go 1.17
 
@@ -7,7 +7,7 @@ require (
 	github.com/eclipse/ditto-clients-golang v0.0.0-20220225085802-cf3b306280d3
 	github.com/eclipse/paho.mqtt.golang v1.4.1
 	github.com/google/uuid v1.3.0
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.8.1
 	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
 )
 

@@ -31,7 +31,7 @@ func SendRequest(cfg *TestConfig, method string, url string) ([]byte, error) {
 		return nil, err
 	}
 
-	req.SetBasicAuth(cfg.DigitalTwinAPIUser, cfg.DigitalTwinAPIPassword)
+	req.SetBasicAuth(cfg.DigitalTwinAPIUserName, cfg.DigitalTwinAPIPassword)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func NewWSConnection(cfg *TestConfig) (*websocket.Conn, error) {
 		return nil, err
 	}
 
-	auth := fmt.Sprintf("%s:%s", cfg.DigitalTwinAPIUser, cfg.DigitalTwinAPIPassword)
+	auth := fmt.Sprintf("%s:%s", cfg.DigitalTwinAPIUserName, cfg.DigitalTwinAPIPassword)
 	enc := base64.StdEncoding.EncodeToString([]byte(auth))
 	wscfg.Header = http.Header{
 		"Authorization": {"Basic " + enc},
