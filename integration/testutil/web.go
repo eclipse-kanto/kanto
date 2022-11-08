@@ -14,6 +14,7 @@ package testutil
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -88,39 +89,47 @@ func asWSAddress(address string) (string, error) {
 	return fmt.Sprintf("ws://%s:%s", url.Hostname(), getPortOrDefault(url, "80")), nil
 }
 
-// BeginWSWait waits for a message to be received via websocket
-func BeginWSWait(cfg *TestConfig, ws *websocket.Conn, check func(payload []byte) bool) chan bool {
-	timeout := time.Duration(cfg.EventTimeoutMs * int(time.Millisecond))
-
-	ch := make(chan bool)
+func beginWait(timeout time.Duration, resultCh chan error, closer func()) chan error {
+	ch := make(chan error)
 
 	go func() {
-		resultCh := make(chan bool)
-
-		go func() {
-			var payload []byte
-			threshold := time.Now().Add(timeout)
-			for time.Now().Before(threshold) {
-				err := websocket.Message.Receive(ws, &payload)
-				if err == nil && check(payload) {
-					resultCh <- true
-					return
-				}
-
-				panic(fmt.Errorf("error while waiting for WS message: %v", err))
-			}
-
-			resultCh <- false
-		}()
-
 		select {
 		case result := <-resultCh:
 			ch <- result
 		case <-time.After(timeout):
-			ws.Close()
-			ch <- false
+			closer()
+			ch <- errors.New("timeout")
 		}
 	}()
 
 	return ch
+}
+
+// BeginWSWait waits for a message to be received via websocket
+func BeginWSWait(cfg *TestConfig, ws *websocket.Conn, check func(payload []byte) error) chan error {
+	timeout := time.Duration(cfg.EventTimeoutMs * int(time.Millisecond))
+	resultCh := make(chan error)
+
+	go func() {
+		var payload []byte
+		threshold := time.Now().Add(timeout)
+		var err error
+		for time.Now().Before(threshold) {
+			err = websocket.Message.Receive(ws, &payload)
+			if err == nil {
+				err = check(payload)
+			}
+			if err == nil {
+				resultCh <- nil
+				return
+			}
+		}
+		resultCh <- fmt.Errorf("WS response not received in %v, last error: %v", timeout, err)
+	}()
+
+	closer := func() {
+		ws.Close()
+	}
+
+	return beginWait(timeout, resultCh, closer)
 }
