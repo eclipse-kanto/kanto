@@ -26,7 +26,7 @@ import (
 // NewMQTTClient creates new MQTT client and connects it to the broker from the test config
 func NewMQTTClient(cfg *TestConfig) (MQTT.Client, error) {
 	opts := MQTT.NewClientOptions().
-		AddBroker(cfg.Broker).
+		AddBroker(cfg.LocalBroker).
 		SetClientID(uuid.New().String()).
 		SetKeepAlive(30 * time.Second).
 		SetCleanSession(true).

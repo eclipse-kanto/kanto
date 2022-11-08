@@ -22,7 +22,7 @@ import (
 
 // TestConfig is common IT configuration
 type TestConfig struct {
-	Broker                   string `env:"LOCAL_BROKER" envDefault:"tcp://localhost:1883"`
+	LocalBroker              string `env:"LOCAL_BROKER" envDefault:"tcp://localhost:1883"`
 	MqttQuiesceMs            int    `env:"MQTT_QUIESCE_MS" envDefault:"500"`
 	MqttAcknowledgeTimeoutMs int    `env:"MQTT_QUIESCE_MS" envDefault:"3000"`
 
