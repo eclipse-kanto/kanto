@@ -10,7 +10,7 @@
 //
 // SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
 
-package testutil
+package util
 
 import (
 	"encoding/base64"
@@ -24,14 +24,14 @@ import (
 	"golang.org/x/net/websocket"
 )
 
-// SendRequest sends new HTTP request to ditto REST API
-func SendRequest(cfg *TestConfig, method string, url string) ([]byte, error) {
+// SendDittoRequest sends new HTTP request to ditto REST API
+func SendDittoRequest(cfg *TestConfig, method string, url string) ([]byte, error) {
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.SetBasicAuth(cfg.DigitalTwinAPIUserName, cfg.DigitalTwinAPIPassword)
+	req.SetBasicAuth(cfg.DigitalTwinAPIUsername, cfg.DigitalTwinAPIPassword)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func NewWSConnection(cfg *TestConfig) (*websocket.Conn, error) {
 		return nil, err
 	}
 
-	auth := fmt.Sprintf("%s:%s", cfg.DigitalTwinAPIUserName, cfg.DigitalTwinAPIPassword)
+	auth := fmt.Sprintf("%s:%s", cfg.DigitalTwinAPIUsername, cfg.DigitalTwinAPIPassword)
 	enc := base64.StdEncoding.EncodeToString([]byte(auth))
 	wscfg.Header = http.Header{
 		"Authorization": {"Basic " + enc},
@@ -89,8 +89,8 @@ func asWSAddress(address string) (string, error) {
 	return fmt.Sprintf("ws://%s:%s", url.Hostname(), getPortOrDefault(url, "80")), nil
 }
 
-// BeginWait waits for an error to be received over the channel up to a timeout
-func BeginWait(timeout time.Duration, resultCh chan error, closer func()) chan error {
+// WaitResult waits for the result or error to be received over the channel up to a timeout
+func WaitResult(timeout time.Duration, resultCh chan error, closer func()) chan error {
 	ch := make(chan error)
 
 	go func() {
@@ -132,5 +132,5 @@ func BeginWSWait(cfg *TestConfig, ws *websocket.Conn, check func(payload []byte)
 		ws.Close()
 	}
 
-	return BeginWait(timeout, resultCh, closer)
+	return WaitResult(timeout, resultCh, closer)
 }

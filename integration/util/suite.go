@@ -10,7 +10,7 @@
 //
 // SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
 
-package testutil
+package util
 
 import (
 	"testing"
@@ -32,15 +32,12 @@ type SuiteInit struct {
 	MqttClient  mqtt.Client
 }
 
-// Setup established connections to local broker and Ditto
+// Setup establishes connections to local MQTT broker and Ditto
 func (suite *SuiteInit) Setup(t *testing.T) {
 	cfg := &TestConfig{}
 
 	opts := env.Options{RequiredIfNoDef: true}
-
-	if err := env.Parse(cfg, opts); err != nil {
-		t.Skip(err)
-	}
+	require.NoError(t, env.Parse(cfg, opts), "Failed to process environment variables")
 
 	t.Logf("%#v\n", cfg)
 

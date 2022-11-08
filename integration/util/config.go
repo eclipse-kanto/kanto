@@ -10,7 +10,7 @@
 //
 // SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
 
-package testutil
+package util
 
 import (
 	"encoding/json"
@@ -27,13 +27,12 @@ type TestConfig struct {
 	MqttAcknowledgeTimeoutMs int    `env:"MQTT_QUIESCE_MS" envDefault:"3000"`
 
 	DigitalTwinAPIAddress  string `env:"DIGITAL_TWIN_API_ADDRESS"`
-	DigitalTwinAPIUserName string `env:"DIGITAL_TWIN_API_USERNAME" envDefault:"ditto"`
+	DigitalTwinAPIUsername string `env:"DIGITAL_TWIN_API_USERNAME" envDefault:"ditto"`
 	DigitalTwinAPIPassword string `env:"DIGITAL_TWIN_API_PASSWORD" envDefault:"ditto"`
 
 	EventTimeoutMs  int `env:"EVENT_TIMEOUT_MS" envDefault:"30000"`
 	StatusTimeoutMs int `env:"STATUS_TIMEOUT_MS" envDefault:"10000"`
-
-	TimeDeltaMs int `env:"TIME_DELTA_MS" envDefault:"5000"`
+	TimeDeltaMs     int `env:"TIME_DELTA_MS" envDefault:"5000"`
 }
 
 // ThingConfig is thing configuration info for Edge

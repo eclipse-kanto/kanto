@@ -10,7 +10,7 @@
 //
 // SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
 
-package testutil
+package util
 
 import (
 	"encoding/json"
@@ -41,8 +41,8 @@ func NewMQTTClient(cfg *TestConfig) (MQTT.Client, error) {
 	return mqttClient, nil
 }
 
-// SendMessage sends a message to a topic using specified client
-func SendMessage(cfg *TestConfig, client MQTT.Client, topic string, message interface{}) error {
+// SendMQTTMessage sends a message to a topic using specified client
+func SendMQTTMessage(cfg *TestConfig, client MQTT.Client, topic string, message interface{}) error {
 	payload, err := json.Marshal(message)
 	if err != nil {
 		return err
