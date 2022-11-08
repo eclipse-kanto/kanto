@@ -89,7 +89,8 @@ func asWSAddress(address string) (string, error) {
 	return fmt.Sprintf("ws://%s:%s", url.Hostname(), getPortOrDefault(url, "80")), nil
 }
 
-func beginWait(timeout time.Duration, resultCh chan error, closer func()) chan error {
+// BeginWait waits for an error to be received over the channel up to a timeout
+func BeginWait(timeout time.Duration, resultCh chan error, closer func()) chan error {
 	ch := make(chan error)
 
 	go func() {
@@ -131,5 +132,5 @@ func BeginWSWait(cfg *TestConfig, ws *websocket.Conn, check func(payload []byte)
 		ws.Close()
 	}
 
-	return beginWait(timeout, resultCh, closer)
+	return BeginWait(timeout, resultCh, closer)
 }
