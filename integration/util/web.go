@@ -20,7 +20,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 
@@ -93,11 +92,11 @@ func asWSAddress(address string) (string, error) {
 	return fmt.Sprintf("ws://%s:%s", url.Hostname(), getPortOrDefault(url, "80")), nil
 }
 
-// WaitForAck polls messages from the web socket connection until specific acknowledgement is received or timeout expires
-func WaitForAck(
+// WaitForWSMessage polls messages from the web socket connection until specific message is received or timeout expires
+func WaitForWSMessage(
 	timeout time.Duration,
 	ws *websocket.Conn,
-	expectedAck string) error {
+	expectedMessage string) error {
 
 	var payload []byte
 	deadline := time.Now().Add(timeout)
@@ -107,8 +106,8 @@ func WaitForAck(
 	for time.Now().Before(deadline) {
 		err = websocket.Message.Receive(ws, &payload)
 		if err == nil {
-			ack := strings.TrimSpace(string(payload))
-			if ack == expectedAck {
+			message := strings.TrimSpace(string(payload))
+			if message == expectedMessage {
 				return nil
 			}
 		}
@@ -117,8 +116,8 @@ func WaitForAck(
 	return errors.New("timeout")
 }
 
-// ProcessMessages polls messages from the web socket connection until specific condition is satisfied or timeout expires
-func ProcessMessages(
+// ProcessWSMessages polls messages from the web socket connection until specific condition is satisfied or timeout expires
+func ProcessWSMessages(
 	timeout time.Duration,
 	ws *websocket.Conn,
 	process func(*protocol.Envelope) (bool, error)) (bool, error) {
@@ -140,7 +139,6 @@ func ProcessMessages(
 			} else {
 				// Unmarshalling error, the payload is not a JSON of protocol.Envelope
 				// Ignore the error
-				fmt.Fprintf(os.Stderr, "error unmarshalling a protocol.Envelope: %v", err)
 				err = nil
 			}
 		}
@@ -158,22 +156,22 @@ func ProcessMessages(
 
 // SubscribeResult contains subscription information
 type SubscribeResult struct {
-	stopped bool
-	err     error
+	Stopped bool
+	Err     error
 }
 
-// Subscribe starts ProcessMessages asynchronously
-func Subscribe(
+// WSSubscribe starts ProcessMessages asynchronously
+func WSSubscribe(
 	timeout time.Duration,
 	ws *websocket.Conn,
 	process func(*protocol.Envelope) (bool, error)) chan SubscribeResult {
 	responseCh := make(chan SubscribeResult)
 
 	go func() {
-		stopped, err := ProcessMessages(timeout, ws, process)
+		stopped, err := ProcessWSMessages(timeout, ws, process)
 		responseCh <- SubscribeResult{
-			stopped: stopped,
-			err:     err,
+			Stopped: stopped,
+			Err:     err,
 		}
 	}()
 
@@ -186,8 +184,9 @@ func WaitSubscribeResult(timeout time.Duration, resultCh chan SubscribeResult, c
 	case result := <-resultCh:
 		return result
 	case <-time.After(timeout):
+		closer()
 		return SubscribeResult{
-			err: errors.New("timeout"),
+			Err: errors.New("timeout"),
 		}
 	}
 }
