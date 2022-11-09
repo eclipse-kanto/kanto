@@ -14,11 +14,10 @@ package util
 
 import (
 	"encoding/json"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
-
-	"github.com/eclipse/ditto-clients-golang"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 )
@@ -50,7 +49,7 @@ func SendMQTTMessage(cfg *TestConfiguration, client MQTT.Client, topic string, m
 	token := client.Publish(topic, 1, false, payload)
 	timeout := time.Duration(cfg.MqttAcknowledgeTimeoutMs * int(time.Millisecond))
 	if !token.WaitTimeout(timeout) {
-		return ditto.ErrAcknowledgeTimeout
+		return errors.New("timeout")
 	}
 	return token.Error()
 }

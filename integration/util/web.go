@@ -93,100 +93,61 @@ func asWSAddress(address string) (string, error) {
 }
 
 // WaitForWSMessage polls messages from the web socket connection until specific message is received or timeout expires
-func WaitForWSMessage(
-	timeout time.Duration,
-	ws *websocket.Conn,
-	expectedMessage string) error {
-
+func WaitForWSMessage(timeout time.Duration, ws *websocket.Conn, expectedMessage string) error {
 	var payload []byte
 	deadline := time.Now().Add(timeout)
 	ws.SetDeadline(deadline)
-	var err error
 
 	for time.Now().Before(deadline) {
-		err = websocket.Message.Receive(ws, &payload)
-		if err == nil {
-			message := strings.TrimSpace(string(payload))
-			if message == expectedMessage {
-				return nil
-			}
+		err := websocket.Message.Receive(ws, &payload)
+		if err != nil {
+			return fmt.Errorf("error reading from websocket: %s", err)
+		}
+		message := strings.TrimSpace(string(payload))
+		if message == expectedMessage {
+			return nil
 		}
 	}
 
 	return errors.New("timeout")
 }
 
+// ProcessWSMessageResult is the result of messages processing
+type ProcessWSMessageResult struct {
+	Finished bool
+	Err      error
+}
+
 // ProcessWSMessages polls messages from the web socket connection until specific condition is satisfied or timeout expires
 func ProcessWSMessages(
 	timeout time.Duration,
 	ws *websocket.Conn,
-	process func(*protocol.Envelope) (bool, error)) (bool, error) {
+	process func(*protocol.Envelope) ProcessWSMessageResult) ProcessWSMessageResult {
 
-	var payload []byte
 	deadline := time.Now().Add(timeout)
 	ws.SetDeadline(deadline)
 
-	var err error
-	var stop bool
-	for !stop && time.Now().Before(deadline) {
-		err = websocket.Message.Receive(ws, &payload)
-		var envelope *protocol.Envelope
-		if err == nil {
-			envelope = &protocol.Envelope{}
-			err = json.Unmarshal(payload, envelope)
-			if err == nil {
-				stop, err = process(envelope)
-			} else {
-				// Unmarshalling error, the payload is not a JSON of protocol.Envelope
-				// Ignore the error
-				err = nil
-			}
+	result := ProcessWSMessageResult{}
+	for !result.Finished && time.Now().Before(deadline) {
+		var payload []byte
+		webSocketErr := websocket.Message.Receive(ws, &payload)
+		if webSocketErr != nil {
+			result.Err = fmt.Errorf("error reading from websocket: %s", webSocketErr)
+			return result
 		}
-		if err != nil {
-			return false, err
+		envelope := &protocol.Envelope{}
+		unmarshalErr := json.Unmarshal(payload, envelope)
+		if unmarshalErr == nil {
+			result = process(envelope)
+		} else {
+			// Unmarshalling error, the payload is not a JSON of protocol.Envelope
+			// Ignore the error
 		}
 	}
 
-	if stop {
-		return true, nil
+	if !result.Finished {
+		result.Err = fmt.Errorf("not finished, expected WS response not received in %v, last error: %v", timeout, result.Err)
 	}
 
-	return false, fmt.Errorf("WS response not received in %v, last error: %v", timeout, err)
-}
-
-// SubscribeResult contains subscription information
-type SubscribeResult struct {
-	Stopped bool
-	Err     error
-}
-
-// WSSubscribe starts ProcessMessages asynchronously
-func WSSubscribe(
-	timeout time.Duration,
-	ws *websocket.Conn,
-	process func(*protocol.Envelope) (bool, error)) chan SubscribeResult {
-	responseCh := make(chan SubscribeResult)
-
-	go func() {
-		stopped, err := ProcessWSMessages(timeout, ws, process)
-		responseCh <- SubscribeResult{
-			Stopped: stopped,
-			Err:     err,
-		}
-	}()
-
-	return responseCh
-}
-
-// WaitSubscribeResult waits until a SubscribeResult appears or timeout
-func WaitSubscribeResult(timeout time.Duration, resultCh chan SubscribeResult, closer func()) SubscribeResult {
-	select {
-	case result := <-resultCh:
-		return result
-	case <-time.After(timeout):
-		closer()
-		return SubscribeResult{
-			Err: errors.New("timeout"),
-		}
-	}
+	return result
 }
