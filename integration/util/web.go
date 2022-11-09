@@ -14,18 +14,22 @@ package util
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"os"
+	"strings"
 	"time"
 
+	"github.com/eclipse/ditto-clients-golang/protocol"
 	"golang.org/x/net/websocket"
 )
 
-// SendDittoRequest sends new HTTP request to ditto REST API
-func SendDittoRequest(cfg *TestConfiguration, method string, url string) ([]byte, error) {
+// SendDigitalTwinRequest sends new HTTP request to ditto REST API
+func SendDigitalTwinRequest(cfg *TestConfiguration, method string, url string) ([]byte, error) {
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		return nil, err
@@ -89,48 +93,101 @@ func asWSAddress(address string) (string, error) {
 	return fmt.Sprintf("ws://%s:%s", url.Hostname(), getPortOrDefault(url, "80")), nil
 }
 
-// WaitResult waits for the result or error to be received over the channel up to a timeout
-func WaitResult(timeout time.Duration, resultCh chan error, closer func()) chan error {
-	ch := make(chan error)
+// WaitForAck polls messages from the web socket connection until specific acknowledgement is received or timeout expires
+func WaitForAck(
+	timeout time.Duration,
+	ws *websocket.Conn,
+	expectedAck string) error {
 
-	go func() {
-		select {
-		case result := <-resultCh:
-			ch <- result
-		case <-time.After(timeout):
-			closer()
-			ch <- errors.New("timeout")
-		}
-	}()
+	var payload []byte
+	deadline := time.Now().Add(timeout)
+	ws.SetDeadline(deadline)
+	var err error
 
-	return ch
-}
-
-// BeginWSWait waits for a message to be received via websocket
-func BeginWSWait(cfg *TestConfiguration, ws *websocket.Conn, check func(payload []byte) error) chan error {
-	timeout := time.Duration(cfg.EventTimeoutMs * int(time.Millisecond))
-	resultCh := make(chan error)
-
-	go func() {
-		var payload []byte
-		threshold := time.Now().Add(timeout)
-		var err error
-		for time.Now().Before(threshold) {
-			err = websocket.Message.Receive(ws, &payload)
-			if err == nil {
-				err = check(payload)
-			}
-			if err == nil {
-				resultCh <- nil
-				return
+	for time.Now().Before(deadline) {
+		err = websocket.Message.Receive(ws, &payload)
+		if err == nil {
+			ack := strings.TrimSpace(string(payload))
+			if ack == expectedAck {
+				return nil
 			}
 		}
-		resultCh <- fmt.Errorf("WS response not received in %v, last error: %v", timeout, err)
-	}()
-
-	closer := func() {
-		ws.Close()
 	}
 
-	return WaitResult(timeout, resultCh, closer)
+	return errors.New("timeout")
+}
+
+// ProcessMessages polls messages from the web socket connection until specific condition is satisfied or timeout expires
+func ProcessMessages(
+	timeout time.Duration,
+	ws *websocket.Conn,
+	process func(*protocol.Envelope) (bool, error)) (bool, error) {
+
+	var payload []byte
+	deadline := time.Now().Add(timeout)
+	ws.SetDeadline(deadline)
+
+	var err error
+	var stop bool
+	for !stop && time.Now().Before(deadline) {
+		err = websocket.Message.Receive(ws, &payload)
+		var envelope *protocol.Envelope
+		if err == nil {
+			envelope = &protocol.Envelope{}
+			err = json.Unmarshal(payload, envelope)
+			if err == nil {
+				stop, err = process(envelope)
+			} else {
+				// Unmarshalling error, the payload is not a JSON of protocol.Envelope
+				// Ignore the error
+				fmt.Fprintf(os.Stderr, "error unmarshalling a protocol.Envelope: %v", err)
+				err = nil
+			}
+		}
+		if err != nil {
+			return false, err
+		}
+	}
+
+	if stop {
+		return true, nil
+	}
+
+	return false, fmt.Errorf("WS response not received in %v, last error: %v", timeout, err)
+}
+
+// SubscribeResult contains subscription information
+type SubscribeResult struct {
+	stopped bool
+	err     error
+}
+
+// Subscribe starts ProcessMessages asynchronously
+func Subscribe(
+	timeout time.Duration,
+	ws *websocket.Conn,
+	process func(*protocol.Envelope) (bool, error)) chan SubscribeResult {
+	responseCh := make(chan SubscribeResult)
+
+	go func() {
+		stopped, err := ProcessMessages(timeout, ws, process)
+		responseCh <- SubscribeResult{
+			stopped: stopped,
+			err:     err,
+		}
+	}()
+
+	return responseCh
+}
+
+// WaitSubscribeResult waits until a SubscribeResult appears or timeout
+func WaitSubscribeResult(timeout time.Duration, resultCh chan SubscribeResult, closer func()) SubscribeResult {
+	select {
+	case result := <-resultCh:
+		return result
+	case <-time.After(timeout):
+		return SubscribeResult{
+			err: errors.New("timeout"),
+		}
+	}
 }
