@@ -13,6 +13,7 @@
 package util
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -24,14 +25,32 @@ import (
 	"time"
 
 	"github.com/eclipse/ditto-clients-golang/protocol"
+	"github.com/google/uuid"
 	"golang.org/x/net/websocket"
 )
 
 // SendDigitalTwinRequest sends new HTTP request to ditto REST API
-func SendDigitalTwinRequest(cfg *TestConfiguration, method string, url string) ([]byte, error) {
-	req, err := http.NewRequest(method, url, nil)
+func SendDigitalTwinRequest(cfg *TestConfiguration, method string, url string, body interface{}) ([]byte, error) {
+	var reqBody io.Reader
+
+	if body != nil {
+		jsonValue, err := json.Marshal(body)
+		if err != nil {
+			return nil, err
+		}
+		reqBody = bytes.NewBuffer(jsonValue)
+	}
+
+	req, err := http.NewRequest(method, url, reqBody)
 	if err != nil {
 		return nil, err
+	}
+
+	if body != nil {
+		correlationID := uuid.New().String()
+		req.Header.Add("Content-Type", "application/json")
+		req.Header.Add("correlation-id", correlationID)
+		req.Header.Add("response-required", "true")
 	}
 
 	req.SetBasicAuth(cfg.DigitalTwinAPIUsername, cfg.DigitalTwinAPIPassword)
