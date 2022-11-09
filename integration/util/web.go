@@ -25,7 +25,7 @@ import (
 )
 
 // SendDittoRequest sends new HTTP request to ditto REST API
-func SendDittoRequest(cfg *TestConfig, method string, url string) ([]byte, error) {
+func SendDittoRequest(cfg *TestConfiguration, method string, url string) ([]byte, error) {
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func SendDittoRequest(cfg *TestConfig, method string, url string) ([]byte, error
 }
 
 // NewWSConnection creates new web socket connection
-func NewWSConnection(cfg *TestConfig) (*websocket.Conn, error) {
+func NewWSConnection(cfg *TestConfiguration) (*websocket.Conn, error) {
 	wsAddress, err := asWSAddress(cfg.DigitalTwinAPIAddress)
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func WaitResult(timeout time.Duration, resultCh chan error, closer func()) chan 
 }
 
 // BeginWSWait waits for a message to be received via websocket
-func BeginWSWait(cfg *TestConfig, ws *websocket.Conn, check func(payload []byte) error) chan error {
+func BeginWSWait(cfg *TestConfiguration, ws *websocket.Conn, check func(payload []byte) error) chan error {
 	timeout := time.Duration(cfg.EventTimeoutMs * int(time.Millisecond))
 	resultCh := make(chan error)
 

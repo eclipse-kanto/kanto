@@ -19,22 +19,22 @@ import (
 
 	"github.com/eclipse/ditto-clients-golang"
 
-	mqtt "github.com/eclipse/paho.mqtt.golang"
+	MQTT "github.com/eclipse/paho.mqtt.golang"
 
 	"github.com/stretchr/testify/require"
 )
 
-// SuiteInit is testify Suite initialization helper
-type SuiteInit struct {
-	Cfg *TestConfig
+// SuiteInitializer  is testify Suite initialization helper
+type SuiteInitializer struct {
+	Cfg *TestConfiguration
 
 	DittoClient *ditto.Client
-	MqttClient  mqtt.Client
+	MqttClient  MQTT.Client
 }
 
 // Setup establishes connections to local MQTT broker and Ditto
-func (suite *SuiteInit) Setup(t *testing.T) {
-	cfg := &TestConfig{}
+func (suite *SuiteInitializer) Setup(t *testing.T) {
+	cfg := &TestConfiguration{}
 
 	opts := env.Options{RequiredIfNoDef: true}
 	require.NoError(t, env.Parse(cfg, opts), "Failed to process environment variables")
@@ -60,7 +60,7 @@ func (suite *SuiteInit) Setup(t *testing.T) {
 }
 
 // TearDown closes all connections
-func (suite *SuiteInit) TearDown() {
+func (suite *SuiteInitializer) TearDown() {
 	suite.DittoClient.Disconnect()
 	suite.MqttClient.Disconnect(uint(suite.Cfg.MqttQuiesceMs))
 }

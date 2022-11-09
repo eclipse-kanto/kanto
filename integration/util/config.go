@@ -20,8 +20,8 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 )
 
-// TestConfig is common IT configuration
-type TestConfig struct {
+// TestConfiguration is common IT configuration
+type TestConfiguration struct {
 	LocalBroker              string `env:"LOCAL_BROKER" envDefault:"tcp://localhost:1883"`
 	MqttQuiesceMs            int    `env:"MQTT_QUIESCE_MS" envDefault:"500"`
 	MqttAcknowledgeTimeoutMs int    `env:"MQTT_QUIESCE_MS" envDefault:"3000"`
@@ -35,24 +35,24 @@ type TestConfig struct {
 	TimeDeltaMs     int `env:"TIME_DELTA_MS" envDefault:"5000"`
 }
 
-// ThingConfig is thing configuration info for Edge
-type ThingConfig struct {
+// ThingConfiguration is thing configuration info for Edge
+type ThingConfiguration struct {
 	DeviceID string `json:"deviceId"`
 	TenantID string `json:"tenantId"`
 	PolicyID string `json:"policyId"`
 }
 
-// GetThingConfig retrieves ThingConfig using specified client
-func GetThingConfig(mqttClient MQTT.Client) (*ThingConfig, error) {
+// GetThingConfiguration retrieves ThingConfig using specified client
+func GetThingConfiguration(mqttClient MQTT.Client) (*ThingConfiguration, error) {
 	type result struct {
-		cfg *ThingConfig
+		cfg *ThingConfiguration
 		err error
 	}
 
 	ch := make(chan result)
 
 	if token := mqttClient.Subscribe("edge/thing/response", 1, func(client MQTT.Client, message MQTT.Message) {
-		var cfg ThingConfig
+		var cfg ThingConfiguration
 		if err := json.Unmarshal(message.Payload(), &cfg); err != nil {
 			ch <- result{nil, err}
 		}

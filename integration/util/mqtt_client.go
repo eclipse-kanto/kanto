@@ -23,8 +23,8 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 )
 
-// NewMQTTClient creates new MQTT client and connects it to the broker from the test config
-func NewMQTTClient(cfg *TestConfig) (MQTT.Client, error) {
+// NewMQTTClient creates a new MQTT client and connects it to the broker from the test config
+func NewMQTTClient(cfg *TestConfiguration) (MQTT.Client, error) {
 	opts := MQTT.NewClientOptions().
 		AddBroker(cfg.LocalBroker).
 		SetClientID(uuid.New().String()).
@@ -41,8 +41,8 @@ func NewMQTTClient(cfg *TestConfig) (MQTT.Client, error) {
 	return mqttClient, nil
 }
 
-// SendMQTTMessage sends a message to a topic using specified client
-func SendMQTTMessage(cfg *TestConfig, client MQTT.Client, topic string, message interface{}) error {
+// SendMQTTMessage sends a message to a topic using specified client. The message is serialized to JSON Format.
+func SendMQTTMessage(cfg *TestConfiguration, client MQTT.Client, topic string, message interface{}) error {
 	payload, err := json.Marshal(message)
 	if err != nil {
 		return err
