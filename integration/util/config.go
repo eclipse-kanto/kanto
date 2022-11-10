@@ -30,6 +30,7 @@ type TestConfiguration struct {
 	WsEventTimeoutMs int `env:"WS_EVENT_TIMEOUT_MS" envDefault:"30000"`
 }
 
+// MillisToDuration connverts milliseconds to Duration
 func MillisToDuration(millis int) time.Duration {
 	return time.Duration(millis) * time.Millisecond
 }
