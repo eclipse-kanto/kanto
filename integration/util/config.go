@@ -12,6 +12,10 @@
 
 package util
 
+import (
+	"time"
+)
+
 // TestConfiguration is common IT configuration
 type TestConfiguration struct {
 	LocalBroker              string `env:"LOCAL_BROKER" envDefault:"tcp://localhost:1883"`
@@ -24,4 +28,8 @@ type TestConfiguration struct {
 	DigitalTwinAPIPassword string `env:"DIGITAL_TWIN_API_PASSWORD" envDefault:"ditto"`
 
 	WsEventTimeoutMs int `env:"WS_EVENT_TIMEOUT_MS" envDefault:"30000"`
+}
+
+func MillisToDuration(millis int) time.Duration {
+	return time.Duration(millis) * time.Millisecond
 }
