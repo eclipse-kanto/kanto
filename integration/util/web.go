@@ -133,7 +133,8 @@ func WaitForWSMessage(cfg *TestConfiguration, ws *websocket.Conn, expectedMessag
 
 // ProcessWSMessages polls messages from the web socket connection until specific condition is satisfied or timeout expires
 func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(*protocol.Envelope) (bool, error)) error {
-	deadline := time.Now().Add(MillisToDuration(cfg.WsEventTimeoutMs))
+	timeout := MillisToDuration(cfg.WsEventTimeoutMs)
+	deadline := time.Now().Add(timeout)
 	ws.SetDeadline(deadline)
 
 	var err error
@@ -163,7 +164,7 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 	}
 
 	if !finished {
-		return fmt.Errorf("not finished, expected WS response not received last error: %v", err)
+		return fmt.Errorf("not finished, expected WS response not received in %v, last error: %v", timeout, err)
 	}
 
 	return err
