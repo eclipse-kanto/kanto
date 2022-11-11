@@ -71,7 +71,7 @@ type ThingConfiguration struct {
 	PolicyID string `json:"policyId"`
 }
 
-// GetThingConfiguration retrieves ThingConfig using specified client
+// GetThingConfiguration retrieves information about the configured thing
 func GetThingConfiguration(cfg *TestConfiguration, mqttClient MQTT.Client) (*ThingConfiguration, error) {
 	type result struct {
 		cfg *ThingConfiguration
