@@ -16,12 +16,13 @@ import (
 	"time"
 )
 
-// TestConfiguration is common IT configuration
+// TestConfiguration is a common IT configuration
 type TestConfiguration struct {
 	LocalBroker              string `env:"LOCAL_BROKER" envDefault:"tcp://localhost:1883"`
 	MqttQuiesceMs            int    `env:"MQTT_QUIESCE_MS" envDefault:"500"`
-	MqttAcknowledgeTimeoutMs int    `env:"MQTT_QUIESCE_MS" envDefault:"3000"`
+	MqttAcknowledgeTimeoutMs int    `env:"MQTT_ACKNOWLEDGE_MS" envDefault:"3000"`
 	MqttStatusTimeoutMs      int    `env:"MQTT_STATUS_TIMEOUT_MS" envDefault:"10000"`
+	MqttConnectMs            int    `env:"MQTT_CONNECT_TIMEOUT_MS" envDefault:"30000"`
 
 	DigitalTwinAPIAddress  string `env:"DIGITAL_TWIN_API_ADDRESS"`
 	DigitalTwinAPIUsername string `env:"DIGITAL_TWIN_API_USERNAME" envDefault:"ditto"`
@@ -30,7 +31,7 @@ type TestConfiguration struct {
 	WsEventTimeoutMs int `env:"WS_EVENT_TIMEOUT_MS" envDefault:"30000"`
 }
 
-// MillisToDuration connverts milliseconds to Duration
+// MillisToDuration converts milliseconds to Duration
 func MillisToDuration(millis int) time.Duration {
 	return time.Duration(millis) * time.Millisecond
 }

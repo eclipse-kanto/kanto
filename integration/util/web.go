@@ -29,7 +29,7 @@ import (
 	"golang.org/x/net/websocket"
 )
 
-// SendDigitalTwinRequest sends new HTTP request to ditto REST API
+// SendDigitalTwinRequest sends new HTTP request to Ditto REST API
 func SendDigitalTwinRequest(cfg *TestConfiguration, method string, url string, body interface{}) ([]byte, error) {
 	var reqBody io.Reader
 
@@ -68,8 +68,8 @@ func SendDigitalTwinRequest(cfg *TestConfiguration, method string, url string, b
 	return io.ReadAll(resp.Body)
 }
 
-// NewWSConnection creates new web socket connection
-func NewWSConnection(cfg *TestConfiguration) (*websocket.Conn, error) {
+// NewDigitalTwinWSConnection creates new web socket connection
+func NewDigitalTwinWSConnection(cfg *TestConfiguration) (*websocket.Conn, error) {
 	wsAddress, err := asWSAddress(cfg.DigitalTwinAPIAddress)
 	if err != nil {
 		return nil, err
@@ -120,7 +120,7 @@ func WaitForWSMessage(timeout time.Duration, ws *websocket.Conn, expectedMessage
 	for time.Now().Before(deadline) {
 		err := websocket.Message.Receive(ws, &payload)
 		if err != nil {
-			return fmt.Errorf("error reading from websocket: %s", err)
+			return fmt.Errorf("error reading from websocket: %v", err)
 		}
 		message := strings.TrimSpace(string(payload))
 		if message == expectedMessage {
@@ -128,45 +128,43 @@ func WaitForWSMessage(timeout time.Duration, ws *websocket.Conn, expectedMessage
 		}
 	}
 
-	return errors.New("timeout")
-}
-
-// ProcessWSMessageResult is the result of messages processing
-type ProcessWSMessageResult struct {
-	Finished bool
-	Err      error
+	return errors.New("timeout waiting for web socket message")
 }
 
 // ProcessWSMessages polls messages from the web socket connection until specific condition is satisfied or timeout expires
-func ProcessWSMessages(
-	timeout time.Duration,
-	ws *websocket.Conn,
-	process func(*protocol.Envelope) ProcessWSMessageResult) ProcessWSMessageResult {
-
-	deadline := time.Now().Add(timeout)
+func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(*protocol.Envelope) (bool, error)) error {
+	deadline := time.Now().Add(MillisToDuration(cfg.WsEventTimeoutMs))
 	ws.SetDeadline(deadline)
 
-	result := ProcessWSMessageResult{}
-	for !result.Finished && time.Now().Before(deadline) {
+	var err error
+	var errProcess error
+	finished := false
+
+	for !finished && time.Now().Before(deadline) {
 		var payload []byte
 		webSocketErr := websocket.Message.Receive(ws, &payload)
 		if webSocketErr != nil {
-			result.Err = fmt.Errorf("error reading from websocket: %s", webSocketErr)
-			return result
+			return fmt.Errorf("error reading from websocket: %v", webSocketErr)
 		}
+
 		envelope := &protocol.Envelope{}
 		unmarshalErr := json.Unmarshal(payload, envelope)
 		if unmarshalErr == nil {
-			result = process(envelope)
+			finished, errProcess = process(envelope)
+			if errProcess != nil {
+				err = errProcess
+			}
+
 		} else {
 			// Unmarshalling error, the payload is not a JSON of protocol.Envelope
 			// Ignore the error
 		}
+
 	}
 
-	if !result.Finished {
-		result.Err = fmt.Errorf("not finished, expected WS response not received in %v, last error: %v", timeout, result.Err)
+	if !finished {
+		return fmt.Errorf("not finished, expected WS response not received last error: %v", err)
 	}
 
-	return result
+	return err
 }
