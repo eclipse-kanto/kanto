@@ -29,7 +29,7 @@ import (
 	"golang.org/x/net/websocket"
 )
 
-// SendDigitalTwinRequest sends new HTTP request to Ditto REST API
+// SendDigitalTwinRequest sends а new HTTP request to Ditto REST API
 func SendDigitalTwinRequest(cfg *TestConfiguration, method string, url string, body interface{}) ([]byte, error) {
 	var reqBody io.Reader
 
