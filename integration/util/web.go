@@ -112,11 +112,11 @@ func asWSAddress(address string) (string, error) {
 }
 
 // WaitForWSMessage polls messages from the web socket connection until specific message is received or timeout expires
-func WaitForWSMessage(timeout time.Duration, ws *websocket.Conn, expectedMessage string) error {
-	var payload []byte
-	deadline := time.Now().Add(timeout)
+func WaitForWSMessage(cfg *TestConfiguration, ws *websocket.Conn, expectedMessage string) error {
+	deadline := time.Now().Add(MillisToDuration(cfg.WsEventTimeoutMs))
 	ws.SetDeadline(deadline)
 
+	var payload []byte
 	for time.Now().Before(deadline) {
 		err := websocket.Message.Receive(ws, &payload)
 		if err != nil {
