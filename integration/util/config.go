@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-// TestConfiguration is a common IT configuration
+// TestConfiguration is a common integration test configuration
 type TestConfiguration struct {
 	LocalBroker              string `env:"LOCAL_BROKER" envDefault:"tcp://localhost:1883"`
 	MqttQuiesceMs            int    `env:"MQTT_QUIESCE_MS" envDefault:"500"`
