@@ -37,7 +37,7 @@ func (suite *SuiteInitializer) Setup(t *testing.T) {
 	cfg := &TestConfiguration{}
 
 	opts := env.Options{RequiredIfNoDef: true}
-	require.NoError(t, env.Parse(cfg, opts), "Failed to process environment variables")
+	require.NoError(t, env.Parse(cfg, opts), "failed to process environment variables")
 
 	t.Logf("%#v\n", cfg)
 

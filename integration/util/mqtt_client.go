@@ -64,7 +64,7 @@ func SendMQTTMessage(cfg *TestConfiguration, client MQTT.Client, topic string, m
 	return token.Error()
 }
 
-// ThingConfiguration is thing configuration info for Edge
+// ThingConfiguration represents information about the configured thing
 type ThingConfiguration struct {
 	DeviceID string `json:"deviceId"`
 	TenantID string `json:"tenantId"`
