@@ -32,7 +32,7 @@ type SuiteInitializer struct {
 	MqttClient  MQTT.Client
 }
 
-// Setup establishes connections to local MQTT broker and Ditto
+// Setup establishes connections to the local MQTT broker and Ditto
 func (suite *SuiteInitializer) Setup(t *testing.T) {
 	cfg := &TestConfiguration{}
 
