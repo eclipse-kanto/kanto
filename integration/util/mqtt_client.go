@@ -50,7 +50,7 @@ func NewMQTTClient(cfg *TestConfiguration) (MQTT.Client, error) {
 	return mqttClient, nil
 }
 
-// SendMQTTMessage sends a message to a topic using specified client. The message is serialized to JSON Format.
+// SendMQTTMessage sends a message to a topic using specified client. The message is serialized to JSON format.
 func SendMQTTMessage(cfg *TestConfiguration, client MQTT.Client, topic string, message interface{}) error {
 	payload, err := json.Marshal(message)
 	if err != nil {
