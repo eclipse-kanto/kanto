@@ -76,18 +76,18 @@ func NewDigitalTwinWSConnection(cfg *TestConfiguration) (*websocket.Conn, error)
 	}
 
 	url := fmt.Sprintf("%s/ws/2", wsAddress)
-	wscfg, err := websocket.NewConfig(url, cfg.DigitalTwinAPIAddress)
+	wsCfg, err := websocket.NewConfig(url, cfg.DigitalTwinAPIAddress)
 	if err != nil {
 		return nil, err
 	}
 
 	auth := fmt.Sprintf("%s:%s", cfg.DigitalTwinAPIUsername, cfg.DigitalTwinAPIPassword)
 	enc := base64.StdEncoding.EncodeToString([]byte(auth))
-	wscfg.Header = http.Header{
+	wsCfg.Header = http.Header{
 		"Authorization": {"Basic " + enc},
 	}
 
-	return websocket.DialConfig(wscfg)
+	return websocket.DialConfig(wsCfg)
 }
 
 func getPortOrDefault(url *url.URL, defaultPort string) string {

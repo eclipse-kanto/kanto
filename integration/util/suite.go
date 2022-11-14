@@ -24,12 +24,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// SuiteInitializer  is testify Suite initialization helper
+// SuiteInitializer is testify Suite initialization helper
 type SuiteInitializer struct {
 	Cfg *TestConfiguration
 
 	DittoClient *ditto.Client
-	MqttClient  MQTT.Client
+	MQTTClient  MQTT.Client
 }
 
 // Setup establishes connections to the local MQTT broker and Ditto
@@ -56,11 +56,11 @@ func (suite *SuiteInitializer) Setup(t *testing.T) {
 
 	suite.Cfg = cfg
 	suite.DittoClient = dittoClient
-	suite.MqttClient = mqttClient
+	suite.MQTTClient = mqttClient
 }
 
 // TearDown closes all connections
 func (suite *SuiteInitializer) TearDown() {
 	suite.DittoClient.Disconnect()
-	suite.MqttClient.Disconnect(uint(suite.Cfg.MqttQuiesceMs))
+	suite.MQTTClient.Disconnect(uint(suite.Cfg.MqttQuiesceMs))
 }
