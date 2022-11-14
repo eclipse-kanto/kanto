@@ -58,7 +58,7 @@ apache/qpid-proton (0.36.0)
 * Project: https://github.com/apache/qpid-proton
 * Source:  https://github.com/apache/qpid-proton/tree/0.36.0
 
-github.com/caarlos0/env (1.7.0)
+github.com/caarlos0/env (6.10.1)
 
 * License: MIT License
 * Project: https://github.com/caarlos0/env
@@ -76,11 +76,11 @@ eclipse/paho.mqtt.golang (1.4.1)
 * Project: https://github.com/eclipse/paho.mqtt.golang
 * Source:  https://github.com/eclipse/paho.mqtt.golang/releases/tag/v1.4.1
 
-google/uuid (1.1.1)
+google/uuid (1.3.0)
 
 * License: BSD 3-Clause "New" or "Revised" License
 * Project: https://github.com/google/uuid
-* Source:  https://github.com/google/uuid/releases/tag/v1.1.1
+* Source:  https://github.com/google/uuid/releases/tag/v1.3.0
 
 gorilla/websocket (1.4.2)
 
