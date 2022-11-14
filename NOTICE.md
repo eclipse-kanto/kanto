@@ -82,23 +82,11 @@ google/uuid (1.3.0)
 * Project: https://github.com/google/uuid
 * Source:  https://github.com/google/uuid/releases/tag/v1.3.0
 
-gorilla/websocket (1.4.2)
-
-* License: BSD 2-Clause "Simplified" License
-* Project: https://github.com/gorilla/websocket
-* Source:  https://github.com/gorilla/websocket/releases/tag/v1.4.2
-
 golang.org/x/net (0.0.0-20210405180319-a5a99cb37ef4)
 
 * License: BSD 3-Clause "New" or "Revised" License
 * Project: https://github.com/golang/net
 * Source:  https://github.com/golang/net/tree/a5a99cb37ef4b68617775ab669177656090ab396
-
-golang.org/x/sync (v0.0.0-20210220032951-036812b2e83c)
-
-* License: BSD 3-Clause "New" or "Revised" License
-* Project: https://github.com/golang/sync
-* Source:  https://github.com/golang/sync/tree/036812b2e83c0ddf193dd5a34e034151da389d09
 
 eclipse/ditto-clients-golang (0.0.0-20220225085802-cf3b306280d3)
 
