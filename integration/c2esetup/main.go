@@ -23,11 +23,12 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"reflect"
 	"strings"
 	"time"
 
-	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"github.com/google/uuid"
+	env "github.com/caarlos0/env/v6"
+	"github.com/eclipse-kanto/kanto/integration/util"
 )
 
 const (
@@ -47,7 +48,8 @@ const (
 )
 
 var (
-	c2eCfg c2eConfig
+	testCfg util.TestConfiguration
+	c2eCfg  c2eConfiguration
 
 	tenantID string
 	policyID string
@@ -76,33 +78,19 @@ type resource struct {
 	delete bool
 }
 
-type c2eConfig struct {
-	Broker                   string `def:"tcp://localhost:1883"`
-	MqttQuiesceMs            int    `def:"500"`
-	MqttAcknowledgeTimeoutMs int    `def:"3000"`
+type c2eConfiguration struct {
+	DeviceRegistryAPIAddress string `env:"DEVICE_REGISTRY_API_ADDRESS" envDefault:""`
 
-	DeviceRegistryAPIAddress string
+	DeviceRegistryAPIUsername string `env:"DEVICE_REGISTRY_API_USERNAME" envDefault:"ditto"`
+	DeviceRegistryAPIPassword string `env:"DEVICE_REGISTRY_API_PASSWORD" envDefault:"ditto"`
 
-	DeviceRegistryAPIUser     string `def:""`
-	DeviceRegistryAPIPassword string `def:""`
-
-	DigitalTwinAPIAddress string
-
-	DigitalTwinAPIUser     string `def:"ditto"`
-	DigitalTwinAPIPassword string `def:"ditto"`
-
-	MqttAdapterAddress string
-}
-
-type thingConfig struct {
-	DeviceID string `json:"deviceId"`
-	TenantID string `json:"tenantId"`
+	MqttAdapterAddress string `env:"MQTT_ADAPTER_ADDRESS" envDefault:""`
 }
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	flag.StringVar(&tenantID, "tenantId", "", "Hono tenant unique identifier")
+	flag.StringVar(&tenantID, "tenantId", "", "Device registry tenant unique identifier")
 
 	flag.StringVar(&deviceID, "deviceId", "", "Test device unique identifier, defaults to randomly generated")
 	flag.StringVar(&devicePass, "devicePass", "123456", "Test device password")
@@ -118,10 +106,14 @@ func main() {
 
 	flag.Parse()
 
-	err := initConfigFromEnv(&c2eCfg)
+	envOpts := env.Options{RequiredIfNoDef: true}
+	err := env.Parse(&testCfg, envOpts)
+	if err == nil {
+		err = env.Parse(&c2eCfg, envOpts)
+	}
 	if err != nil {
-		fmt.Println(err)
-		fmt.Println(getConfigHelp(c2eCfg))
+		fmt.Printf("failed to process command-line arguments: %v\n", err)
+		printConfigHelp()
 		os.Exit(1)
 	}
 
@@ -133,7 +125,17 @@ func main() {
 			fmt.Printf("forcing device id: \"%s\"\n", deviceID)
 		}
 	} else if deviceID == "" || tenantID == "" {
-		readIdsFromMQTT()
+		mqttClient, err := util.NewMQTTClient(&testCfg)
+		var thingConfiguration *util.ThingConfiguration
+		if err == nil {
+			thingConfiguration, err = util.GetThingConfiguration(&testCfg, mqttClient)
+		}
+		if err != nil {
+			fmt.Printf("unable to open local mqtt connection to %s\n", testCfg.LocalBroker)
+			os.Exit(1)
+		}
+		deviceID = thingConfiguration.DeviceID
+		tenantID = thingConfiguration.TenantID
 	}
 
 	if !*clean {
@@ -146,18 +148,18 @@ func main() {
 
 	resources := make([]*resource, 0, 4)
 	deviceResource := &resource{base: registryAPI, path: devices + devicePath, method: http.MethodPost,
-		body: deviceJSON, user: c2eCfg.DeviceRegistryAPIUser, pass: c2eCfg.DeviceRegistryAPIPassword, delete: true}
+		body: deviceJSON, user: c2eCfg.DeviceRegistryAPIUsername, pass: c2eCfg.DeviceRegistryAPIPassword, delete: true}
 	resources = append(resources, deviceResource)
 
 	authID = strings.ReplaceAll(deviceID, ":", "_")
 	auth := fmt.Sprintf(authJSON, authID, devicePass)
 	resources = append(resources, &resource{base: registryAPI, path: credentials + devicePath, method: http.MethodPut,
-		body: auth, user: c2eCfg.DeviceRegistryAPIUser, pass: c2eCfg.DeviceRegistryAPIPassword, delete: false})
+		body: auth, user: c2eCfg.DeviceRegistryAPIUsername, pass: c2eCfg.DeviceRegistryAPIPassword, delete: false})
 
-	dittoAPI := fmt.Sprintf("%s/api/2", strings.TrimSuffix(c2eCfg.DigitalTwinAPIAddress, "/"))
+	digitalTwinAPI := fmt.Sprintf("%s/api/2", strings.TrimSuffix(testCfg.DigitalTwinAPIAddress, "/"))
 	thing := fmt.Sprintf(thingJSON, policyID)
-	resources = append(resources, &resource{base: dittoAPI, path: things + deviceID, method: http.MethodPut,
-		body: thing, user: c2eCfg.DigitalTwinAPIUser, pass: c2eCfg.DigitalTwinAPIPassword, delete: true})
+	resources = append(resources, &resource{base: digitalTwinAPI, path: things + deviceID, method: http.MethodPut,
+		body: thing, user: testCfg.DigitalTwinAPIUsername, pass: testCfg.DigitalTwinAPIPassword, delete: true})
 
 	var code int
 	if !*clean {
@@ -170,42 +172,29 @@ func main() {
 	os.Exit(code)
 }
 
-func readIdsFromMQTT() {
-	deviceID = ""
-	policyID = ""
+func printHelp(cfg interface{}) {
+	t := reflect.TypeOf(cfg)
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
 
-	opts := MQTT.NewClientOptions().
-		AddBroker(c2eCfg.Broker).
-		SetClientID(uuid.New().String()).
-		SetKeepAlive(30 * time.Second).
-		SetCleanSession(true).
-		SetAutoReconnect(true)
+		name, ok := f.Tag.Lookup("env")
+		if ok {
 
-	mqttClient := MQTT.NewClient(opts)
+			fmt.Printf("\n\t - %s", name)
 
-	if token := mqttClient.Connect(); token.Wait() && token.Error() != nil {
-		fmt.Printf("can't connect to MQTT broker: %v\n", token.Error())
-	} else {
-		defer mqttClient.Disconnect(uint(c2eCfg.MqttQuiesceMs))
-		thingCfg, err := getThingConfig(mqttClient)
-		if err != nil {
-			fmt.Printf("can't get thing configuration from MQTT broker: %v\n", err)
-		} else {
-			deviceID = thingCfg.DeviceID
-			tenantID = thingCfg.TenantID
+			def, ok := f.Tag.Lookup("def")
+			if ok {
+				fmt.Printf(" (default '%s')", def)
+			}
 		}
 	}
+}
 
-	if deviceID == "" {
-		fmt.Println("can't find device id")
-		os.Exit(1)
-	}
-	fmt.Printf("found thing id from MQTT broker: %s\n", deviceID)
-	if tenantID == "" {
-		fmt.Println("can't find tenant id")
-		os.Exit(1)
-	}
-	fmt.Printf("found tenant id from MQTT broker: %s\n", tenantID)
+func printConfigHelp() {
+	fmt.Print("config environmental variables:")
+	printHelp(testCfg)
+	printHelp(c2eCfg)
+	fmt.Println()
 }
 
 func generateRandomDeviceID() string {
@@ -222,7 +211,7 @@ func assertFlag(value string, name string) {
 
 func checkDeviceInRegistry(deviceID string, deviceResource *resource) error {
 	url := fmt.Sprintf("%s/%s", deviceResource.base, deviceResource.path)
-	devicesBytes, err := doRequest("GET", url, nil, c2eCfg.DeviceRegistryAPIUser, c2eCfg.DeviceRegistryAPIPassword)
+	devicesBytes, err := sendDeviceRegistryRequest(http.MethodGet, url)
 	if err == nil {
 		devicesJSON := string(devicesBytes)
 		if strings.Contains(devicesJSON, "status") &&
@@ -258,7 +247,7 @@ func performSetUp(deviceResource *resource, resources []*resource) int {
 	for i, r := range resources {
 		url := fmt.Sprintf("%s/%s", r.base, r.path)
 
-		if b, err := doRequest(r.method, url, ([]byte)(r.body), r.user, r.pass); err != nil {
+		if b, err := sendRequest(r.method, url, ([]byte)(r.body), r.user, r.pass); err != nil {
 			fmt.Println(err)
 			if b != nil {
 				fmt.Println(string(b))
@@ -339,7 +328,7 @@ func deleteResources(resources []*resource) {
 
 		url := fmt.Sprintf("%s/%s", r.base, r.path)
 
-		if _, err := doRequest(http.MethodDelete, url, nil, r.user, r.pass); err != nil {
+		if _, err := sendRequest(http.MethodDelete, url, nil, r.user, r.pass); err != nil {
 			fmt.Println(err)
 		} else {
 			fmt.Printf("%s '%s' deleted\n", indent, r.path)
@@ -348,14 +337,14 @@ func deleteResources(resources []*resource) {
 }
 
 func deleteRelatedDevices(viaDeviceID string) {
-	devicesVia := findHonoDevicesVia(viaDeviceID)
-	// Ditto things are created after Hono devices, so delete them first
-	deleteDittoThings(devicesVia)
-	// Then delete Hono devices
-	deleteHonoDevices(devicesVia)
+	devicesVia := findDeviceRegistryDevicesVia(viaDeviceID)
+	// Digital Twin API things are created after Device Registry devices, so delete them first
+	deleteDigitalTwinAPIThings(devicesVia)
+	// Then delete Device Registry devices
+	deleteDeviceRegistryDevices(devicesVia)
 }
 
-func findHonoDevicesVia(viaDeviceID string) []string {
+func findDeviceRegistryDevicesVia(viaDeviceID string) []string {
 	var relations []string
 
 	type registryDevice struct {
@@ -376,9 +365,9 @@ func findHonoDevicesVia(viaDeviceID string) []string {
 		return false
 	}
 
-	honoAPI := fmt.Sprintf(
+	deviceRegistryAPI := fmt.Sprintf(
 		"%s/v1/%s%s/", strings.TrimSuffix(c2eCfg.DeviceRegistryAPIAddress, "/"), devices, tenantID)
-	devicesJSON, err := doRequest("GET", honoAPI, nil, c2eCfg.DeviceRegistryAPIUser, c2eCfg.DeviceRegistryAPIPassword)
+	devicesJSON, err := sendDeviceRegistryRequest(http.MethodGet, deviceRegistryAPI)
 	if err != nil {
 		fmt.Println(err)
 	} else {
@@ -398,12 +387,12 @@ func findHonoDevicesVia(viaDeviceID string) []string {
 	return relations
 }
 
-func deleteDittoThings(relations []string) {
-	// Delete related Ditto things
-	fmt.Println("deleting automatically created things in ditto...")
-	dittoAPI := fmt.Sprintf("%s/api/2/", strings.TrimSuffix(c2eCfg.DigitalTwinAPIAddress, "/"))
+func deleteDigitalTwinAPIThings(relations []string) {
+	// Delete related Digital Twin API things
+	fmt.Println("deleting automatically created things in the digital twin API...")
+	digitalTwinAPI := fmt.Sprintf("%s/api/2/", strings.TrimSuffix(testCfg.DigitalTwinAPIAddress, "/"))
 	for _, thing := range relations {
-		_, err := doRequest(http.MethodDelete, dittoAPI+thing, nil, c2eCfg.DigitalTwinAPIUser, c2eCfg.DigitalTwinAPIPassword)
+		_, err := util.SendDigitalTwinRequest(&testCfg, http.MethodDelete, digitalTwinAPI+thing, nil)
 		if err != nil {
 			fmt.Printf("error deleting thing: %v\n", err)
 		} else {
@@ -412,13 +401,13 @@ func deleteDittoThings(relations []string) {
 	}
 }
 
-func deleteHonoDevices(relations []string) {
-	// Delete related Hono devices
-	fmt.Println("deleting automatically created devices in hono...")
-	honoAPI := fmt.Sprintf(
+func deleteDeviceRegistryDevices(relations []string) {
+	// Delete related Device Registry devices
+	fmt.Println("deleting automatically created devices in the device registry...")
+	deviceRegistryAPI := fmt.Sprintf(
 		"%s/v1/%s%s/", strings.TrimSuffix(c2eCfg.DeviceRegistryAPIAddress, "/"), devices, tenantID)
 	for _, device := range relations {
-		if _, err := doRequest(http.MethodDelete, honoAPI+device, nil, c2eCfg.DeviceRegistryAPIUser, c2eCfg.DeviceRegistryAPIPassword); err != nil {
+		if _, err := sendDeviceRegistryRequest(http.MethodDelete, deviceRegistryAPI+device); err != nil {
 			fmt.Printf("error deleting device: %v\n", err)
 		} else {
 			fmt.Printf("%s '%s' deleted\n", indent, device)
@@ -470,23 +459,25 @@ func getFileModeOrDefault(path string, defaultMode os.FileMode) os.FileMode {
 	return mode
 }
 
-func doRequest(method string, url string, payload []byte, user string, pass string) ([]byte, error) {
-	var r io.Reader
+func sendDeviceRegistryRequest(method string, url string) ([]byte, error) {
+	return sendRequest(method, url, nil, c2eCfg.DeviceRegistryAPIUsername, c2eCfg.DeviceRegistryAPIPassword)
+}
+
+func sendRequest(method string, url string, payload []byte, username string, password string) ([]byte, error) {
+	var reqBody io.Reader
 
 	if payload != nil {
-		r = bytes.NewReader(payload)
+		// Unlike util.SendDigitalTwinRequest, we use the payload directly
+		reqBody = bytes.NewBuffer(payload)
 	}
 
-	req, err := http.NewRequest(method, url, r)
+	req, err := http.NewRequest(method, url, reqBody)
 	if err != nil {
 		return nil, err
 	}
 
-	if user != "" {
-		req.SetBasicAuth(user, pass)
-	}
-
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	req.SetBasicAuth(username, password)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -498,41 +489,10 @@ func doRequest(method string, url string, payload []byte, user string, pass stri
 	body, err := io.ReadAll(resp.Body)
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return body, fmt.Errorf("%s %s request failed: %s", method, url, resp.Status)
+		return nil, fmt.Errorf("%s %s request failed: %s", method, url, resp.Status)
 	}
 
 	return body, err
-}
-
-func getThingConfig(mqttClient MQTT.Client) (*thingConfig, error) {
-	type result struct {
-		cfg *thingConfig
-		err error
-	}
-
-	ch := make(chan result)
-
-	if token := mqttClient.Subscribe("edge/thing/response", 1, func(client MQTT.Client, message MQTT.Message) {
-		var cfg thingConfig
-		if err := json.Unmarshal(message.Payload(), &cfg); err != nil {
-			ch <- result{nil, err}
-		}
-		ch <- result{&cfg, nil}
-	}); token.Wait() && token.Error() != nil {
-		return nil, token.Error()
-	}
-
-	if token := mqttClient.Publish("edge/thing/request", 1, false, ""); token.Wait() && token.Error() != nil {
-		return nil, token.Error()
-	}
-
-	timeout := 5 * time.Second
-	select {
-	case result := <-ch:
-		return result.cfg, result.err
-	case <-time.After(timeout):
-		return nil, fmt.Errorf("thing configuration not received in %v", timeout)
-	}
 }
 
 func restartSuiteConnector() int {
