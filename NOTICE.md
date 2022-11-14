@@ -118,12 +118,6 @@ golang.org/x/crypto (v0.0.0-20190308221718-c2843e01d9a2)
 * Project: https://github.com/golang/net
 * Source:  https://github.com/golang/crypto/tree/c2843e01d9a2bc60bb26ad24e09734fdc2d9ec58
 
-golang.org/x/net (v0.0.0-20200425230154-ff2c4b7c35a0)
-
-* License: BSD 3-Clause "New" or "Revised" License
-* Project: https://github.com/golang/net
-* Source:  https://github.com/golang/net/tree/ff2c4b7c35a07b0c1e90ce72aa7bfe41bb66a3cb
-
 golang.org/x/sync (v0.0.0-20210220032951-036812b2e83c)
 
 * License: BSD 3-Clause "New" or "Revised" License
