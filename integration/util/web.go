@@ -138,7 +138,6 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 	ws.SetDeadline(deadline)
 
 	var err error
-	var errProcess error
 	finished := false
 
 	for !finished && time.Now().Before(deadline) {
@@ -151,16 +150,11 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 		envelope := &protocol.Envelope{}
 		unmarshalErr := json.Unmarshal(payload, envelope)
 		if unmarshalErr == nil {
-			finished, errProcess = process(envelope)
-			if errProcess != nil {
-				err = errProcess
-			}
-
+			finished, err = process(envelope)
 		} else {
 			// Unmarshalling error, the payload is not a JSON of protocol.Envelope
 			// Ignore the error
 		}
-
 	}
 
 	if !finished {
