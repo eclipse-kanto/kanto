@@ -182,7 +182,7 @@ func printHelp(cfg interface{}) {
 
 			fmt.Printf("\n\t - %s", name)
 
-			def, ok := f.Tag.Lookup("def")
+			def, ok := f.Tag.Lookup("envDefault")
 			if ok {
 				fmt.Printf(" (default '%s')", def)
 			}
