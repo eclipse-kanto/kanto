@@ -58,6 +58,42 @@ apache/qpid-proton (0.36.0)
 * Project: https://github.com/apache/qpid-proton
 * Source:  https://github.com/apache/qpid-proton/tree/0.36.0
 
+github.com/caarlos0/env (6.10.1)
+
+* License: MIT License
+* Project: https://github.com/caarlos0/env
+* Source:  https://github.com/caarlos0/env/releases/tag/v6.10.1
+
+github.com/stretchr/testify (1.8.1)
+
+* License: MIT License
+* Project: https://github.com/stretchr/testify
+* Source:  https://github.com/stretchr/testify/releases/tag/v1.8.1
+
+eclipse/paho.mqtt.golang (1.4.1)
+
+* License: Eclipse Distribution License v1.0
+* Project: https://github.com/eclipse/paho.mqtt.golang
+* Source:  https://github.com/eclipse/paho.mqtt.golang/releases/tag/v1.4.1
+
+google/uuid (1.3.0)
+
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/google/uuid
+* Source:  https://github.com/google/uuid/releases/tag/v1.3.0
+
+golang.org/x/net (0.0.0-20210405180319-a5a99cb37ef4)
+
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/golang/net
+* Source:  https://github.com/golang/net/tree/a5a99cb37ef4b68617775ab669177656090ab396
+
+eclipse/ditto-clients-golang (0.0.0-20220225085802-cf3b306280d3)
+
+* License: Eclipse Public License v2.0
+* Project: https://github.com/eclipse/ditto-clients-golang
+* Source:  https://github.com/eclipse/ditto-clients-golang/tree/cf3b306280d3453473ae8dd65e78f978e2c838ea
+
 ## Cryptography
 
 Content may contain encryption software. The country in which you are currently
