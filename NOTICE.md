@@ -58,6 +58,18 @@ apache/qpid-proton (0.36.0)
 * Project: https://github.com/apache/qpid-proton
 * Source:  https://github.com/apache/qpid-proton/tree/0.36.0
 
+plotly/plotly.py (5.11.0)
+
+* License: MIT License
+* Project: https://github.com/plotly/plotly.py
+* Source:  https://github.com/plotly/plotly.py/releases/tag/v5.11.0
+
+plotly/dash (2.7.0)
+
+* License: MIT License
+* Project: https://github.com/plotly/dash
+* Source:  https://github.com/plotly/dash/releases/tag/v2.7.0
+
 github.com/caarlos0/env (6.10.1)
 
 * License: MIT License
@@ -93,18 +105,6 @@ eclipse/ditto-clients-golang (0.0.0-20220225085802-cf3b306280d3)
 * License: Eclipse Public License v2.0
 * Project: https://github.com/eclipse/ditto-clients-golang
 * Source:  https://github.com/eclipse/ditto-clients-golang/tree/cf3b306280d3453473ae8dd65e78f978e2c838ea
-
-plotly/plotly.py (5.11.0)
-
-* License: MIT License
-* Project: https://github.com/plotly/plotly.py
-* Source:  https://github.com/plotly/plotly.py/releases/tag/v5.11.0
-
-plotly/dash (2.7.0)
-
-* License: MIT License
-* Project: https://github.com/plotly/dash
-* Source:  https://github.com/plotly/dash/releases/tag/v2.7.0
 
 ## Cryptography
 
