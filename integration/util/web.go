@@ -111,6 +111,28 @@ func asWSAddress(address string) (string, error) {
 	return fmt.Sprintf("ws://%s:%s", url.Hostname(), getPortOrDefault(url, "80")), nil
 }
 
+// StartListening TBD
+func StartListening(cfg *TestConfiguration, conn *websocket.Conn, eventType string, filter string) error {
+	var msg string
+	if len(filter) > 0 {
+		msg = fmt.Sprintf("%s?filter=%s", eventType, filter)
+	} else {
+		msg = eventType
+	}
+	err := websocket.Message.Send(conn, msg)
+	if err != nil {
+		return err
+	}
+	return WaitForWSMessage(cfg, conn, fmt.Sprintf("%s:ACK", eventType))
+}
+
+// ExecFeatureOperation TBD
+func (suite *SuiteInitializer) ExecFeatureOperation(cfg *TestConfiguration, command string, params map[string]interface{}) error {
+	url := fmt.Sprintf(suite.featureOperationURLTemplate, command)
+	_, err := SendDigitalTwinRequest(cfg, http.MethodPost, url, params)
+	return err
+}
+
 // WaitForWSMessage polls messages from the web socket connection until specific message is received or timeout expires
 func WaitForWSMessage(cfg *TestConfiguration, ws *websocket.Conn, expectedMessage string) error {
 	deadline := time.Now().Add(MillisToDuration(cfg.WsEventTimeoutMs))
