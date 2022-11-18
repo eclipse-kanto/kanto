@@ -14,6 +14,7 @@ package util
 
 import (
 	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/caarlos0/env/v6"
@@ -35,14 +36,13 @@ type SuiteInitializer struct {
 	DittoClient *ditto.Client
 	MQTTClient  MQTT.Client
 
-	thingURL                    string
-	featureURL                  string
+	ThingURL   string
+	FeatureURL string
+
 	featureOperationURLTemplate string
-
 	featurePropertyPathTemplate string
-
-	eventTopicTemplate       string
-	liveMessageTopicTemplate string
+	eventTopicTemplate          string
+	liveMessageTopicTemplate    string
 }
 
 // Setup establishes connections to the local MQTT broker and Ditto
@@ -81,21 +81,23 @@ func (suite *SuiteInitializer) TearDown() {
 	suite.MQTTClient.Disconnect(uint(suite.Cfg.MqttQuiesceMs))
 }
 
+// ExecFeatureOperation TBD
+func (suite *SuiteInitializer) ExecFeatureOperation(cfg *TestConfiguration, command string, params map[string]interface{}) error {
+	url := fmt.Sprintf(suite.featureOperationURLTemplate, command)
+	_, err := SendDigitalTwinRequest(cfg, http.MethodPost, url, params)
+	return err
+}
+
 // FormatURLsAndTemplates TBD
 func (suite *SuiteInitializer) FormatURLsAndTemplates(featureID string) {
-	suite.thingURL = GetDigitalTwinAPIURLForThingID(suite.Cfg.DigitalTwinAPIAddress, suite.ThingCfg.DeviceID)
-	suite.featureURL = fmt.Sprintf("%s/features/%s", suite.thingURL, featureID)
+	suite.ThingURL = GetDigitalTwinAPIURLForThingID(suite.Cfg.DigitalTwinAPIAddress, suite.ThingCfg.DeviceID)
+	suite.FeatureURL = fmt.Sprintf("%s/features/%s", suite.ThingURL, featureID)
 	suite.featurePropertyPathTemplate = fmt.Sprintf("/features/%s/properties/%%s", featureID)
 
 	namespaceID := model.NewNamespacedIDFrom(suite.ThingCfg.DeviceID)
 	suite.eventTopicTemplate = fmt.Sprintf("%s/%s/things/twin/events/%%s", namespaceID.Namespace, namespaceID.Name)
 	suite.liveMessageTopicTemplate = fmt.Sprintf("%s/%s/things/live/messages/%%s", namespaceID.Namespace, namespaceID.Name)
-	suite.featureOperationURLTemplate = fmt.Sprintf("%s/inbox/messages/%%s", suite.featureURL)
-}
-
-// GetFeatureURL TBD
-func (suite *SuiteInitializer) GetFeatureURL() string {
-	return suite.featureURL
+	suite.featureOperationURLTemplate = fmt.Sprintf("%s/inbox/messages/%%s", suite.FeatureURL)
 }
 
 // GetPropertyPath TBD
