@@ -17,7 +17,7 @@ To control all aspects of the software update behavior.
 | artifactType | string | archive | Type of the artifact that is to be processed: archive or plain |
 | install | string[] | | Absolute path to the install script/command and an optional sequence of additional flags/parameters |
 | storageLocation | string | ./ | Path to the storage directory where the working files are stored |
-| installDirs | string[] | | File system directories where the local artifacts will be stored |
+| installDirs | string[] | | File system directories where the local artifacts are stored |
 | mode | string | strict | Restriction where the local artifacts can be stored on the file system, the supported modes are: strict, lax and scope |
 | **Download** | | | |
 | downloadRetryCount | int| 0 | Number of retries, in case of a failed download |
@@ -61,9 +61,9 @@ The following template illustrates all possible properties with their default va
     "storageLocation": "./",
     "installDirs": [],
     "mode": "strict",
-    "serverCert": "",
     "downloadRetryCount": 0,
     "downloadRetryInterval": "5s",
+    "serverCert": "",
     "broker": "tcp://localhost:1883",
     "username": "",
     "password": "",
