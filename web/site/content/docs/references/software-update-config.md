@@ -17,9 +17,13 @@ To control all aspects of the software update behavior.
 | artifactType | string | archive | Type of the artifact that is to be processed: archive or plain |
 | install | string[] | | Absolute path to the install script/command and an optional sequence of additional flags/parameters |
 | storageLocation | string | ./ | Path to the storage directory where the working files are stored |
+| installDirs | string[] | | File system directories where the local artifacts are stored |
+| mode | string | strict | Restriction where the local artifacts can be stored on the file system, the supported modes are: strict, lax and scope |
 | **Download** | | | |
 | downloadRetryCount | int| 0 | Number of retries, in case of a failed download |
 | downloadRetryInterval | string | 5s | Interval between retries, in case of a failed download as a sequence of decimal numbers, each with optional fraction and a unit suffix, such as: 300ms, 1.5h, 10m30s, etc., time units are: ns, us (or µs), ms, s, m, h |
+| **Download - TLS** | | | |
+| serverCert | string | | PEM encoded certificate file for secure downloads |
 | **Local connectivity** | | | |
 | broker | string | tcp://localhost:1883 | Address of the MQTT server/broker that the software update will connect for the local communication, the format is: `scheme://host:port` |
 | username | string | | Username that is a part of the credentials |
@@ -55,8 +59,11 @@ The following template illustrates all possible properties with their default va
     "artifactType": "archive",
     "install": [],
     "storageLocation": "./",
+    "installDirs": [],
+    "mode": "strict",
     "downloadRetryCount": 0,
     "downloadRetryInterval": "5s",
+    "serverCert": "",
     "broker": "tcp://localhost:1883",
     "username": "",
     "password": "",
