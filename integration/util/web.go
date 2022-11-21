@@ -178,3 +178,8 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 
 	return err
 }
+
+// GetDigitalTwinURLForThingID returns the url for executing operations on a thing
+func GetDigitalTwinURLForThingID(digitalTwinAPIAddress string, thingID string) string {
+	return fmt.Sprintf("%s/api/2/things/%s", strings.TrimSuffix(digitalTwinAPIAddress, "/"), thingID)
+}

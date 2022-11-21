@@ -75,7 +75,7 @@ func (suite *SuiteInitializer) Setup(t *testing.T, featureID string) {
 		defer mqttClient.Disconnect(uint(suite.Cfg.MqttQuiesceMs))
 	}
 	require.NoError(t, err, "get thing configuration")
-	suite.FormatURLsAndTemplates(featureID)
+	suite.InitURLsAndTemplates(suite.ThingCfg.DeviceID, featureID)
 }
 
 // TearDown closes all connections
@@ -84,22 +84,25 @@ func (suite *SuiteInitializer) TearDown() {
 	suite.MQTTClient.Disconnect(uint(suite.Cfg.MqttQuiesceMs))
 }
 
-// ExecFeatureOperation TBD
-func (suite *SuiteInitializer) ExecFeatureOperation(cfg *TestConfiguration, command string, params map[string]interface{}) error {
+// ExecCommand TBD
+func (suite *SuiteInitializer) ExecCommand(cfg *TestConfiguration, command string, params interface{}) error {
 	url := fmt.Sprintf(suite.featureOperationURLTemplate, command)
 	_, err := SendDigitalTwinRequest(cfg, http.MethodPost, url, params)
 	return err
 }
 
-// FormatURLsAndTemplates TBD
-func (suite *SuiteInitializer) FormatURLsAndTemplates(featureID string) {
-	suite.ThingURL = GetDigitalTwinAPIURLForThingID(suite.Cfg.DigitalTwinAPIAddress, suite.ThingCfg.DeviceID)
+// InitURLsAndTemplates TBD
+func (suite *SuiteInitializer) InitURLsAndTemplates(thingID string, featureID string) {
+	if len(thingID) == 0 {
+		thingID = suite.ThingCfg.DeviceID
+	}
+	suite.ThingURL = GetDigitalTwinURLForThingID(suite.Cfg.DigitalTwinAPIAddress, thingID)
 	suite.FeatureURL = fmt.Sprintf("%s/features/%s", suite.ThingURL, featureID)
 	suite.featurePropertyPathTemplate = fmt.Sprintf("/features/%s/properties/%%s", featureID)
 
-	namespaceID := model.NewNamespacedIDFrom(suite.ThingCfg.DeviceID)
-	suite.eventTopicTemplate = fmt.Sprintf("%s/%s/things/twin/events/%%s", namespaceID.Namespace, namespaceID.Name)
-	suite.liveMessageTopicTemplate = fmt.Sprintf("%s/%s/things/live/messages/%%s", namespaceID.Namespace, namespaceID.Name)
+	thingIDWithNamespace := model.NewNamespacedIDFrom(thingID)
+	suite.eventTopicTemplate = fmt.Sprintf("%s/%s/things/twin/events/%%s", thingIDWithNamespace.Namespace, thingIDWithNamespace.Name)
+	suite.liveMessageTopicTemplate = fmt.Sprintf("%s/%s/things/live/messages/%%s", thingIDWithNamespace.Namespace, thingIDWithNamespace.Name)
 	suite.featureOperationURLTemplate = fmt.Sprintf("%s/inbox/messages/%%s", suite.FeatureURL)
 }
 
