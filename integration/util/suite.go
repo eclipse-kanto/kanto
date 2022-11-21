@@ -27,6 +27,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	// FeatureURLTemplate TBD
+	FeatureURLTemplate = "%s/features/%s"
+	// FeatureOperationURLTemplate TBD
+	FeatureOperationURLTemplate = "%s/inbox/messages/%s"
+)
+
+var (
+	eventTopicTemplate          string
+	liveMessageTopicTemplate    string
+	featurePropertyPathTemplate string
+)
+
 // SuiteInitializer is testify Suite initialization helper
 type SuiteInitializer struct {
 	Cfg *TestConfiguration
@@ -38,11 +51,6 @@ type SuiteInitializer struct {
 
 	ThingURL   string
 	FeatureURL string
-
-	featureOperationURLTemplate string
-	featurePropertyPathTemplate string
-	eventTopicTemplate          string
-	liveMessageTopicTemplate    string
 }
 
 // Setup establishes connections to the local MQTT broker and Ditto
@@ -85,8 +93,8 @@ func (suite *SuiteInitializer) TearDown() {
 }
 
 // ExecCommand TBD
-func (suite *SuiteInitializer) ExecCommand(cfg *TestConfiguration, command string, params interface{}) error {
-	url := fmt.Sprintf(suite.featureOperationURLTemplate, command)
+func (suite *SuiteInitializer) ExecCommand(cfg *TestConfiguration, featureURL string, command string, params interface{}) error {
+	url := fmt.Sprintf(FeatureOperationURLTemplate, featureURL, command)
 	_, err := SendDigitalTwinRequest(cfg, http.MethodPost, url, params)
 	return err
 }
@@ -97,26 +105,30 @@ func (suite *SuiteInitializer) InitURLsAndTemplates(thingID string, featureID st
 		thingID = suite.ThingCfg.DeviceID
 	}
 	suite.ThingURL = GetDigitalTwinURLForThingID(suite.Cfg.DigitalTwinAPIAddress, thingID)
-	suite.FeatureURL = fmt.Sprintf("%s/features/%s", suite.ThingURL, featureID)
-	suite.featurePropertyPathTemplate = fmt.Sprintf("/features/%s/properties/%%s", featureID)
+	suite.FeatureURL = suite.GetFeatureURL(featureID)
 
 	thingIDWithNamespace := model.NewNamespacedIDFrom(thingID)
-	suite.eventTopicTemplate = fmt.Sprintf("%s/%s/things/twin/events/%%s", thingIDWithNamespace.Namespace, thingIDWithNamespace.Name)
-	suite.liveMessageTopicTemplate = fmt.Sprintf("%s/%s/things/live/messages/%%s", thingIDWithNamespace.Namespace, thingIDWithNamespace.Name)
-	suite.featureOperationURLTemplate = fmt.Sprintf("%s/inbox/messages/%%s", suite.FeatureURL)
+	featurePropertyPathTemplate = fmt.Sprintf("/features/%s/properties/%%s", featureID)
+	eventTopicTemplate = fmt.Sprintf("%s/%s/things/twin/events/%%s", thingIDWithNamespace.Namespace, thingIDWithNamespace.Name)
+	liveMessageTopicTemplate = fmt.Sprintf("%s/%s/things/live/messages/%%s", thingIDWithNamespace.Namespace, thingIDWithNamespace.Name)
+}
+
+// GetFeatureURL TBD
+func (suite *SuiteInitializer) GetFeatureURL(featureID string) string {
+	return fmt.Sprintf(FeatureURLTemplate, suite.ThingURL, featureID)
 }
 
 // GetPropertyPath TBD
-func (suite *SuiteInitializer) GetPropertyPath(name string) string {
-	return fmt.Sprintf(suite.featurePropertyPathTemplate, name)
+func GetPropertyPath(featureID string, name string) string {
+	return fmt.Sprintf(featurePropertyPathTemplate, name)
 }
 
 // GetEventTopic TBD
-func (suite *SuiteInitializer) GetEventTopic(action string) string {
-	return fmt.Sprintf(suite.eventTopicTemplate, action)
+func GetEventTopic(action string) string {
+	return fmt.Sprintf(eventTopicTemplate, action)
 }
 
 // GetLiveMessageTopic TBD
-func (suite *SuiteInitializer) GetLiveMessageTopic(action string) string {
-	return fmt.Sprintf(suite.liveMessageTopicTemplate, action)
+func GetLiveMessageTopic(action string) string {
+	return fmt.Sprintf(liveMessageTopicTemplate, action)
 }
