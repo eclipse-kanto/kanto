@@ -71,6 +71,9 @@ func (suite *SuiteInitializer) Setup(t *testing.T, featureID string) {
 	suite.DittoClient = dittoClient
 	suite.MQTTClient = mqttClient
 	suite.ThingCfg, err = GetThingConfiguration(cfg, mqttClient)
+	if err != nil {
+		defer mqttClient.Disconnect(uint(suite.Cfg.MqttQuiesceMs))
+	}
 	require.NoError(t, err, "get thing configuration")
 	suite.FormatURLsAndTemplates(featureID)
 }
@@ -101,16 +104,16 @@ func (suite *SuiteInitializer) FormatURLsAndTemplates(featureID string) {
 }
 
 // GetPropertyPath TBD
-func (suite *SuiteInitializer) GetPropertyPath(propertyName string) string {
-	return fmt.Sprintf(suite.featurePropertyPathTemplate, propertyName)
+func (suite *SuiteInitializer) GetPropertyPath(name string) string {
+	return fmt.Sprintf(suite.featurePropertyPathTemplate, name)
 }
 
 // GetEventTopic TBD
-func (suite *SuiteInitializer) GetEventTopic(propertyName string) string {
-	return fmt.Sprintf(suite.eventTopicTemplate, propertyName)
+func (suite *SuiteInitializer) GetEventTopic(action string) string {
+	return fmt.Sprintf(suite.eventTopicTemplate, action)
 }
 
 // GetLiveMessageTopic TBD
-func (suite *SuiteInitializer) GetLiveMessageTopic(propertyName string) string {
-	return fmt.Sprintf(suite.liveMessageTopicTemplate, propertyName)
+func (suite *SuiteInitializer) GetLiveMessageTopic(action string) string {
+	return fmt.Sprintf(suite.liveMessageTopicTemplate, action)
 }
