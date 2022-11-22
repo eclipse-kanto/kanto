@@ -33,7 +33,7 @@ import (
 const (
 	featureURLTemplate          = "%s/features/%s"
 	featureOperationURLTemplate = "%s/inbox/messages/%s"
-	thingURLTemplate            = "%s/api/2/things/%s"
+	digitalTwinURLTemplate      = "%s/api/2/things/%s"
 	featurePropertyPathTemplate = "/features/%s/properties/%s"
 	messagePathTemplate         = "/features/%s/outbox/messages/%s"
 	eventTopicTemplate          = "%s/%s/things/twin/events/%s"
@@ -122,8 +122,8 @@ func asWSAddress(address string) (string, error) {
 	return fmt.Sprintf("ws://%s:%s", url.Hostname(), getPortOrDefault(url, "80")), nil
 }
 
-// StartListening sends a request message for listening to a given event type and awaits confirmation response
-func StartListening(cfg *TestConfiguration, conn *websocket.Conn, eventType string, filter string) error {
+// StartWSListening sends a request message for listening to a given event type and awaits confirmation response
+func StartWSListening(cfg *TestConfiguration, conn *websocket.Conn, eventType string, filter string) error {
 	var msg string
 	if len(filter) > 0 {
 		msg = fmt.Sprintf("%s?filter=%s", eventType, filter)
@@ -196,23 +196,23 @@ func ExecuteOperation(cfg *TestConfiguration, featureURL string, operation strin
 	return SendHTTPFeatureRequest(cfg, http.MethodPost, url, params)
 }
 
-// GetThingURL returns the url for executing operations on a thing
-func GetThingURL(digitalTwinAPIAddress string, thingID string) string {
-	return fmt.Sprintf(thingURLTemplate, strings.TrimSuffix(digitalTwinAPIAddress, "/"), thingID)
+// GetDigitalTwinURLForThingID returns the url for executing operations on a thing
+func GetDigitalTwinURLForThingID(digitalTwinAPIAddress string, thingID string) string {
+	return fmt.Sprintf(digitalTwinURLTemplate, strings.TrimSuffix(digitalTwinAPIAddress, "/"), thingID)
 }
 
 // GetFeatureURL returns the url of a feature
-func GetFeatureURL(thingURL string, featureID string) string {
-	return fmt.Sprintf(featureURLTemplate, thingURL, featureID)
+func GetFeatureURL(digitalTwinURL string, featureID string) string {
+	return fmt.Sprintf(featureURLTemplate, digitalTwinURL, featureID)
 }
 
-// GetPropertyPath returns the path to a property on a feature
-func GetPropertyPath(featureID string, name string) string {
+// GetFeaturePropertyPath returns the path to a property on a feature
+func GetFeaturePropertyPath(featureID string, name string) string {
 	return fmt.Sprintf(featurePropertyPathTemplate, featureID, name)
 }
 
-// GetMessagePath returns the path to a message on a feature
-func GetMessagePath(featureID string, name string) string {
+// GetFeatureMessagePath returns the path to a message on a feature
+func GetFeatureMessagePath(featureID string, name string) string {
 	return fmt.Sprintf(messagePathTemplate, featureID, name)
 }
 
