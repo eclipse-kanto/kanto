@@ -13,31 +13,15 @@
 package util
 
 import (
-	"fmt"
-	"net/http"
 	"testing"
 
 	"github.com/caarlos0/env/v6"
 
 	"github.com/eclipse/ditto-clients-golang"
-	"github.com/eclipse/ditto-clients-golang/model"
 
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 
 	"github.com/stretchr/testify/require"
-)
-
-const (
-	// FeatureURLTemplate TBD
-	FeatureURLTemplate = "%s/features/%s"
-	// FeatureOperationURLTemplate TBD
-	FeatureOperationURLTemplate = "%s/inbox/messages/%s"
-)
-
-var (
-	eventTopicTemplate          string
-	liveMessageTopicTemplate    string
-	featurePropertyPathTemplate string
 )
 
 // SuiteInitializer is testify Suite initialization helper
@@ -48,13 +32,10 @@ type SuiteInitializer struct {
 
 	DittoClient *ditto.Client
 	MQTTClient  MQTT.Client
-
-	ThingURL   string
-	FeatureURL string
 }
 
 // Setup establishes connections to the local MQTT broker and Ditto
-func (suite *SuiteInitializer) Setup(t *testing.T, featureID string) {
+func (suite *SuiteInitializer) Setup(t *testing.T) {
 	cfg := &TestConfiguration{}
 
 	opts := env.Options{RequiredIfNoDef: true}
@@ -81,54 +62,12 @@ func (suite *SuiteInitializer) Setup(t *testing.T, featureID string) {
 	suite.ThingCfg, err = GetThingConfiguration(cfg, mqttClient)
 	if err != nil {
 		defer mqttClient.Disconnect(uint(suite.Cfg.MqttQuiesceMs))
+		require.NoError(t, err, "get thing configuration")
 	}
-	require.NoError(t, err, "get thing configuration")
-	suite.InitURLsAndTemplates(suite.ThingCfg.DeviceID, featureID)
 }
 
 // TearDown closes all connections
 func (suite *SuiteInitializer) TearDown() {
 	suite.DittoClient.Disconnect()
 	suite.MQTTClient.Disconnect(uint(suite.Cfg.MqttQuiesceMs))
-}
-
-// ExecCommand TBD
-func (suite *SuiteInitializer) ExecCommand(cfg *TestConfiguration, featureURL string, command string, params interface{}) error {
-	url := fmt.Sprintf(FeatureOperationURLTemplate, featureURL, command)
-	_, err := SendDigitalTwinRequest(cfg, http.MethodPost, url, params)
-	return err
-}
-
-// InitURLsAndTemplates TBD
-func (suite *SuiteInitializer) InitURLsAndTemplates(thingID string, featureID string) {
-	if len(thingID) == 0 {
-		thingID = suite.ThingCfg.DeviceID
-	}
-	suite.ThingURL = GetDigitalTwinURLForThingID(suite.Cfg.DigitalTwinAPIAddress, thingID)
-	suite.FeatureURL = suite.GetFeatureURL(featureID)
-
-	thingIDWithNamespace := model.NewNamespacedIDFrom(thingID)
-	featurePropertyPathTemplate = fmt.Sprintf("/features/%s/properties/%%s", featureID)
-	eventTopicTemplate = fmt.Sprintf("%s/%s/things/twin/events/%%s", thingIDWithNamespace.Namespace, thingIDWithNamespace.Name)
-	liveMessageTopicTemplate = fmt.Sprintf("%s/%s/things/live/messages/%%s", thingIDWithNamespace.Namespace, thingIDWithNamespace.Name)
-}
-
-// GetFeatureURL TBD
-func (suite *SuiteInitializer) GetFeatureURL(featureID string) string {
-	return fmt.Sprintf(FeatureURLTemplate, suite.ThingURL, featureID)
-}
-
-// GetPropertyPath TBD
-func GetPropertyPath(featureID string, name string) string {
-	return fmt.Sprintf(featurePropertyPathTemplate, name)
-}
-
-// GetEventTopic TBD
-func GetEventTopic(action string) string {
-	return fmt.Sprintf(eventTopicTemplate, action)
-}
-
-// GetLiveMessageTopic TBD
-func GetLiveMessageTopic(action string) string {
-	return fmt.Sprintf(liveMessageTopicTemplate, action)
 }

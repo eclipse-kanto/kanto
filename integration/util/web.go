@@ -24,9 +24,22 @@ import (
 	"strings"
 	"time"
 
+	"github.com/eclipse/ditto-clients-golang/model"
 	"github.com/eclipse/ditto-clients-golang/protocol"
 	"github.com/google/uuid"
 	"golang.org/x/net/websocket"
+)
+
+const (
+	// FeatureURLTemplate TBD
+	FeatureURLTemplate = "%s/features/%s"
+
+	// FeatureOperationURLTemplate TBD
+	FeatureOperationURLTemplate = "%s/inbox/messages/%s"
+
+	featurePropertyPathTemplate = "/features/%s/properties/%s"
+	eventTopicTemplate          = "%s/%s/things/twin/events/%s"
+	liveMessageTopicTemplate    = "%s/%s/things/live/messages/%s"
 )
 
 // SendDigitalTwinRequest sends а new HTTP request to Ditto REST API
@@ -182,4 +195,33 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 // GetDigitalTwinURLForThingID returns the url for executing operations on a thing
 func GetDigitalTwinURLForThingID(digitalTwinAPIAddress string, thingID string) string {
 	return fmt.Sprintf("%s/api/2/things/%s", strings.TrimSuffix(digitalTwinAPIAddress, "/"), thingID)
+}
+
+// ExecCommand TBD
+func ExecCommand(cfg *TestConfiguration, featureURL string, command string, params interface{}) error {
+	url := fmt.Sprintf(FeatureOperationURLTemplate, featureURL, command)
+	_, err := SendDigitalTwinRequest(cfg, http.MethodPost, url, params)
+	return err
+}
+
+// GetFeatureURL TBD
+func GetFeatureURL(thingURL string, featureID string) string {
+	return fmt.Sprintf(FeatureURLTemplate, thingURL, featureID)
+}
+
+// GetPropertyPath TBD
+func GetPropertyPath(featureID string, name string) string {
+	return fmt.Sprintf(featurePropertyPathTemplate, featureID, name)
+}
+
+// GetEventTopic TBD
+func GetEventTopic(thingID string, action string) string {
+	thingIDWithNamespace := model.NewNamespacedIDFrom(thingID)
+	return fmt.Sprintf(eventTopicTemplate, thingIDWithNamespace.Namespace, thingIDWithNamespace.Name, action)
+}
+
+// GetLiveMessageTopic TBD
+func GetLiveMessageTopic(thingID string, action string) string {
+	thingIDWithNamespace := model.NewNamespacedIDFrom(thingID)
+	return fmt.Sprintf(liveMessageTopicTemplate, thingIDWithNamespace.Namespace, thingIDWithNamespace.Name, action)
 }
