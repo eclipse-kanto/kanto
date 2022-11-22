@@ -219,11 +219,27 @@ func GetMessagePath(featureID string, name string) string {
 // GetEventTopic returns the topic of an event on a thing
 func GetEventTopic(thingID string, action protocol.TopicAction) string {
 	thingIDWithNamespace := model.NewNamespacedIDFrom(thingID)
-	return fmt.Sprintf(eventTopicTemplate, thingIDWithNamespace.Namespace, thingIDWithNamespace.Name, action)
+	t := protocol.Topic{
+		Namespace:  thingIDWithNamespace.Namespace,
+		EntityName: thingIDWithNamespace.Name,
+		Group:      protocol.GroupThings,
+		Channel:    protocol.ChannelTwin,
+		Criterion:  protocol.CriterionEvents,
+		Action:     action,
+	}
+	return t.String()
 }
 
 // GetLiveMessageTopic returns the topic of a live message on a thing
 func GetLiveMessageTopic(thingID string, action protocol.TopicAction) string {
 	thingIDWithNamespace := model.NewNamespacedIDFrom(thingID)
-	return fmt.Sprintf(liveMessageTopicTemplate, thingIDWithNamespace.Namespace, thingIDWithNamespace.Name, action)
+	t := protocol.Topic{
+		Namespace:  thingIDWithNamespace.Namespace,
+		EntityName: thingIDWithNamespace.Name,
+		Group:      protocol.GroupThings,
+		Channel:    protocol.ChannelLive,
+		Criterion:  protocol.CriterionMessages,
+		Action:     action,
+	}
+	return t.String()
 }
