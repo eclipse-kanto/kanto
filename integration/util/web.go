@@ -31,16 +31,16 @@ import (
 )
 
 const (
+	thingURLTemplate            = "%s/api/2/things/%s"
 	featureURLTemplate          = "%s/features/%s"
 	featureOperationURLTemplate = "%s/inbox/messages/%s"
-	thingURLTemplate            = "%s/api/2/things/%s"
 	featurePropertyPathTemplate = "/features/%s/properties/%s"
-	messagePathTemplate         = "/features/%s/outbox/messages/%s"
-	eventTopicTemplate          = "%s/%s/things/twin/events/%s"
+	featureMessagePathTemplate  = "/features/%s/outbox/messages/%s"
+	twinEventTopicTemplate      = "%s/%s/things/twin/events/%s"
 	liveMessageTopicTemplate    = "%s/%s/things/live/messages/%s"
 )
 
-// SendDigitalTwinRequest sends а new HTTP request to Ditto REST API
+// SendDigitalTwinRequest sends а new HTTP request to the Ditto REST API
 func SendDigitalTwinRequest(cfg *TestConfiguration, method string, url string, body interface{}) ([]byte, error) {
 	var reqBody io.Reader
 
@@ -79,7 +79,7 @@ func SendDigitalTwinRequest(cfg *TestConfiguration, method string, url string, b
 	return io.ReadAll(resp.Body)
 }
 
-// NewDigitalTwinWSConnection creates new web socket connection
+// NewDigitalTwinWSConnection creates a new web socket connection
 func NewDigitalTwinWSConnection(cfg *TestConfiguration) (*websocket.Conn, error) {
 	wsAddress, err := asWSAddress(cfg.DigitalTwinAPIAddress)
 	if err != nil {
@@ -122,8 +122,8 @@ func asWSAddress(address string) (string, error) {
 	return fmt.Sprintf("ws://%s:%s", url.Hostname(), getPortOrDefault(url, "80")), nil
 }
 
-// StartWSListening sends a request message for listening to a given event type and awaits confirmation response
-func StartWSListening(cfg *TestConfiguration, conn *websocket.Conn, eventType string, filter string) error {
+// SubscribeForWSMessages subscribes for the messages that are sent from a web socket session and awaits confirmation response
+func SubscribeForWSMessages(cfg *TestConfiguration, conn *websocket.Conn, eventType string, filter string) error {
 	var msg string
 	if len(filter) > 0 {
 		msg = fmt.Sprintf("%s?filter=%s", eventType, filter)
@@ -137,7 +137,7 @@ func StartWSListening(cfg *TestConfiguration, conn *websocket.Conn, eventType st
 	return WaitForWSMessage(cfg, conn, fmt.Sprintf("%s:ACK", eventType))
 }
 
-// WaitForWSMessage polls messages from the web socket connection until specific message is received or timeout expires
+// WaitForWSMessage waits for received a specific message from a web socket session or timeout expires
 func WaitForWSMessage(cfg *TestConfiguration, ws *websocket.Conn, expectedMessage string) error {
 	deadline := time.Now().Add(MillisToDuration(cfg.WsEventTimeoutMs))
 	ws.SetDeadline(deadline)
@@ -157,7 +157,7 @@ func WaitForWSMessage(cfg *TestConfiguration, ws *websocket.Conn, expectedMessag
 	return errors.New("timeout waiting for web socket message")
 }
 
-// ProcessWSMessages polls messages from the web socket connection until specific condition is satisfied or timeout expires
+// ProcessWSMessages processes messages for the satisfied condition from the web socket session or timeout expires
 func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(*protocol.Envelope) (bool, error)) error {
 	timeout := MillisToDuration(cfg.WsEventTimeoutMs)
 	deadline := time.Now().Add(timeout)
@@ -190,13 +190,13 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 	return err
 }
 
-// ExecuteOperation executes an operation of a feature using http POST method
+// ExecuteOperation executes an operation of a feature
 func ExecuteOperation(cfg *TestConfiguration, featureURL string, operation string, params interface{}) ([]byte, error) {
 	url := fmt.Sprintf(featureOperationURLTemplate, featureURL, operation)
 	return SendDigitalTwinRequest(cfg, http.MethodPost, url, params)
 }
 
-// GetThingURL returns the url for executing operations on a thing
+// GetThingURL returns the url of a thing
 func GetThingURL(digitalTwinAPIAddress string, thingID string) string {
 	return fmt.Sprintf(thingURLTemplate, strings.TrimSuffix(digitalTwinAPIAddress, "/"), thingID)
 }
@@ -211,35 +211,33 @@ func GetFeaturePropertyPath(featureID string, name string) string {
 	return fmt.Sprintf(featurePropertyPathTemplate, featureID, name)
 }
 
-// GetFeatureMessagePath returns the path to a message on a feature
-func GetFeatureMessagePath(featureID string, name string) string {
-	return fmt.Sprintf(messagePathTemplate, featureID, name)
+// GetFeatureOutboxMessagePath returns the path to an outbox message on a feature
+func GetFeatureOutboxMessagePath(featureID string, name string) string {
+	return fmt.Sprintf(featureMessagePathTemplate, featureID, name)
 }
 
-// GetEventTopic returns the topic of an event on a thing
-func GetEventTopic(thingID string, action protocol.TopicAction) string {
-	thingIDWithNamespace := model.NewNamespacedIDFrom(thingID)
-	t := protocol.Topic{
-		Namespace:  thingIDWithNamespace.Namespace,
-		EntityName: thingIDWithNamespace.Name,
-		Group:      protocol.GroupThings,
-		Channel:    protocol.ChannelTwin,
-		Criterion:  protocol.CriterionEvents,
-		Action:     action,
-	}
+// GetTwinEventTopic returns the twin event topic
+func GetTwinEventTopic(fullThingID string, action protocol.TopicAction) string {
+	thingID := model.NewNamespacedIDFrom(fullThingID)
+	t := (&protocol.Topic{}).
+		WithNamespace(thingID.Namespace).
+		WithEntityName(thingID.Name).
+		WithGroup(protocol.GroupThings).
+		WithChannel(protocol.ChannelTwin).
+		WithCriterion(protocol.CriterionEvents).
+		WithAction(action)
 	return t.String()
 }
 
-// GetLiveMessageTopic returns the topic of a live message on a thing
-func GetLiveMessageTopic(thingID string, action protocol.TopicAction) string {
-	thingIDWithNamespace := model.NewNamespacedIDFrom(thingID)
-	t := protocol.Topic{
-		Namespace:  thingIDWithNamespace.Namespace,
-		EntityName: thingIDWithNamespace.Name,
-		Group:      protocol.GroupThings,
-		Channel:    protocol.ChannelLive,
-		Criterion:  protocol.CriterionMessages,
-		Action:     action,
-	}
+// GetLiveMessageTopic returns the live message topic
+func GetLiveMessageTopic(fullThingID string, action protocol.TopicAction) string {
+	thingID := model.NewNamespacedIDFrom(fullThingID)
+	t := (&protocol.Topic{}).
+		WithNamespace(thingID.Namespace).
+		WithEntityName(thingID.Name).
+		WithGroup(protocol.GroupThings).
+		WithChannel(protocol.ChannelLive).
+		WithCriterion(protocol.CriterionEvents).
+		WithAction(action)
 	return t.String()
 }
