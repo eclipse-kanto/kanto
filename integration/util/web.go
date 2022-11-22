@@ -33,15 +33,15 @@ import (
 const (
 	featureURLTemplate          = "%s/features/%s"
 	featureOperationURLTemplate = "%s/inbox/messages/%s"
-	digitalTwinURLTemplate      = "%s/api/2/things/%s"
+	thingURLTemplate            = "%s/api/2/things/%s"
 	featurePropertyPathTemplate = "/features/%s/properties/%s"
 	messagePathTemplate         = "/features/%s/outbox/messages/%s"
 	eventTopicTemplate          = "%s/%s/things/twin/events/%s"
 	liveMessageTopicTemplate    = "%s/%s/things/live/messages/%s"
 )
 
-// SendHTTPFeatureRequest sends а new HTTP request to Ditto REST API
-func SendHTTPFeatureRequest(cfg *TestConfiguration, method string, url string, body interface{}) ([]byte, error) {
+// SendDigitalTwinRequest sends а new HTTP request to Ditto REST API
+func SendDigitalTwinRequest(cfg *TestConfiguration, method string, url string, body interface{}) ([]byte, error) {
 	var reqBody io.Reader
 
 	if body != nil {
@@ -193,17 +193,17 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 // ExecuteOperation executes an operation of a feature using http POST method
 func ExecuteOperation(cfg *TestConfiguration, featureURL string, operation string, params interface{}) ([]byte, error) {
 	url := fmt.Sprintf(featureOperationURLTemplate, featureURL, operation)
-	return SendHTTPFeatureRequest(cfg, http.MethodPost, url, params)
+	return SendDigitalTwinRequest(cfg, http.MethodPost, url, params)
 }
 
-// GetDigitalTwinURLForThingID returns the url for executing operations on a thing
-func GetDigitalTwinURLForThingID(digitalTwinAPIAddress string, thingID string) string {
-	return fmt.Sprintf(digitalTwinURLTemplate, strings.TrimSuffix(digitalTwinAPIAddress, "/"), thingID)
+// GetThingURL returns the url for executing operations on a thing
+func GetThingURL(digitalTwinAPIAddress string, thingID string) string {
+	return fmt.Sprintf(thingURLTemplate, strings.TrimSuffix(digitalTwinAPIAddress, "/"), thingID)
 }
 
 // GetFeatureURL returns the url of a feature
-func GetFeatureURL(digitalTwinURL string, featureID string) string {
-	return fmt.Sprintf(featureURLTemplate, digitalTwinURL, featureID)
+func GetFeatureURL(thingURL string, featureID string) string {
+	return fmt.Sprintf(featureURLTemplate, thingURL, featureID)
 }
 
 // GetFeaturePropertyPath returns the path to a property on a feature
