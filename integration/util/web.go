@@ -31,19 +31,17 @@ import (
 )
 
 const (
-	// FeatureURLTemplate TBD
-	FeatureURLTemplate = "%s/features/%s"
-
-	// FeatureOperationURLTemplate TBD
-	FeatureOperationURLTemplate = "%s/inbox/messages/%s"
-
+	featureURLTemplate          = "%s/features/%s"
+	featureOperationURLTemplate = "%s/inbox/messages/%s"
+	thingURLTemplate            = "%s/api/2/things/%s"
 	featurePropertyPathTemplate = "/features/%s/properties/%s"
+	messagePathTemplate         = "/features/%s/outbox/messages/%s"
 	eventTopicTemplate          = "%s/%s/things/twin/events/%s"
 	liveMessageTopicTemplate    = "%s/%s/things/live/messages/%s"
 )
 
-// SendDigitalTwinRequest sends а new HTTP request to Ditto REST API
-func SendDigitalTwinRequest(cfg *TestConfiguration, method string, url string, body interface{}) ([]byte, error) {
+// SendHTTPFeatureRequest sends а new HTTP request to Ditto REST API
+func SendHTTPFeatureRequest(cfg *TestConfiguration, method string, url string, body interface{}) ([]byte, error) {
 	var reqBody io.Reader
 
 	if body != nil {
@@ -124,7 +122,7 @@ func asWSAddress(address string) (string, error) {
 	return fmt.Sprintf("ws://%s:%s", url.Hostname(), getPortOrDefault(url, "80")), nil
 }
 
-// StartListening TBD
+// StartListening sends a request message for listening to a given event type and awaits confirmation response
 func StartListening(cfg *TestConfiguration, conn *websocket.Conn, eventType string, filter string) error {
 	var msg string
 	if len(filter) > 0 {
@@ -192,36 +190,40 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 	return err
 }
 
-// GetDigitalTwinURLForThingID returns the url for executing operations on a thing
-func GetDigitalTwinURLForThingID(digitalTwinAPIAddress string, thingID string) string {
-	return fmt.Sprintf("%s/api/2/things/%s", strings.TrimSuffix(digitalTwinAPIAddress, "/"), thingID)
+// ExecuteOperation executes an operation of a feature using http POST method
+func ExecuteOperation(cfg *TestConfiguration, featureURL string, operation string, params interface{}) ([]byte, error) {
+	url := fmt.Sprintf(featureOperationURLTemplate, featureURL, operation)
+	return SendHTTPFeatureRequest(cfg, http.MethodPost, url, params)
 }
 
-// ExecCommand TBD
-func ExecCommand(cfg *TestConfiguration, featureURL string, command string, params interface{}) error {
-	url := fmt.Sprintf(FeatureOperationURLTemplate, featureURL, command)
-	_, err := SendDigitalTwinRequest(cfg, http.MethodPost, url, params)
-	return err
+// GetThingURL returns the url for executing operations on a thing
+func GetThingURL(digitalTwinAPIAddress string, thingID string) string {
+	return fmt.Sprintf(thingURLTemplate, strings.TrimSuffix(digitalTwinAPIAddress, "/"), thingID)
 }
 
-// GetFeatureURL TBD
+// GetFeatureURL returns the url of a feature
 func GetFeatureURL(thingURL string, featureID string) string {
-	return fmt.Sprintf(FeatureURLTemplate, thingURL, featureID)
+	return fmt.Sprintf(featureURLTemplate, thingURL, featureID)
 }
 
-// GetPropertyPath TBD
+// GetPropertyPath returns the path to a property on a feature
 func GetPropertyPath(featureID string, name string) string {
 	return fmt.Sprintf(featurePropertyPathTemplate, featureID, name)
 }
 
-// GetEventTopic TBD
-func GetEventTopic(thingID string, action string) string {
+// GetMessagePath returns the path to a message on a feature
+func GetMessagePath(featureID string, name string) string {
+	return fmt.Sprintf(messagePathTemplate, featureID, name)
+}
+
+// GetEventTopic returns the topic of an event on a thing
+func GetEventTopic(thingID string, action protocol.TopicAction) string {
 	thingIDWithNamespace := model.NewNamespacedIDFrom(thingID)
 	return fmt.Sprintf(eventTopicTemplate, thingIDWithNamespace.Namespace, thingIDWithNamespace.Name, action)
 }
 
-// GetLiveMessageTopic TBD
-func GetLiveMessageTopic(thingID string, action string) string {
+// GetLiveMessageTopic returns the topic of a live message on a thing
+func GetLiveMessageTopic(thingID string, action protocol.TopicAction) string {
 	thingIDWithNamespace := model.NewNamespacedIDFrom(thingID)
 	return fmt.Sprintf(liveMessageTopicTemplate, thingIDWithNamespace.Namespace, thingIDWithNamespace.Name, action)
 }
