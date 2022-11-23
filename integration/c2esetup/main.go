@@ -97,8 +97,12 @@ func main() {
 
 	flag.StringVar(&policyID, "policyId", "", "Test device's policy unique identifier")
 
-	flag.StringVar(&configFile, "configFile", "/etc/suite-connector/config.json", "Path to Suite Connector configuration file")
-	flag.StringVar(&configFileBackup, "configFileBackup", "/etc/suite-connector/configBackup.json", "Path to Suite Connector configuration file backup")
+	flag.StringVar(&configFile, "configFile", "/etc/suite-connector/config.json",
+		"Path to Suite Connector configuration file. "+
+			"If set to the empty string, configuring Suite Connector and restarting it will be skipped")
+	flag.StringVar(&configFileBackup, "configFileBackup", "/etc/suite-connector/configBackup.json",
+		"Path to Suite Connector configuration file backup. "+
+			"If set to the empty string, backing up the Suite Connector configuration file will be skipped")
 	flag.StringVar(&certFile, "certFile", "/etc/suite-connector/iothub.crt", "Path to Suite Connector CA certificates file")
 	flag.StringVar(&logFile, "logFile", "/var/log/suite-connector/suite-connector.log", "Path to Suite Connector log file")
 
