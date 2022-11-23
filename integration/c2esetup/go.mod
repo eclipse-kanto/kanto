@@ -3,15 +3,15 @@ module github.com/eclipse-kanto/kanto/integration/c2esetup
 go 1.17
 
 require (
-	github.com/eclipse/paho.mqtt.golang v1.4.1
-	github.com/google/uuid v1.3.0
+	github.com/caarlos0/env/v6 v6.10.1
+	github.com/eclipse-kanto/kanto/integration/util v0.0.0-20221123073842-14c133d7eb34
 )
 
 require (
-	github.com/caarlos0/env/v6 v6.10.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/eclipse-kanto/kanto/integration/util v0.0.0-20221114101725-fadc1f231801 // indirect
 	github.com/eclipse/ditto-clients-golang v0.0.0-20220225085802-cf3b306280d3 // indirect
+	github.com/eclipse/paho.mqtt.golang v1.4.1 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/testify v1.8.1 // indirect
