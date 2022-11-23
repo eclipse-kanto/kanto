@@ -48,8 +48,8 @@ const (
 )
 
 var (
-	testCfg util.TestConfiguration
-	c2eCfg  c2eConfiguration
+	cfg    util.TestConfiguration
+	c2eCfg c2eConfiguration
 
 	tenantID string
 	policyID string
@@ -66,8 +66,7 @@ var (
 )
 
 type resource struct {
-	base string
-	path string
+	url string
 
 	method string
 	body   string
@@ -111,7 +110,7 @@ func main() {
 	flag.Parse()
 
 	envOpts := env.Options{RequiredIfNoDef: true}
-	err := env.Parse(&testCfg, envOpts)
+	err := env.Parse(&cfg, envOpts)
 	if err == nil {
 		err = env.Parse(&c2eCfg, envOpts)
 	}
@@ -129,13 +128,13 @@ func main() {
 			fmt.Printf("forcing device id: \"%s\"\n", deviceID)
 		}
 	} else if deviceID == "" || tenantID == "" {
-		mqttClient, err := util.NewMQTTClient(&testCfg)
+		mqttClient, err := util.NewMQTTClient(&cfg)
 		var thingConfiguration *util.ThingConfiguration
 		if err == nil {
-			thingConfiguration, err = util.GetThingConfiguration(&testCfg, mqttClient)
+			thingConfiguration, err = util.GetThingConfiguration(&cfg, mqttClient)
 		}
 		if err != nil {
-			fmt.Printf("unable to open local mqtt connection to %s\n", testCfg.LocalBroker)
+			fmt.Printf("unable to open local mqtt connection to %s\n", cfg.LocalBroker)
 			os.Exit(1)
 		}
 		deviceID = thingConfiguration.DeviceID
@@ -151,19 +150,19 @@ func main() {
 	devicePath := fmt.Sprintf("%s/%s", tenantID, deviceID)
 
 	resources := make([]*resource, 0, 4)
-	deviceResource := &resource{base: registryAPI, path: devices + devicePath, method: http.MethodPost,
+	deviceResource := &resource{url: registryAPI + "/" + devices + devicePath, method: http.MethodPost,
 		body: deviceJSON, user: c2eCfg.DeviceRegistryAPIUsername, pass: c2eCfg.DeviceRegistryAPIPassword, delete: true}
 	resources = append(resources, deviceResource)
 
 	authID = strings.ReplaceAll(deviceID, ":", "_")
 	auth := fmt.Sprintf(authJSON, authID, devicePass)
-	resources = append(resources, &resource{base: registryAPI, path: credentials + devicePath, method: http.MethodPut,
+	resources = append(resources, &resource{url: registryAPI + "/" + credentials + devicePath, method: http.MethodPut,
 		body: auth, user: c2eCfg.DeviceRegistryAPIUsername, pass: c2eCfg.DeviceRegistryAPIPassword, delete: false})
 
-	digitalTwinAPI := fmt.Sprintf("%s/api/2", strings.TrimSuffix(testCfg.DigitalTwinAPIAddress, "/"))
+	thingURL := util.GetThingURL(cfg.DigitalTwinAPIAddress, deviceID)
 	thing := fmt.Sprintf(thingJSON, policyID)
-	resources = append(resources, &resource{base: digitalTwinAPI, path: things + deviceID, method: http.MethodPut,
-		body: thing, user: testCfg.DigitalTwinAPIUsername, pass: testCfg.DigitalTwinAPIPassword, delete: true})
+	resources = append(resources, &resource{url: thingURL, method: http.MethodPut,
+		body: thing, user: cfg.DigitalTwinAPIUsername, pass: cfg.DigitalTwinAPIPassword, delete: true})
 
 	var code int
 	if !*clean {
@@ -196,7 +195,7 @@ func printHelp(cfg interface{}) {
 
 func printConfigHelp() {
 	fmt.Print("config environmental variables:")
-	printHelp(testCfg)
+	printHelp(cfg)
 	printHelp(c2eCfg)
 	fmt.Println()
 }
@@ -214,8 +213,7 @@ func assertFlag(value string, name string) {
 }
 
 func checkDeviceInRegistry(deviceID string, deviceResource *resource) error {
-	url := fmt.Sprintf("%s/%s", deviceResource.base, deviceResource.path)
-	devicesBytes, err := sendDeviceRegistryRequest(http.MethodGet, url)
+	devicesBytes, err := sendDeviceRegistryRequest(http.MethodGet, deviceResource.url)
 	if err == nil {
 		devicesJSON := string(devicesBytes)
 		if strings.Contains(devicesJSON, "status") &&
@@ -249,9 +247,7 @@ func performSetUp(deviceResource *resource, resources []*resource) int {
 	}
 
 	for i, r := range resources {
-		url := fmt.Sprintf("%s/%s", r.base, r.path)
-
-		if b, err := sendRequest(r.method, url, ([]byte)(r.body), r.user, r.pass); err != nil {
+		if b, err := sendRequest(r.method, r.url, ([]byte)(r.body), r.user, r.pass); err != nil {
 			fmt.Println(err)
 			if b != nil {
 				fmt.Println(string(b))
@@ -264,7 +260,7 @@ func performSetUp(deviceResource *resource, resources []*resource) int {
 
 			return 1
 		}
-		fmt.Printf("%s '%s' created\n", indent, r.path)
+		fmt.Printf("%s '%s' created\n", indent, r.url)
 	}
 
 	fmt.Println("checking if the device was successfully created in the registry")
@@ -330,12 +326,10 @@ func deleteResources(resources []*resource) {
 			continue
 		}
 
-		url := fmt.Sprintf("%s/%s", r.base, r.path)
-
-		if _, err := sendRequest(http.MethodDelete, url, nil, r.user, r.pass); err != nil {
+		if _, err := sendRequest(http.MethodDelete, r.url, nil, r.user, r.pass); err != nil {
 			fmt.Println(err)
 		} else {
-			fmt.Printf("%s '%s' deleted\n", indent, r.path)
+			fmt.Printf("%s '%s' deleted\n", indent, r.url)
 		}
 	}
 }
@@ -394,13 +388,13 @@ func findDeviceRegistryDevicesVia(viaDeviceID string) []string {
 func deleteDigitalTwinAPIThings(relations []string) {
 	// Delete related Digital Twin API things
 	fmt.Println("deleting automatically created things in the digital twin API...")
-	digitalTwinAPI := fmt.Sprintf("%s/api/2/", strings.TrimSuffix(testCfg.DigitalTwinAPIAddress, "/"))
-	for _, thing := range relations {
-		_, err := util.SendDigitalTwinRequest(&testCfg, http.MethodDelete, digitalTwinAPI+thing, nil)
+	for _, thingID := range relations {
+		url := util.GetThingURL(cfg.DigitalTwinAPIAddress, thingID)
+		_, err := util.SendDigitalTwinRequest(&cfg, http.MethodDelete, url, nil)
 		if err != nil {
 			fmt.Printf("error deleting thing: %v\n", err)
 		} else {
-			fmt.Printf("%s '%s' deleted\n", indent, thing)
+			fmt.Printf("%s '%s' deleted\n", indent, url)
 		}
 	}
 }
@@ -411,10 +405,11 @@ func deleteDeviceRegistryDevices(relations []string) {
 	deviceRegistryAPI := fmt.Sprintf(
 		"%s/v1/%s%s/", strings.TrimSuffix(c2eCfg.DeviceRegistryAPIAddress, "/"), devices, tenantID)
 	for _, device := range relations {
-		if _, err := sendDeviceRegistryRequest(http.MethodDelete, deviceRegistryAPI+device); err != nil {
+		url := deviceRegistryAPI + device
+		if _, err := sendDeviceRegistryRequest(http.MethodDelete, url); err != nil {
 			fmt.Printf("error deleting device: %v\n", err)
 		} else {
-			fmt.Printf("%s '%s' deleted\n", indent, device)
+			fmt.Printf("%s '%s' deleted\n", indent, url)
 		}
 	}
 }
