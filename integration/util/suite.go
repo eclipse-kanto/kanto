@@ -28,6 +28,8 @@ import (
 type SuiteInitializer struct {
 	Cfg *TestConfiguration
 
+	ThingCfg *ThingConfiguration
+
 	DittoClient *ditto.Client
 	MQTTClient  MQTT.Client
 }
@@ -57,6 +59,10 @@ func (suite *SuiteInitializer) Setup(t *testing.T) {
 	suite.Cfg = cfg
 	suite.DittoClient = dittoClient
 	suite.MQTTClient = mqttClient
+	suite.ThingCfg, err = GetThingConfiguration(cfg, mqttClient)
+	if err != nil {
+		suite.TearDown()
+	}
 }
 
 // TearDown closes all connections
