@@ -1,4 +1,4 @@
-module github.com/eclipse-kanto/kanto/integration/c2esetup
+module github.com/eclipse-kanto/kanto/integration/c2e-setup
 
 go 1.17
 
