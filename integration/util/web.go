@@ -36,8 +36,6 @@ const (
 	featureOperationURLTemplate = "%s/inbox/messages/%s"
 	featurePropertyPathTemplate = "/features/%s/properties/%s"
 	featureMessagePathTemplate  = "/features/%s/outbox/messages/%s"
-	twinEventTopicTemplate      = "%s/%s/things/twin/events/%s"
-	liveMessageTopicTemplate    = "%s/%s/things/live/messages/%s"
 )
 
 // SendDigitalTwinRequest sends а new HTTP request to the Ditto REST API
@@ -237,7 +235,7 @@ func GetLiveMessageTopic(fullThingID string, action protocol.TopicAction) string
 		WithEntityName(thingID.Name).
 		WithGroup(protocol.GroupThings).
 		WithChannel(protocol.ChannelLive).
-		WithCriterion(protocol.CriterionEvents).
+		WithCriterion(protocol.CriterionMessages).
 		WithAction(action)
 	return t.String()
 }
