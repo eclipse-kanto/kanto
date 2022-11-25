@@ -61,7 +61,8 @@ func (suite *SuiteInitializer) Setup(t *testing.T) {
 	suite.MQTTClient = mqttClient
 	suite.ThingCfg, err = GetThingConfiguration(cfg, mqttClient)
 	if err != nil {
-		suite.TearDown()
+		defer suite.TearDown()
+		require.NoError(t, err, "cannot get thing configuration")
 	}
 }
 
