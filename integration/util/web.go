@@ -33,6 +33,7 @@ import (
 const (
 	thingURLTemplate                 = "%s/api/2/things/%s"
 	featureURLTemplate               = "%s/features/%s"
+	featurePropertyURLTemplate       = "%s/properties/%s"
 	featureOperationURLTemplate      = "%s/inbox/messages/%s"
 	featurePropertyPathTemplate      = "/features/%s/properties/%s"
 	featureMessageOutboxPathTemplate = "/features/%s/outbox/messages/%s"
@@ -193,6 +194,12 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 func ExecuteOperation(cfg *TestConfiguration, featureURL string, operation string, params interface{}) ([]byte, error) {
 	url := fmt.Sprintf(featureOperationURLTemplate, featureURL, operation)
 	return SendDigitalTwinRequest(cfg, http.MethodPost, url, params)
+}
+
+// GetFeaturePropertyValue gets the value of a feature's property
+func GetFeaturePropertyValue(cfg *TestConfiguration, featureURL string, property string) ([]byte, error) {
+	url := fmt.Sprintf(featurePropertyURLTemplate, featureURL, property)
+	return SendDigitalTwinRequest(cfg, http.MethodGet, url, nil)
 }
 
 // GetThingURL returns the url of a thing
