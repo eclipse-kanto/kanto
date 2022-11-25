@@ -31,11 +31,13 @@ import (
 )
 
 const (
-	thingURLTemplate            = "%s/api/2/things/%s"
-	featureURLTemplate          = "%s/features/%s"
-	featureOperationURLTemplate = "%s/inbox/messages/%s"
-	featurePropertyPathTemplate = "/features/%s/properties/%s"
-	featureMessagePathTemplate  = "/features/%s/outbox/messages/%s"
+	thingURLTemplate                 = "%s/api/2/things/%s"
+	featureURLTemplate               = "%s/features/%s"
+	featurePropertyURLTemplate       = "%s/properties/%s"
+	featureOperationURLTemplate      = "%s/inbox/messages/%s"
+	featurePropertyPathTemplate      = "/features/%s/properties/%s"
+	featureMessageOutboxPathTemplate = "/features/%s/outbox/messages/%s"
+	featureMessageInboxPathTemplate  = "/features/%s/inbox/messages/%s"
 )
 
 // SendDigitalTwinRequest sends а new HTTP request to the Ditto REST API
@@ -194,6 +196,12 @@ func ExecuteOperation(cfg *TestConfiguration, featureURL string, operation strin
 	return SendDigitalTwinRequest(cfg, http.MethodPost, url, params)
 }
 
+// GetFeaturePropertyValue gets the value of a feature's property
+func GetFeaturePropertyValue(cfg *TestConfiguration, featureURL string, property string) ([]byte, error) {
+	url := fmt.Sprintf(featurePropertyURLTemplate, featureURL, property)
+	return SendDigitalTwinRequest(cfg, http.MethodGet, url, nil)
+}
+
 // GetThingURL returns the url of a thing
 func GetThingURL(digitalTwinAPIAddress string, thingID string) string {
 	return fmt.Sprintf(thingURLTemplate, strings.TrimSuffix(digitalTwinAPIAddress, "/"), thingID)
@@ -209,9 +217,14 @@ func GetFeaturePropertyPath(featureID string, name string) string {
 	return fmt.Sprintf(featurePropertyPathTemplate, featureID, name)
 }
 
-// GetFeatureOutboxMessagePath returns the path to an outbox message on a feature
+// GetFeatureOutboxMessagePath returns the path to an outbox message of a feature
 func GetFeatureOutboxMessagePath(featureID string, name string) string {
-	return fmt.Sprintf(featureMessagePathTemplate, featureID, name)
+	return fmt.Sprintf(featureMessageOutboxPathTemplate, featureID, name)
+}
+
+// GetFeatureInboxMessagePath returns the path to an inbox message of a feature
+func GetFeatureInboxMessagePath(featureID string, name string) string {
+	return fmt.Sprintf(featureMessageInboxPathTemplate, featureID, name)
 }
 
 // GetTwinEventTopic returns the twin event topic
