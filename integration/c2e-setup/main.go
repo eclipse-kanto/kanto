@@ -146,8 +146,8 @@ func main() {
 		assertFlag(policyID, "policy id")
 	}
 
-	registryAPI := fmt.Sprintf("%s/v1", strings.TrimSuffix(c2eCfg.DeviceRegistryAPIAddress, "/"))
-	devicePath := fmt.Sprintf("%s/%s", tenantID, deviceID)
+	registryAPI := strings.TrimSuffix(c2eCfg.DeviceRegistryAPIAddress, "/") + "/v1"
+	devicePath := tenantID + "/" + deviceID
 
 	resources := make([]*resource, 0, 4)
 	deviceResource := &resource{url: registryAPI + "/" + devices + devicePath, method: http.MethodPost,
@@ -363,9 +363,7 @@ func findDeviceRegistryDevicesVia(viaDeviceID string) []string {
 		return false
 	}
 
-	deviceRegistryAPI := fmt.Sprintf(
-		"%s/v1/%s%s/", strings.TrimSuffix(c2eCfg.DeviceRegistryAPIAddress, "/"), devices, tenantID)
-	devicesJSON, err := sendDeviceRegistryRequest(http.MethodGet, deviceRegistryAPI)
+	devicesJSON, err := sendDeviceRegistryRequest(http.MethodGet, getTenantURL())
 	if err != nil {
 		fmt.Println(err)
 	} else {
@@ -402,10 +400,9 @@ func deleteDigitalTwinAPIThings(relations []string) {
 func deleteDeviceRegistryDevices(relations []string) {
 	// Delete related Device Registry devices
 	fmt.Println("deleting automatically created devices in the device registry...")
-	deviceRegistryAPI := fmt.Sprintf(
-		"%s/v1/%s%s/", strings.TrimSuffix(c2eCfg.DeviceRegistryAPIAddress, "/"), devices, tenantID)
+	tenantURL := getTenantURL()
 	for _, device := range relations {
-		url := deviceRegistryAPI + device
+		url := tenantURL + device
 		if _, err := sendDeviceRegistryRequest(http.MethodDelete, url); err != nil {
 			fmt.Printf("error deleting device: %v\n", err)
 		} else {
@@ -518,4 +515,9 @@ func copyFile(src, dst string) error {
 	// Preserve the file mode if the file already exists
 	mode := getFileModeOrDefault(dst, configDefaultMode)
 	return ioutil.WriteFile(dst, data, mode)
+}
+
+func getTenantURL() string {
+	return fmt.Sprintf(
+		"%s/v1/%s%s/", strings.TrimSuffix(c2eCfg.DeviceRegistryAPIAddress, "/"), devices, tenantID)
 }
