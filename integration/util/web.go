@@ -31,11 +31,12 @@ import (
 )
 
 const (
-	thingURLTemplate            = "%s/api/2/things/%s"
-	featureURLTemplate          = "%s/features/%s"
-	featureOperationURLTemplate = "%s/inbox/messages/%s"
-	featurePropertyPathTemplate = "/features/%s/properties/%s"
-	featureMessagePathTemplate  = "/features/%s/outbox/messages/%s"
+	thingURLTemplate                 = "%s/api/2/things/%s"
+	featureURLTemplate               = "%s/features/%s"
+	featureOperationURLTemplate      = "%s/inbox/messages/%s"
+	featurePropertyPathTemplate      = "/features/%s/properties/%s"
+	featureMessageOutboxPathTemplate = "/features/%s/outbox/messages/%s"
+	featureMessageInboxPathTemplate  = "/features/%s/inbox/messages/%s"
 )
 
 // SendDigitalTwinRequest sends а new HTTP request to the Ditto REST API
@@ -209,9 +210,14 @@ func GetFeaturePropertyPath(featureID string, name string) string {
 	return fmt.Sprintf(featurePropertyPathTemplate, featureID, name)
 }
 
-// GetFeatureOutboxMessagePath returns the path to an outbox message on a feature
+// GetFeatureOutboxMessagePath returns the path to the message outbox message of a feature
 func GetFeatureOutboxMessagePath(featureID string, name string) string {
-	return fmt.Sprintf(featureMessagePathTemplate, featureID, name)
+	return fmt.Sprintf(featureMessageOutboxPathTemplate, featureID, name)
+}
+
+// GetFeatureInboxMessagePath returns the path to the message inbox message of a feature
+func GetFeatureInboxMessagePath(featureID string, name string) string {
+	return fmt.Sprintf(featureMessageInboxPathTemplate, featureID, name)
 }
 
 // GetTwinEventTopic returns the twin event topic
