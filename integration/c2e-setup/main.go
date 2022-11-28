@@ -213,33 +213,16 @@ func assertFlag(value string, name string) {
 	}
 }
 
-func checkDeviceInRegistry(deviceID string, deviceResource *resource) error {
-	devicesBytes, err := sendDeviceRegistryRequest(http.MethodGet, deviceResource.url)
+func isDeviceIDPresentInRegistry(deviceID string, deviceResource *resource) bool {
+	_, err := sendDeviceRegistryRequest(http.MethodGet, deviceResource.url)
 	if err == nil {
-		type status struct {
-			Created *time.Time `json:"created"`
-		}
-		type device struct {
-			Status      *status  `json:"status"`
-			Authorities []string `json:"authorities"`
-		}
-		var deviceResponse device
-		err = json.Unmarshal(devicesBytes, &deviceResponse)
-		if err != nil {
-			return fmt.Errorf("unable to unmarshal device '%s', error: %v", string(devicesBytes), err)
-		}
-		if deviceResponse.Status != nil &&
-			deviceResponse.Status.Created != nil &&
-			len(deviceResponse.Authorities) > 0 {
-			return nil
-		}
-		return fmt.Errorf("device %s hasn't been created", deviceID)
+		return true
 	}
-	return err
+	return false
 }
 
 func performSetUp(deviceResource *resource, resources []*resource) bool {
-	if err := checkDeviceInRegistry(deviceID, deviceResource); err == nil {
+	if isDeviceIDPresentInRegistry(deviceID, deviceResource) {
 		fmt.Printf("device %s already exists in registry, aborting...\n", deviceID)
 		return false
 	}
@@ -272,13 +255,6 @@ func performSetUp(deviceResource *resource, resources []*resource) bool {
 			return false
 		}
 		fmt.Printf("%s '%s' created\n", indent, r.url)
-	}
-
-	if err := checkDeviceInRegistry(deviceID, deviceResource); err != nil {
-		fmt.Printf("device not created properly: %v\n", err)
-		deleteResources(resources)
-		deleteBackupFile()
-		return false
 	}
 
 	ok := true
