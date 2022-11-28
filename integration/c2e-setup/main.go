@@ -129,7 +129,7 @@ func main() {
 			fmt.Printf("unable to open local MQTT connection to %s, error: %v\n", cfg.LocalBroker, err)
 			os.Exit(1)
 		}
-		defer mqttClient.Disconnect(500)
+		defer mqttClient.Disconnect(uint(cfg.MqttQuiesceMs))
 		thingConfiguration, err := util.GetThingConfiguration(&cfg, mqttClient)
 		if err != nil {
 			fmt.Printf("unable to get thing configuration from the local MQTT %s, error: %v\n", cfg.LocalBroker, err)
