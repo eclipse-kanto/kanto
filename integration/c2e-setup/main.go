@@ -18,7 +18,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"os"
@@ -35,9 +34,6 @@ const (
 	devices     = "devices/"
 	credentials = "credentials/"
 
-	policies = "policies/"
-	things   = "things/"
-
 	indent = " "
 
 	systemctl             = "systemctl"
@@ -51,18 +47,18 @@ var (
 	cfg    util.TestConfiguration
 	c2eCfg c2eConfiguration
 
+	caCert   string
+	logFile  string
+	deviceID string
 	tenantID string
+	password string
+
 	policyID string
-
-	deviceID   string
-	devicePass string
-
-	authID string
 
 	configFile       string
 	configFileBackup string
-	certFile         string
-	logFile          string
+
+	authID string
 )
 
 type resource struct {
@@ -78,32 +74,32 @@ type resource struct {
 }
 
 type c2eConfiguration struct {
-	DeviceRegistryAPIAddress string `env:"DEVICE_REGISTRY_API_ADDRESS" envDefault:""`
+	DeviceRegistryAPIAddress string `env:"DEVICE_REGISTRY_API_ADDRESS"`
 
 	DeviceRegistryAPIUsername string `env:"DEVICE_REGISTRY_API_USERNAME" envDefault:"ditto"`
 	DeviceRegistryAPIPassword string `env:"DEVICE_REGISTRY_API_PASSWORD" envDefault:"ditto"`
 
-	MqttAdapterAddress string `env:"MQTT_ADAPTER_ADDRESS" envDefault:""`
+	MqttAdapterAddress string `env:"MQTT_ADAPTER_ADDRESS"`
 }
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	flag.StringVar(&tenantID, "tenantId", "", "Device registry tenant unique identifier")
-
+	flag.StringVar(&caCert, "caCert", "/etc/suite-connector/iothub.crt", "Path to Suite Connector CA certificates file")
+	flag.StringVar(&logFile, "logFile", "/var/log/suite-connector/suite-connector.log", "Path to Suite Connector log file")
 	flag.StringVar(&deviceID, "deviceId", "", "Test device unique identifier, defaults to randomly generated")
-	flag.StringVar(&devicePass, "devicePass", "123456", "Test device password")
+	flag.StringVar(&tenantID, "tenantId", "", "Device registry tenant unique identifier")
+	flag.StringVar(&password, "password", "123456", "Test device password")
 
 	flag.StringVar(&policyID, "policyId", "", "Test device's policy unique identifier")
 
 	flag.StringVar(&configFile, "configFile", "/etc/suite-connector/config.json",
 		"Path to Suite Connector configuration file. "+
 			"If set to the empty string, configuring Suite Connector and restarting it will be skipped")
+
 	flag.StringVar(&configFileBackup, "configFileBackup", "/etc/suite-connector/configBackup.json",
 		"Path to Suite Connector configuration file backup. "+
 			"If set to the empty string, backing up the Suite Connector configuration file will be skipped")
-	flag.StringVar(&certFile, "certFile", "/etc/suite-connector/iothub.crt", "Path to Suite Connector CA certificates file")
-	flag.StringVar(&logFile, "logFile", "/var/log/suite-connector/suite-connector.log", "Path to Suite Connector log file")
 
 	clean := flag.Bool("clean", false, "Clean up test resources")
 
@@ -115,7 +111,7 @@ func main() {
 		err = env.Parse(&c2eCfg, envOpts)
 	}
 	if err != nil {
-		fmt.Printf("failed to process command-line arguments: %v\n", err)
+		fmt.Printf("failed to process environment variables: %v\n", err)
 		printConfigHelp()
 		os.Exit(1)
 	}
@@ -129,12 +125,14 @@ func main() {
 		}
 	} else if deviceID == "" || tenantID == "" {
 		mqttClient, err := util.NewMQTTClient(&cfg)
-		var thingConfiguration *util.ThingConfiguration
-		if err == nil {
-			thingConfiguration, err = util.GetThingConfiguration(&cfg, mqttClient)
-		}
 		if err != nil {
-			fmt.Printf("unable to open local mqtt connection to %s\n", cfg.LocalBroker)
+			fmt.Printf("unable to open local MQTT connection to %s, error: %v\n", cfg.LocalBroker, err)
+			os.Exit(1)
+		}
+		defer mqttClient.Disconnect(500)
+		thingConfiguration, err := util.GetThingConfiguration(&cfg, mqttClient)
+		if err != nil {
+			fmt.Printf("unable to get thing configuration from the local MQTT %s, error: %v\n", cfg.LocalBroker, err)
 			os.Exit(1)
 		}
 		deviceID = thingConfiguration.DeviceID
@@ -155,7 +153,7 @@ func main() {
 	resources = append(resources, deviceResource)
 
 	authID = strings.ReplaceAll(deviceID, ":", "_")
-	auth := fmt.Sprintf(authJSON, authID, devicePass)
+	auth := fmt.Sprintf(authJSON, authID, password)
 	resources = append(resources, &resource{url: registryAPI + "/" + credentials + devicePath, method: http.MethodPut,
 		body: auth, user: c2eCfg.DeviceRegistryAPIUsername, pass: c2eCfg.DeviceRegistryAPIPassword, delete: false})
 
@@ -164,15 +162,18 @@ func main() {
 	resources = append(resources, &resource{url: thingURL, method: http.MethodPut,
 		body: thing, user: cfg.DigitalTwinAPIUsername, pass: cfg.DigitalTwinAPIPassword, delete: true})
 
-	var code int
+	var ok bool
 	if !*clean {
-		code = performSetUp(deviceResource, resources)
+		ok = performSetUp(deviceResource, resources)
 		fmt.Println("setup complete")
 	} else {
-		code = performCleanUp(resources)
+		ok = performCleanUp(resources)
 		fmt.Println("cleanup complete")
 	}
-	os.Exit(code)
+	if ok {
+		os.Exit(0)
+	}
+	os.Exit(1)
 }
 
 func printHelp(cfg interface{}) {
@@ -215,23 +216,32 @@ func assertFlag(value string, name string) {
 func checkDeviceInRegistry(deviceID string, deviceResource *resource) error {
 	devicesBytes, err := sendDeviceRegistryRequest(http.MethodGet, deviceResource.url)
 	if err == nil {
-		devicesJSON := string(devicesBytes)
-		if strings.Contains(devicesJSON, "status") &&
-			strings.Contains(devicesJSON, "created") &&
-			strings.Contains(devicesJSON, "authorities") {
+		type status struct {
+			Created *time.Time `json:"created"`
+		}
+		type device struct {
+			Status      *status  `json:"status"`
+			Authorities []string `json:"authorities"`
+		}
+		var deviceResponse device
+		err = json.Unmarshal(devicesBytes, &deviceResponse)
+		if err != nil {
+			return fmt.Errorf("unable to unmarshal device '%s', error: %v", string(devicesBytes), err)
+		}
+		if deviceResponse.Status != nil &&
+			deviceResponse.Status.Created != nil &&
+			len(deviceResponse.Authorities) > 0 {
 			return nil
 		}
-	}
-	if err == nil {
 		return fmt.Errorf("device %s hasn't been created", deviceID)
 	}
 	return err
 }
 
-func performSetUp(deviceResource *resource, resources []*resource) int {
+func performSetUp(deviceResource *resource, resources []*resource) bool {
 	if err := checkDeviceInRegistry(deviceID, deviceResource); err == nil {
 		fmt.Printf("device %s already exists in registry, aborting...\n", deviceID)
-		os.Exit(1)
+		return false
 	}
 
 	fmt.Println("performing setup...")
@@ -242,13 +252,14 @@ func performSetUp(deviceResource *resource, resources []*resource) int {
 			fmt.Printf(
 				"unable to save backup copy of configuration file %s to %s: %v\n",
 				configFile, configFileBackup, err)
-			return 1
+			return false
 		}
 	}
 
 	for i, r := range resources {
 		if b, err := sendRequest(r.method, r.url, ([]byte)(r.body), r.user, r.pass); err != nil {
-			fmt.Println(err)
+			fmt.Printf("unable to create device at %s, error: %v\n", r.url, err)
+
 			if b != nil {
 				fmt.Println(string(b))
 				fmt.Println()
@@ -257,62 +268,67 @@ func performSetUp(deviceResource *resource, resources []*resource) int {
 			if i > 0 {
 				deleteResources(resources[:i])
 			}
-
-			return 1
+			deleteBackupFile()
+			return false
 		}
 		fmt.Printf("%s '%s' created\n", indent, r.url)
 	}
 
-	fmt.Println("checking if the device was successfully created in the registry")
 	if err := checkDeviceInRegistry(deviceID, deviceResource); err != nil {
-		fmt.Printf("%v\n", err)
+		fmt.Printf("device not created properly: %v\n", err)
 		deleteResources(resources)
-		return 1
+		deleteBackupFile()
+		return false
 	}
 
-	var code int
+	ok := true
 	if configFile != "" {
 		if err := writeConfigFile(configFile); err != nil {
-			fmt.Println(err)
+			fmt.Printf("unable to write configuration file, error: %v\n", err)
 
 			deleteResources(resources)
-			return 1
+			deleteBackupFile()
+			return false
 		}
 
 		fmt.Printf("%s configuration file '%s' written\n", indent, configFile)
-		code = restartSuiteConnector()
+		ok = restartSuiteConnector()
 	}
 
-	if code == 0 {
+	if ok {
 		fmt.Println("setup successful")
 	}
 
-	return code
+	return ok
 }
 
-func performCleanUp(resources []*resource) int {
-	var code int
+func performCleanUp(resources []*resource) bool {
+	ok := true
 	if configFile != "" && configFileBackup != "" {
 		fmt.Println("restoring suite-connector configuration file and restarting suite-connector")
 		if err := copyFile(configFileBackup, configFile); err != nil {
 			fmt.Printf(
 				"unable to restore the backup copy of configuration file %s to %s: %v\n",
 				configFileBackup, configFile, err)
-			code = 1
+			ok = false
 		} else {
-			code = restartSuiteConnector()
+			ok = restartSuiteConnector()
 		}
-		if code == 0 {
+		if ok {
 			// Delete suite-connector configuration backup file
-			if err := os.Remove(configFileBackup); err != nil {
-				fmt.Printf("unable to delete configuration file backup %s, error: %v", configFileBackup, err)
-			}
+			deleteBackupFile()
 		}
 	}
 	// Delete devices and things
 	fmt.Printf("performing cleanup on device id: %s\n", deviceID)
 	deleteResources(resources)
-	return code
+	return ok
+}
+
+func deleteBackupFile() {
+	if err := os.Remove(configFileBackup); err != nil {
+		fmt.Printf("unable to delete configuration file backup %s, error: %v", configFileBackup, err)
+	}
 }
 
 func deleteResources(resources []*resource) {
@@ -327,7 +343,7 @@ func deleteResources(resources []*resource) {
 		}
 
 		if _, err := sendRequest(http.MethodDelete, r.url, nil, r.user, r.pass); err != nil {
-			fmt.Println(err)
+			fmt.Printf("%s unable to delete '%s', error: %v\n", indent, r.url, err)
 		} else {
 			fmt.Printf("%s '%s' deleted\n", indent, r.url)
 		}
@@ -337,8 +353,10 @@ func deleteResources(resources []*resource) {
 func deleteRelatedDevices(viaDeviceID string) {
 	devicesVia := findDeviceRegistryDevicesVia(viaDeviceID)
 	// Digital Twin API things are created after Device Registry devices, so delete them first
-	deleteDigitalTwinAPIThings(devicesVia)
+	fmt.Println("deleting automatically created things in the digital twin API...")
+	deleteDigitalTwinThings(devicesVia)
 	// Then delete Device Registry devices
+	fmt.Println("deleting automatically created devices in the device registry...")
 	deleteDeviceRegistryDevices(devicesVia)
 }
 
@@ -365,12 +383,12 @@ func findDeviceRegistryDevicesVia(viaDeviceID string) []string {
 
 	devicesJSON, err := sendDeviceRegistryRequest(http.MethodGet, getTenantURL())
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("unable to list devices from the device registry, error: %v\n", err)
 	} else {
 		devices := &registryDevices{}
 		err = json.Unmarshal(devicesJSON, devices)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Printf("unable to parse devices JSON returned from the device registry, error: %v\n", err)
 			devices.Devices = nil
 		}
 		for _, device := range devices.Devices {
@@ -383,10 +401,9 @@ func findDeviceRegistryDevicesVia(viaDeviceID string) []string {
 	return relations
 }
 
-func deleteDigitalTwinAPIThings(relations []string) {
-	// Delete related Digital Twin API things
-	fmt.Println("deleting automatically created things in the digital twin API...")
-	for _, thingID := range relations {
+func deleteDigitalTwinThings(things []string) {
+	// Delete Digital Twin things
+	for _, thingID := range things {
 		url := util.GetThingURL(cfg.DigitalTwinAPIAddress, thingID)
 		_, err := util.SendDigitalTwinRequest(&cfg, http.MethodDelete, url, nil)
 		if err != nil {
@@ -397,11 +414,10 @@ func deleteDigitalTwinAPIThings(relations []string) {
 	}
 }
 
-func deleteDeviceRegistryDevices(relations []string) {
-	// Delete related Device Registry devices
-	fmt.Println("deleting automatically created devices in the device registry...")
+func deleteDeviceRegistryDevices(devices []string) {
+	// Delete Device Registry devices
 	tenantURL := getTenantURL()
-	for _, device := range relations {
+	for _, device := range devices {
 		url := tenantURL + device
 		if _, err := sendDeviceRegistryRequest(http.MethodDelete, url); err != nil {
 			fmt.Printf("error deleting device: %v\n", err)
@@ -423,13 +439,13 @@ func writeConfigFile(path string) error {
 	}
 
 	cfg := &connectorConfig{
-		CaCert:   certFile,
+		CaCert:   caCert,
 		LogFile:  logFile,
 		Address:  c2eCfg.MqttAdapterAddress,
 		DeviceID: deviceID,
 		TenantID: tenantID,
 		AuthID:   authID,
-		Password: devicePass,
+		Password: password,
 	}
 
 	jsonContents, err := json.MarshalIndent(cfg, "", "\t")
@@ -439,7 +455,7 @@ func writeConfigFile(path string) error {
 
 	// Preserve the file mode if the file already exists
 	mode := getFileModeOrDefault(path, configDefaultMode)
-	err = ioutil.WriteFile(path, jsonContents, mode)
+	err = os.WriteFile(path, jsonContents, mode)
 	if err != nil {
 		return fmt.Errorf("unable to save suite-connector configuration json file %s: %v", path, err)
 	}
@@ -491,30 +507,29 @@ func sendRequest(method string, url string, payload []byte, username string, pas
 	return body, err
 }
 
-func restartSuiteConnector() int {
+func restartSuiteConnector() bool {
 	fmt.Println("restarting suite-connector...")
-	code := 0
 	cmd := exec.Command(systemctl, restart, suiteConnectorService)
 	stdout, err := cmd.Output()
 	if err != nil {
 		fmt.Printf("error restarting %s: %v", suiteConnectorService, err)
-		code = -1
+		return false
 	}
 	fmt.Println(string(stdout))
-	if code == 0 {
-		fmt.Println("... done")
-	}
-	return code
+	fmt.Println("... done")
+	return true
 }
 
 func copyFile(src, dst string) error {
-	data, err := ioutil.ReadFile(src)
+	data, err := os.ReadFile(src)
 	if err != nil {
 		return err
 	}
-	// Preserve the file mode if the file already exists
-	mode := getFileModeOrDefault(dst, configDefaultMode)
-	return ioutil.WriteFile(dst, data, mode)
+	// If the destination file exists, preserve its file mode.
+	// If the destination file doesn't exist, use the file mode of the source file.
+	srcMode := getFileModeOrDefault(src, configDefaultMode)
+	dstMode := getFileModeOrDefault(dst, srcMode)
+	return os.WriteFile(dst, data, dstMode)
 }
 
 func getTenantURL() string {
