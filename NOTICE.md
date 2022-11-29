@@ -82,6 +82,12 @@ caarlos0/env (6.10.1)
 * Project: https://github.com/caarlos0/env
 * Source:  https://github.com/caarlos0/env/releases/tag/v6.10.1
 
+stretchr/testify (1.8.1)
+
+* License: MIT License
+* Project: https://github.com/stretchr/testify
+* Source:  https://github.com/stretchr/testify/releases/tag/v1.8.1
+
 eclipse/paho.mqtt.golang (1.4.1)
 
 * License: Eclipse Distribution License v1.0
@@ -111,12 +117,6 @@ pmezard/go-difflib (1.0.0)
 * License: BSD 3-Clause "New" or "Revised" License
 * Project: https://github.com/pmezard/go-difflib
 * Source:  https://github.com/pmezard/go-difflib/releases/tag/v1.0.0
-
-stretchr/testify (1.8.1)
-
-* License: MIT License
-* Project: https://github.com/stretchr/testify
-* Source:  https://github.com/stretchr/testify/releases/tag/v1.8.1
 
 google/uuid (1.3.0)
 
