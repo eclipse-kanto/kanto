@@ -40,11 +40,17 @@ golang/go (1.17.2)
 * Project: https://github.com/golang/go
 * Source:  https://github.com/golang/go/releases/tag/go1.17.2
 
-gohugoio/hugo (0.89.4)
+golang.org/x/net (0.0.0-20210405180319-a5a99cb37ef4)
 
-* License: Apache License 2.0
-* Project: https://github.com/gohugoio/hugo
-* Source:  https://github.com/gohugoio/hugo/releases/tag/v0.89.4
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/golang/net
+* Source:  https://github.com/golang/net/tree/a5a99cb37ef4b68617775ab669177656090ab396
+
+golang.org/x/sync (v0.0.0-20210220032951-036812b2e83c)
+
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/golang/sync
+* Source:  https://github.com/golang/sync/tree/036812b2e83c0ddf193dd5a34e034151da389d09
 
 google/docsy
 
@@ -52,17 +58,47 @@ google/docsy
 * Project: https://github.com/google/docsy
 * Source:  https://github.com/google/docsy
 
-PrismJS/prism (1.25.0)
+google/uuid (1.3.0)
 
-* License: MIT License
-* Project: https://github.com/PrismJS/prism
-* Source:  https://github.com/PrismJS/prism/releases/tag/v1.25.0
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/google/uuid
+* Source:  https://github.com/google/uuid/releases/tag/v1.3.0
 
 apache/qpid-proton (0.36.0)
 
 * License: Apache License 2.0
 * Project: https://github.com/apache/qpid-proton
 * Source:  https://github.com/apache/qpid-proton/tree/0.36.0
+
+eclipse/paho.mqtt.golang (1.4.1)
+
+* License: Eclipse Distribution License v1.0
+* Project: https://github.com/eclipse/paho.mqtt.golang
+* Source:  https://github.com/eclipse/paho.mqtt.golang/releases/tag/v1.4.1
+
+eclipse/ditto-clients-golang (0.0.0-20220225085802-cf3b306280d3)
+
+* License: Eclipse Public License v2.0
+* Project: https://github.com/eclipse/ditto-clients-golang
+* Source:  https://github.com/eclipse/ditto-clients-golang/tree/cf3b306280d3453473ae8dd65e78f978e2c838ea
+
+gopkg.in/yaml.v3 (3.0.1)
+
+* License: MIT License
+* Project: https://gopkg.in/yaml.v3
+* Source:  https://github.com/go-yaml/yaml/releases/tag/v3.0.1
+
+gohugoio/hugo (0.89.4)
+
+* License: Apache License 2.0
+* Project: https://github.com/gohugoio/hugo
+* Source:  https://github.com/gohugoio/hugo/releases/tag/v0.89.4
+
+PrismJS/prism (1.25.0)
+
+* License: MIT License
+* Project: https://github.com/PrismJS/prism
+* Source:  https://github.com/PrismJS/prism/releases/tag/v1.25.0
 
 plotly/plotly.py (5.11.0)
 
@@ -88,24 +124,6 @@ stretchr/testify (1.8.1)
 * Project: https://github.com/stretchr/testify
 * Source:  https://github.com/stretchr/testify/releases/tag/v1.8.1
 
-eclipse/paho.mqtt.golang (1.4.1)
-
-* License: Eclipse Distribution License v1.0
-* Project: https://github.com/eclipse/paho.mqtt.golang
-* Source:  https://github.com/eclipse/paho.mqtt.golang/releases/tag/v1.4.1
-
-google/uuid (1.3.0)
-
-* License: BSD 3-Clause "New" or "Revised" License
-* Project: https://github.com/google/uuid
-* Source:  https://github.com/google/uuid/releases/tag/v1.3.0
-
-eclipse/ditto-clients-golang (0.0.0-20220225085802-cf3b306280d3)
-
-* License: Eclipse Public License v2.0
-* Project: https://github.com/eclipse/ditto-clients-golang
-* Source:  https://github.com/eclipse/ditto-clients-golang/tree/cf3b306280d3453473ae8dd65e78f978e2c838ea
-
 davecgh/go-spew (1.1.1)
 
 * License: ISC License
@@ -123,24 +141,6 @@ pmezard/go-difflib (1.0.0)
 * License: BSD 3-Clause "New" or "Revised" License
 * Project: https://github.com/pmezard/go-difflib
 * Source:  https://github.com/pmezard/go-difflib/releases/tag/v1.0.0
-
-golang.org/x/net (0.0.0-20210405180319-a5a99cb37ef4)
-
-* License: BSD 3-Clause "New" or "Revised" License
-* Project: https://github.com/golang/net
-* Source:  https://github.com/golang/net/tree/a5a99cb37ef4b68617775ab669177656090ab396
-
-golang.org/x/sync (v0.0.0-20210220032951-036812b2e83c)
-
-* License: BSD 3-Clause "New" or "Revised" License
-* Project: https://github.com/golang/sync
-* Source:  https://github.com/golang/sync/tree/036812b2e83c0ddf193dd5a34e034151da389d09
-
-gopkg.in/yaml.v3 (3.0.1)
-
-* License: MIT License
-* Project: https://gopkg.in/yaml.v3
-* Source:  https://github.com/go-yaml/yaml/releases/tag/v3.0.1
 
 ## Cryptography
 
