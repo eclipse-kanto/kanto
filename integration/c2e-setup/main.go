@@ -147,7 +147,7 @@ func main() {
 	registryAPI := strings.TrimSuffix(c2eCfg.DeviceRegistryAPIAddress, "/") + "/v1"
 	devicePath := tenantID + "/" + deviceID
 
-	resources := make([]*resource, 0, 4)
+	resources := make([]*resource, 0, 3)
 	deviceResource := &resource{url: registryAPI + "/" + devices + devicePath, method: http.MethodPost,
 		body: deviceJSON, user: c2eCfg.DeviceRegistryAPIUsername, pass: c2eCfg.DeviceRegistryAPIPassword, delete: true}
 	resources = append(resources, deviceResource)
