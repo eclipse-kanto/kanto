@@ -212,10 +212,7 @@ func assertFlag(value string, name string) {
 
 func isDeviceIDPresentInRegistry(deviceID string, deviceResource *resource) bool {
 	_, err := sendDeviceRegistryRequest(http.MethodGet, deviceResource.url)
-	if err == nil {
-		return true
-	}
-	return false
+	return err == nil
 }
 
 func performSetUp(deviceResource *resource, resources []*resource) bool {
@@ -280,32 +277,36 @@ func performCleanUp(resources []*resource) bool {
 	if configFile != "" && configFileBackup != "" {
 		fmt.Println("restoring suite-connector configuration file and restarting suite-connector")
 		if err := copyFile(configFileBackup, configFile); err != nil {
+			ok = false
 			fmt.Printf(
 				"unable to restore the backup copy of configuration file %s to %s: %v\n",
 				configFileBackup, configFile, err)
-			ok = false
 		} else {
 			ok = restartSuiteConnector()
 		}
 		if ok {
 			// Delete suite-connector configuration backup file
-			deleteBackupFile()
+			ok = deleteBackupFile()
 		}
 	}
 	// Delete devices and things
 	fmt.Printf("performing cleanup on device id: %s\n", deviceID)
-	deleteResources(resources)
+	if !deleteResources(resources) {
+		ok = false
+	}
 	return ok
 }
 
-func deleteBackupFile() {
+func deleteBackupFile() bool {
 	if err := os.Remove(configFileBackup); err != nil {
 		fmt.Printf("unable to delete configuration file backup %s, error: %v", configFileBackup, err)
+		return false
 	}
+	return true
 }
 
-func deleteResources(resources []*resource) {
-	deleteRelatedDevices(deviceID)
+func deleteResources(resources []*resource) bool {
+	ok := deleteRelatedDevices(deviceID)
 	fmt.Println("deleting initially created things...")
 	// Delete in reverse order of creation
 	for i := len(resources) - 1; i >= 0; i-- {
@@ -316,25 +317,33 @@ func deleteResources(resources []*resource) {
 		}
 
 		if _, err := sendRequest(http.MethodDelete, r.url, nil, r.user, r.pass); err != nil {
+			ok = false
 			fmt.Printf("%s unable to delete '%s', error: %v\n", indent, r.url, err)
 		} else {
 			fmt.Printf("%s '%s' deleted\n", indent, r.url)
 		}
 	}
+	return ok
 }
 
-func deleteRelatedDevices(viaDeviceID string) {
-	devicesVia := findDeviceRegistryDevicesVia(viaDeviceID)
+func deleteRelatedDevices(viaDeviceID string) bool {
+	devicesVia, ok := findDeviceRegistryDevicesVia(viaDeviceID)
 	// Digital Twin API things are created after Device Registry devices, so delete them first
 	fmt.Println("deleting automatically created things in the digital twin API...")
-	deleteDigitalTwinThings(devicesVia)
+	if !deleteDigitalTwinThings(devicesVia) {
+		ok = false
+	}
 	// Then delete Device Registry devices
 	fmt.Println("deleting automatically created devices in the device registry...")
-	deleteDeviceRegistryDevices(devicesVia)
+	if !deleteRegistryDevices(devicesVia) {
+		ok = false
+	}
+	return ok
 }
 
-func findDeviceRegistryDevicesVia(viaDeviceID string) []string {
+func findDeviceRegistryDevicesVia(viaDeviceID string) ([]string, bool) {
 	var relations []string
+	ok := true
 
 	type registryDevice struct {
 		ID  string   `json:"id"`
@@ -356,11 +365,13 @@ func findDeviceRegistryDevicesVia(viaDeviceID string) []string {
 
 	devicesJSON, err := sendDeviceRegistryRequest(http.MethodGet, getTenantURL())
 	if err != nil {
+		ok = false
 		fmt.Printf("unable to list devices from the device registry, error: %v\n", err)
 	} else {
 		devices := &registryDevices{}
 		err = json.Unmarshal(devicesJSON, devices)
 		if err != nil {
+			ok = false
 			fmt.Printf("unable to parse devices JSON returned from the device registry, error: %v\n", err)
 			devices.Devices = nil
 		}
@@ -371,33 +382,39 @@ func findDeviceRegistryDevicesVia(viaDeviceID string) []string {
 		}
 	}
 
-	return relations
+	return relations, ok
 }
 
-func deleteDigitalTwinThings(things []string) {
-	// Delete Digital Twin things
+func deleteDigitalTwinThings(things []string) bool {
+	// Delete things from the Digital Twin
+	ok := true
 	for _, thingID := range things {
 		url := util.GetThingURL(cfg.DigitalTwinAPIAddress, thingID)
 		_, err := util.SendDigitalTwinRequest(&cfg, http.MethodDelete, url, nil)
 		if err != nil {
+			ok = false
 			fmt.Printf("error deleting thing: %v\n", err)
 		} else {
 			fmt.Printf("%s '%s' deleted\n", indent, url)
 		}
 	}
+	return ok
 }
 
-func deleteDeviceRegistryDevices(devices []string) {
-	// Delete Device Registry devices
+func deleteRegistryDevices(devices []string) bool {
+	// Delete devices from the Device Registry
+	ok := true
 	tenantURL := getTenantURL()
 	for _, device := range devices {
 		url := tenantURL + device
 		if _, err := sendDeviceRegistryRequest(http.MethodDelete, url); err != nil {
+			ok = false
 			fmt.Printf("error deleting device: %v\n", err)
 		} else {
 			fmt.Printf("%s '%s' deleted\n", indent, url)
 		}
 	}
+	return ok
 }
 
 func writeConfigFile(path string) error {

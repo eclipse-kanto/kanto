@@ -136,6 +136,24 @@ golang.org/x/text (v0.3.0)
 * Project: https://github.com/golang/text
 * Source:  https://github.com/golang/text/releases/tag/v0.3.0
 
+davecgh/go-spew (1.1.1)
+
+* License: ISC License
+* Project: https://github.com/davecgh/go-spew
+* Source:  https://github.com/davecgh/go-spew/releases/tag/v1.1.1
+
+pmezard/go-difflib (1.0.0)
+
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/pmezard/go-difflib
+* Source:  https://github.com/pmezard/go-difflib/releases/tag/v1.0.0
+
+gopkg.in/yaml.v3 (3.0.1)
+
+* License: MIT License
+* Project: https://gopkg.in/yaml.v3
+* Source:  https://github.com/go-yaml/yaml/releases/tag/v3.0.1
+
 ## Cryptography
 
 Content may contain encryption software. The country in which you are currently
