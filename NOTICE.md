@@ -34,11 +34,53 @@ The project maintains all source code repositories in the following GitHub organ
 
 This project makes use of the follow third party projects.
 
+golang/go (1.17.2)
+
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/golang/go
+* Source:  https://github.com/golang/go/releases/tag/go1.17.2
+
+gohugoio/hugo (0.89.4)
+
+* License: Apache License 2.0
+* Project: https://github.com/gohugoio/hugo
+* Source:  https://github.com/gohugoio/hugo/releases/tag/v0.89.4
+
+google/docsy
+
+* License: Apache License 2.0
+* Project: https://github.com/google/docsy
+* Source:  https://github.com/google/docsy
+
+PrismJS/prism (1.25.0)
+
+* License: MIT License
+* Project: https://github.com/PrismJS/prism
+* Source:  https://github.com/PrismJS/prism/releases/tag/v1.25.0
+
 apache/qpid-proton (0.36.0)
 
 * License: Apache License 2.0
 * Project: https://github.com/apache/qpid-proton
 * Source:  https://github.com/apache/qpid-proton/tree/0.36.0
+
+plotly/plotly.py (5.11.0)
+
+* License: MIT License
+* Project: https://github.com/plotly/plotly.py
+* Source:  https://github.com/plotly/plotly.py/releases/tag/v5.11.0
+
+plotly/dash (2.7.0)
+
+* License: MIT License
+* Project: https://github.com/plotly/dash
+* Source:  https://github.com/plotly/dash/releases/tag/v2.7.0
+
+caarlos0/env (6.10.1)
+
+* License: MIT License
+* Project: https://github.com/caarlos0/env
+* Source:  https://github.com/caarlos0/env/releases/tag/v6.10.1
 
 eclipse/paho.mqtt.golang (1.4.1)
 
@@ -52,65 +94,29 @@ eclipse/ditto-clients-golang (0.0.0-20220225085802-cf3b306280d3)
 * Project: https://github.com/eclipse/ditto-clients-golang
 * Source:  https://github.com/eclipse/ditto-clients-golang/tree/cf3b306280d3453473ae8dd65e78f978e2c838ea
 
-github.com/caarlos0/env (6.10.1)
-
-* License: MIT License
-* Project: https://github.com/caarlos0/env
-* Source:  https://github.com/caarlos0/env/releases/tag/v6.10.1
-
-github.com/davecgh/go-spew (1.1.1)
+davecgh/go-spew (1.1.1)
 
 * License: ISC License
 * Project: https://github.com/davecgh/go-spew
 * Source:  https://github.com/davecgh/go-spew/releases/tag/v1.1.1
 
-github.com/gohugoio/hugo (0.89.4)
-
-* License: Apache License 2.0
-* Project: https://github.com/gohugoio/hugo
-* Source:  https://github.com/gohugoio/hugo/releases/tag/v0.89.4
-
-github.com/gorilla/websocket (1.4.2)
+gorilla/websocket (1.4.2)
 
 * License: BSD 2-Clause "Simplified" License
 * Project: https://github.com/gorilla/websocket
 * Source:  https://github.com/gorilla/websocket/releases/tag/v1.4.2
 
-github.com/plotly/plotly.py (5.11.0)
-
-* License: MIT License
-* Project: https://github.com/plotly/plotly.py
-* Source:  https://github.com/plotly/plotly.py/releases/tag/v5.11.0
-
-github.com/plotly/dash (2.7.0)
-
-* License: MIT License
-* Project: https://github.com/plotly/dash
-* Source:  https://github.com/plotly/dash/releases/tag/v2.7.0
-
-github.com/pmezard/go-difflib (1.0.0)
+pmezard/go-difflib (1.0.0)
 
 * License: BSD 3-Clause "New" or "Revised" License
 * Project: https://github.com/pmezard/go-difflib
 * Source:  https://github.com/pmezard/go-difflib/releases/tag/v1.0.0
 
-github.com/PrismJS/prism (1.25.0)
-
-* License: MIT License
-* Project: https://github.com/PrismJS/prism
-* Source:  https://github.com/PrismJS/prism/releases/tag/v1.25.0
-
-github.com/stretchr/testify (1.8.1)
+stretchr/testify (1.8.1)
 
 * License: MIT License
 * Project: https://github.com/stretchr/testify
 * Source:  https://github.com/stretchr/testify/releases/tag/v1.8.1
-
-google/docsy
-
-* License: Apache License 2.0
-* Project: https://github.com/google/docsy
-* Source:  https://github.com/google/docsy
 
 google/uuid (1.3.0)
 
