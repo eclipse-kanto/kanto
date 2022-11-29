@@ -94,6 +94,12 @@ eclipse/paho.mqtt.golang (1.4.1)
 * Project: https://github.com/eclipse/paho.mqtt.golang
 * Source:  https://github.com/eclipse/paho.mqtt.golang/releases/tag/v1.4.1
 
+google/uuid (1.3.0)
+
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/google/uuid
+* Source:  https://github.com/google/uuid/releases/tag/v1.3.0
+
 eclipse/ditto-clients-golang (0.0.0-20220225085802-cf3b306280d3)
 
 * License: Eclipse Public License v2.0
@@ -117,12 +123,6 @@ pmezard/go-difflib (1.0.0)
 * License: BSD 3-Clause "New" or "Revised" License
 * Project: https://github.com/pmezard/go-difflib
 * Source:  https://github.com/pmezard/go-difflib/releases/tag/v1.0.0
-
-google/uuid (1.3.0)
-
-* License: BSD 3-Clause "New" or "Revised" License
-* Project: https://github.com/google/uuid
-* Source:  https://github.com/google/uuid/releases/tag/v1.3.0
 
 golang.org/x/net (0.0.0-20210405180319-a5a99cb37ef4)
 
