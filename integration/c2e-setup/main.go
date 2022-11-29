@@ -329,12 +329,12 @@ func deleteResources(resources []*resource) bool {
 func deleteRelatedDevices(viaDeviceID string) bool {
 	devicesVia, ok := findDeviceRegistryDevicesVia(viaDeviceID)
 	// Digital Twin API things are created after Device Registry devices, so delete them first
-	fmt.Println("deleting automatically created things in the digital twin API...")
+	fmt.Println("deleting automatically created things...")
 	if !deleteDigitalTwinThings(devicesVia) {
 		ok = false
 	}
 	// Then delete Device Registry devices
-	fmt.Println("deleting automatically created devices in the device registry...")
+	fmt.Println("deleting automatically created devices...")
 	if !deleteRegistryDevices(devicesVia) {
 		ok = false
 	}
@@ -342,7 +342,7 @@ func deleteRelatedDevices(viaDeviceID string) bool {
 }
 
 func findDeviceRegistryDevicesVia(viaDeviceID string) ([]string, bool) {
-	var relations []string
+	var devicesVia []string
 	ok := true
 
 	type registryDevice struct {
@@ -377,16 +377,15 @@ func findDeviceRegistryDevicesVia(viaDeviceID string) ([]string, bool) {
 		}
 		for _, device := range devices.Devices {
 			if contains(device.Via, viaDeviceID) {
-				relations = append(relations, device.ID)
+				devicesVia = append(devicesVia, device.ID)
 			}
 		}
 	}
 
-	return relations, ok
+	return devicesVia, ok
 }
 
 func deleteDigitalTwinThings(things []string) bool {
-	// Delete things from the Digital Twin
 	ok := true
 	for _, thingID := range things {
 		url := util.GetThingURL(cfg.DigitalTwinAPIAddress, thingID)
@@ -402,7 +401,6 @@ func deleteDigitalTwinThings(things []string) bool {
 }
 
 func deleteRegistryDevices(devices []string) bool {
-	// Delete devices from the Device Registry
 	ok := true
 	tenantURL := getTenantURL()
 	for _, device := range devices {
