@@ -70,29 +70,11 @@ plotly/dash (2.7.0)
 * Project: https://github.com/plotly/dash
 * Source:  https://github.com/plotly/dash/releases/tag/v2.7.0
 
-github.com/caarlos0/env (6.10.1)
-
-* License: MIT License
-* Project: https://github.com/caarlos0/env
-* Source:  https://github.com/caarlos0/env/releases/tag/v6.10.1
-
-github.com/stretchr/testify (1.8.1)
-
-* License: MIT License
-* Project: https://github.com/stretchr/testify
-* Source:  https://github.com/stretchr/testify/releases/tag/v1.8.1
-
-eclipse/paho.mqtt.golang (1.4.1)
-
-* License: Eclipse Distribution License v1.0
-* Project: https://github.com/eclipse/paho.mqtt.golang
-* Source:  https://github.com/eclipse/paho.mqtt.golang/releases/tag/v1.4.1
-
-google/uuid (1.3.0)
+golang/go (1.17.2)
 
 * License: BSD 3-Clause "New" or "Revised" License
-* Project: https://github.com/google/uuid
-* Source:  https://github.com/google/uuid/releases/tag/v1.3.0
+* Project: https://github.com/golang/go
+* Source:  https://github.com/golang/go/releases/tag/go1.17.2
 
 golang.org/x/net (0.0.0-20210405180319-a5a99cb37ef4)
 
@@ -100,11 +82,65 @@ golang.org/x/net (0.0.0-20210405180319-a5a99cb37ef4)
 * Project: https://github.com/golang/net
 * Source:  https://github.com/golang/net/tree/a5a99cb37ef4b68617775ab669177656090ab396
 
+golang.org/x/sync (v0.0.0-20210220032951-036812b2e83c)
+
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/golang/sync
+* Source:  https://github.com/golang/sync/tree/036812b2e83c0ddf193dd5a34e034151da389d09
+
+google/uuid (1.3.0)
+
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/google/uuid
+* Source:  https://github.com/google/uuid/releases/tag/v1.3.0
+
+caarlos0/env (6.10.1)
+
+* License: MIT License
+* Project: https://github.com/caarlos0/env
+* Source:  https://github.com/caarlos0/env/releases/tag/v6.10.1
+
+davecgh/go-spew (1.1.1)
+
+* License: ISC License
+* Project: https://github.com/davecgh/go-spew
+* Source:  https://github.com/davecgh/go-spew/releases/tag/v1.1.1
+
 eclipse/ditto-clients-golang (0.0.0-20220225085802-cf3b306280d3)
 
 * License: Eclipse Public License v2.0
 * Project: https://github.com/eclipse/ditto-clients-golang
 * Source:  https://github.com/eclipse/ditto-clients-golang/tree/cf3b306280d3453473ae8dd65e78f978e2c838ea
+
+eclipse/paho.mqtt.golang (1.4.1)
+
+* License: Eclipse Distribution License v1.0
+* Project: https://github.com/eclipse/paho.mqtt.golang
+* Source:  https://github.com/eclipse/paho.mqtt.golang/releases/tag/v1.4.1
+
+gopkg.in/yaml.v3 (3.0.1)
+
+* License: MIT License
+* Project: https://gopkg.in/yaml.v3
+* Source:  https://github.com/go-yaml/yaml/releases/tag/v3.0.1
+
+gorilla/websocket (1.4.2)
+
+* License: BSD 2-Clause "Simplified" License
+* Project: https://github.com/gorilla/websocket
+* Source:  https://github.com/gorilla/websocket/releases/tag/v1.4.2
+
+pmezard/go-difflib (1.0.0)
+
+* License: BSD 3-Clause "New" or "Revised" License
+* Project: https://github.com/pmezard/go-difflib
+* Source:  https://github.com/pmezard/go-difflib/releases/tag/v1.0.0
+
+stretchr/testify (1.8.1)
+
+* License: MIT License
+* Project: https://github.com/stretchr/testify
+* Source:  https://github.com/stretchr/testify/releases/tag/v1.8.1
 
 ## Cryptography
 
