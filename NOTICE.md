@@ -118,12 +118,6 @@ google/uuid (1.3.0)
 * Project: https://github.com/google/uuid
 * Source:  https://github.com/google/uuid/releases/tag/v1.3.0
 
-golang.org/x/crypto (v0.0.0-20190308221718-c2843e01d9a2)
-
-* License: BSD 3-Clause "New" or "Revised" License
-* Project: https://github.com/golang/net
-* Source:  https://github.com/golang/crypto/tree/c2843e01d9a2bc60bb26ad24e09734fdc2d9ec58
-
 golang.org/x/net (0.0.0-20210405180319-a5a99cb37ef4)
 
 * License: BSD 3-Clause "New" or "Revised" License
@@ -135,18 +129,6 @@ golang.org/x/sync (v0.0.0-20210220032951-036812b2e83c)
 * License: BSD 3-Clause "New" or "Revised" License
 * Project: https://github.com/golang/sync
 * Source:  https://github.com/golang/sync/tree/036812b2e83c0ddf193dd5a34e034151da389d09
-
-golang.org/x/sys (v0.0.0-20190215142949-d0b11bdaac8a)
-
-* License: BSD 3-Clause "New" or "Revised" License
-* Project: https://github.com/golang/sys
-* Source:  https://github.com/golang/sys/tree/d0b11bdaac8adb652bff00e49bcacf992835621a
-
-golang.org/x/text (v0.3.0)
-
-* License: BSD 3-Clause "New" or "Revised" License
-* Project: https://github.com/golang/text
-* Source:  https://github.com/golang/text/releases/tag/v0.3.0
 
 gopkg.in/yaml.v3 (3.0.1)
 
