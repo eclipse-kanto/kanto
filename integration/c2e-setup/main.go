@@ -123,6 +123,8 @@ func main() {
 		} else {
 			fmt.Printf("forcing device id: \"%s\"\n", deviceID)
 		}
+		assertFlag(tenantID, "tenant id")
+		assertFlag(policyID, "policy id")
 	} else if deviceID == "" || tenantID == "" {
 		mqttClient, err := util.NewMQTTClient(&cfg)
 		if err != nil {
@@ -137,11 +139,6 @@ func main() {
 		}
 		deviceID = thingConfiguration.DeviceID
 		tenantID = thingConfiguration.TenantID
-	}
-
-	if !*clean {
-		assertFlag(tenantID, "tenant id")
-		assertFlag(policyID, "policy id")
 	}
 
 	registryAPI := strings.TrimSuffix(c2eCfg.DeviceRegistryAPIAddress, "/") + "/v1"
