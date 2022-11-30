@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"testing"
 	"time"
 
 	"github.com/eclipse/ditto-clients-golang/model"
@@ -137,11 +138,32 @@ func SubscribeForWSMessages(cfg *TestConfiguration, conn *websocket.Conn, eventT
 	return WaitForWSMessage(cfg, conn, fmt.Sprintf("%s:ACK", eventType))
 }
 
+func logError(t *testing.T, f func() error, description string) {
+	if err := f(); err != nil {
+		t.Logf("error calling %s: %v", description, err)
+	}
+}
+
+func unsubscribe(cfg *TestConfiguration, ws *websocket.Conn, messageType string) error {
+	if err := SubscribeForWSMessages(cfg, ws, messageType, ""); err != nil {
+		return fmt.Errorf("unable to unsubscribe with %s: %v", messageType, err)
+	}
+	return nil
+}
+
+// UnsubscribeFromWSMessages unsubscribes for the messages that are sent from a web socket session
+// and awaits confirmation response.
+// It logs any errors that occur, so that it can be called with defer.
+func UnsubscribeFromWSMessages(t *testing.T, cfg *TestConfiguration, ws *websocket.Conn, messageType string) {
+	logError(t, func() error { return unsubscribe(cfg, ws, messageType) }, "unsubscribe")
+}
+
 // WaitForWSMessage waits for received a specific message from a web socket session or timeout expires
 func WaitForWSMessage(cfg *TestConfiguration, ws *websocket.Conn, expectedMessage string) error {
 	deadline := time.Now().Add(MillisToDuration(cfg.WsEventTimeoutMs))
-	ws.SetDeadline(deadline)
-
+	if err := ws.SetDeadline(deadline); err != nil {
+		return fmt.Errorf("unable to set deadline to websocket: %v", err)
+	}
 	var payload []byte
 	for time.Now().Before(deadline) {
 		err := websocket.Message.Receive(ws, &payload)
@@ -161,7 +183,9 @@ func WaitForWSMessage(cfg *TestConfiguration, ws *websocket.Conn, expectedMessag
 func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(*protocol.Envelope) (bool, error)) error {
 	timeout := MillisToDuration(cfg.WsEventTimeoutMs)
 	deadline := time.Now().Add(timeout)
-	ws.SetDeadline(deadline)
+	if err := ws.SetDeadline(deadline); err != nil {
+		return fmt.Errorf("unable to set deadline to websocket: %v", err)
+	}
 
 	var err error
 	finished := false
@@ -174,8 +198,7 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 		}
 
 		envelope := &protocol.Envelope{}
-		unmarshalErr := json.Unmarshal(payload, envelope)
-		if unmarshalErr == nil {
+		if unmarshalErr := json.Unmarshal(payload, envelope); unmarshalErr == nil {
 			finished, err = process(envelope)
 		} else {
 			// Unmarshalling error, the payload is not a JSON of protocol.Envelope
@@ -188,6 +211,33 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 	}
 
 	return err
+}
+
+func disconnect(cfg *TestConfiguration, ws *websocket.Conn) error {
+	deadline := time.Now().Add(MillisToDuration(cfg.WsEventTimeoutMs))
+	if err := ws.SetDeadline(deadline); err != nil {
+		return fmt.Errorf("unable to set deadline to websocket: %v", err)
+	}
+
+	if err := ws.Close(); err != nil {
+		return fmt.Errorf("unable to close websocket: %v", err)
+	}
+
+	var payload []byte
+	for time.Now().Before(deadline) {
+		if err := websocket.Message.Receive(ws, &payload); err != nil {
+			// We want this error, it shows that we've closed the connection
+			return nil
+		}
+	}
+	return errors.New("timeout")
+}
+
+// Disconnect calls Close() on the websocket connection,
+// and then waits to ensure that the connection is closed.
+// It logs any errors that occur, so that it can be called with defer.
+func Disconnect(t *testing.T, cfg *TestConfiguration, ws *websocket.Conn) {
+	logError(t, func() error { return disconnect(cfg, ws) }, "disconnect")
 }
 
 // ExecuteOperation executes an operation of a feature
