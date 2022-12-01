@@ -22,7 +22,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"testing"
 	"time"
 
 	"github.com/eclipse/ditto-clients-golang/model"
@@ -138,24 +137,14 @@ func SubscribeForWSMessages(cfg *TestConfiguration, conn *websocket.Conn, eventT
 	return WaitForWSMessage(cfg, conn, fmt.Sprintf("%s:ACK", eventType))
 }
 
-func logError(t *testing.T, f func() error, description string) {
-	if err := f(); err != nil {
-		t.Logf("error calling %s: %v", description, err)
-	}
-}
-
-func unsubscribe(cfg *TestConfiguration, ws *websocket.Conn, messageType string) error {
+// UnsubscribeFromWSMessages unsubscribes for the messages that are sent from a web socket session
+// and awaits confirmation response.
+// It logs any errors that occur, so that it can be called with defer.
+func UnsubscribeFromWSMessages(cfg *TestConfiguration, ws *websocket.Conn, messageType string) error {
 	if err := SubscribeForWSMessages(cfg, ws, messageType, ""); err != nil {
 		return fmt.Errorf("unable to unsubscribe with %s: %v", messageType, err)
 	}
 	return nil
-}
-
-// UnsubscribeFromWSMessages unsubscribes for the messages that are sent from a web socket session
-// and awaits confirmation response.
-// It logs any errors that occur, so that it can be called with defer.
-func UnsubscribeFromWSMessages(t *testing.T, cfg *TestConfiguration, ws *websocket.Conn, messageType string) {
-	logError(t, func() error { return unsubscribe(cfg, ws, messageType) }, "unsubscribe")
 }
 
 // WaitForWSMessage waits for received a specific message from a web socket session or timeout expires
@@ -213,7 +202,10 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 	return err
 }
 
-func disconnect(cfg *TestConfiguration, ws *websocket.Conn) error {
+// Disconnect calls Close() on the websocket connection,
+// and then waits to ensure that the connection is closed.
+// It logs any errors that occur, so that it can be called with defer.
+func Disconnect(cfg *TestConfiguration, ws *websocket.Conn) error {
 	deadline := time.Now().Add(MillisToDuration(cfg.WsEventTimeoutMs))
 	if err := ws.SetDeadline(deadline); err != nil {
 		return fmt.Errorf("unable to set deadline to websocket: %v", err)
@@ -231,13 +223,6 @@ func disconnect(cfg *TestConfiguration, ws *websocket.Conn) error {
 		}
 	}
 	return errors.New("timeout")
-}
-
-// Disconnect calls Close() on the websocket connection,
-// and then waits to ensure that the connection is closed.
-// It logs any errors that occur, so that it can be called with defer.
-func Disconnect(t *testing.T, cfg *TestConfiguration, ws *websocket.Conn) {
-	logError(t, func() error { return disconnect(cfg, ws) }, "disconnect")
 }
 
 // ExecuteOperation executes an operation of a feature
