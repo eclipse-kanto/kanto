@@ -79,7 +79,7 @@ func SendDigitalTwinRequest(cfg *TestConfiguration, method string, url string, b
 	return io.ReadAll(resp.Body)
 }
 
-// NewDigitalTwinWSConnection creates a new web socket connection
+// NewDigitalTwinWSConnection creates a new WebSocket connection
 func NewDigitalTwinWSConnection(cfg *TestConfiguration) (*websocket.Conn, error) {
 	wsAddress, err := asWSAddress(cfg.DigitalTwinAPIAddress)
 	if err != nil {
@@ -122,7 +122,15 @@ func asWSAddress(address string) (string, error) {
 	return fmt.Sprintf("ws://%s:%s", url.Hostname(), getPortOrDefault(url, "80")), nil
 }
 
-// SubscribeForWSMessages subscribes for the messages that are sent from a web socket session and awaits confirmation response
+func sendMessageAndAwaitAck(cfg *TestConfiguration, conn *websocket.Conn, msg string, eventType string) error {
+	err := websocket.Message.Send(conn, msg)
+	if err != nil {
+		return err
+	}
+	return WaitForWSMessage(cfg, conn, eventType+":ACK")
+}
+
+// SubscribeForWSMessages subscribes for the messages that are sent from a WebSocket session and awaits confirmation response.
 func SubscribeForWSMessages(cfg *TestConfiguration, conn *websocket.Conn, eventType string, filter string) error {
 	var msg string
 	if len(filter) > 0 {
@@ -130,24 +138,16 @@ func SubscribeForWSMessages(cfg *TestConfiguration, conn *websocket.Conn, eventT
 	} else {
 		msg = eventType
 	}
-	err := websocket.Message.Send(conn, msg)
-	if err != nil {
-		return err
-	}
-	return WaitForWSMessage(cfg, conn, fmt.Sprintf("%s:ACK", eventType))
+	return sendMessageAndAwaitAck(cfg, conn, msg, eventType)
 }
 
-// UnsubscribeFromWSMessages unsubscribes for the messages that are sent from a web socket session
+// UnsubscribeFromWSMessages unsubscribes from the messages that are sent from a WebSocket session
 // and awaits confirmation response.
-// It logs any errors that occur, so that it can be called with defer.
-func UnsubscribeFromWSMessages(cfg *TestConfiguration, ws *websocket.Conn, messageType string) error {
-	if err := SubscribeForWSMessages(cfg, ws, messageType, ""); err != nil {
-		return fmt.Errorf("unable to unsubscribe with %s: %v", messageType, err)
-	}
-	return nil
+func UnsubscribeFromWSMessages(cfg *TestConfiguration, ws *websocket.Conn, eventType string) error {
+	return sendMessageAndAwaitAck(cfg, ws, eventType, eventType)
 }
 
-// WaitForWSMessage waits for received a specific message from a web socket session or timeout expires
+// WaitForWSMessage waits for received a specific message from a WebSocket session or timeout expires
 func WaitForWSMessage(cfg *TestConfiguration, ws *websocket.Conn, expectedMessage string) error {
 	deadline := time.Now().Add(MillisToDuration(cfg.WsEventTimeoutMs))
 	if err := ws.SetDeadline(deadline); err != nil {
@@ -165,10 +165,10 @@ func WaitForWSMessage(cfg *TestConfiguration, ws *websocket.Conn, expectedMessag
 		}
 	}
 
-	return errors.New("timeout waiting for web socket message")
+	return errors.New("timeout waiting for websocket message")
 }
 
-// ProcessWSMessages processes messages for the satisfied condition from the web socket session or timeout expires
+// ProcessWSMessages processes messages for the satisfied condition from the WebSocket session or timeout expires
 func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(*protocol.Envelope) (bool, error)) error {
 	timeout := MillisToDuration(cfg.WsEventTimeoutMs)
 	deadline := time.Now().Add(timeout)
@@ -181,9 +181,9 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 
 	for !finished && time.Now().Before(deadline) {
 		var payload []byte
-		webSocketErr := websocket.Message.Receive(ws, &payload)
-		if webSocketErr != nil {
-			return fmt.Errorf("error reading from websocket: %v", webSocketErr)
+		wsErr := websocket.Message.Receive(ws, &payload)
+		if wsErr != nil {
+			return fmt.Errorf("error reading from websocket: %v", wsErr)
 		}
 
 		envelope := &protocol.Envelope{}
@@ -196,33 +196,39 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 	}
 
 	if !finished {
-		return fmt.Errorf("not finished, expected WS response not received in %v, last error: %v", timeout, err)
+		return fmt.Errorf("not finished, expected websocket response not received in %v, last error: %v", timeout, err)
 	}
 
 	return err
 }
 
-// Disconnect calls Close() on the websocket connection,
-// and then waits to ensure that the connection is closed.
-// It logs any errors that occur, so that it can be called with defer.
+// Disconnect calls Close() on the WebSocket connection.
+// Then we wait until the connection is fully closed or the timeout expires.
 func Disconnect(cfg *TestConfiguration, ws *websocket.Conn) error {
 	deadline := time.Now().Add(MillisToDuration(cfg.WsEventTimeoutMs))
 	if err := ws.SetDeadline(deadline); err != nil {
 		return fmt.Errorf("unable to set deadline to websocket: %v", err)
 	}
 
+	// We call Close(), which sends a WebSocket close message to the backend.
 	if err := ws.Close(); err != nil {
 		return fmt.Errorf("unable to close websocket: %v", err)
 	}
 
+	// Then the backend sends back a confirmation for the close message.
+	// We make sure we recieve any remaining messages from the server, including the confirmation,
+	// until we get an error, which means that the connection has been closed.
 	var payload []byte
 	for time.Now().Before(deadline) {
 		if err := websocket.Message.Receive(ws, &payload); err != nil {
-			// We want this error, it shows that we've closed the connection
+			// We only wait for the first possible error reading from the WebSocket.
+			// This could mean a timeout, but it's the best we can do after calling Close().
+			// Normally, by the time we get the first error, the connection has been closed,
+			// and the error is caused by the connection being closed.
 			return nil
 		}
 	}
-	return errors.New("timeout")
+	return errors.New("timeout waiting for websocket connection to close")
 }
 
 // ExecuteOperation executes an operation of a feature
