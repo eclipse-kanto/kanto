@@ -149,7 +149,7 @@ func UnsubscribeFromWSMessages(cfg *TestConfiguration, ws *websocket.Conn, event
 
 // WaitForWSMessage waits for received a specific message from a WebSocket session or timeout expires
 func WaitForWSMessage(cfg *TestConfiguration, ws *websocket.Conn, expectedMessage string) error {
-	deadline := time.Now().Add(MillisToDuration(cfg.WsEventTimeoutMs))
+	deadline := time.Now().Add(MillisToDuration(cfg.WSEventTimeoutMS))
 	if err := ws.SetDeadline(deadline); err != nil {
 		return fmt.Errorf("unable to set deadline to websocket: %v", err)
 	}
@@ -170,7 +170,7 @@ func WaitForWSMessage(cfg *TestConfiguration, ws *websocket.Conn, expectedMessag
 
 // ProcessWSMessages processes messages for the satisfied condition from the WebSocket session or timeout expires
 func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(*protocol.Envelope) (bool, error)) error {
-	timeout := MillisToDuration(cfg.WsEventTimeoutMs)
+	timeout := MillisToDuration(cfg.WSEventTimeoutMS)
 	deadline := time.Now().Add(timeout)
 	if err := ws.SetDeadline(deadline); err != nil {
 		return fmt.Errorf("unable to set deadline to websocket: %v", err)
@@ -205,7 +205,7 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 // Disconnect calls Close() on the WebSocket connection.
 // Then we wait until the connection is fully closed or the timeout expires.
 func Disconnect(cfg *TestConfiguration, ws *websocket.Conn) error {
-	deadline := time.Now().Add(MillisToDuration(cfg.WsEventTimeoutMs))
+	deadline := time.Now().Add(MillisToDuration(cfg.WSEventTimeoutMS))
 	if err := ws.SetDeadline(deadline); err != nil {
 		return fmt.Errorf("unable to set deadline to websocket: %v", err)
 	}
