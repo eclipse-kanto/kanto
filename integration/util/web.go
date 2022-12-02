@@ -202,35 +202,6 @@ func ProcessWSMessages(cfg *TestConfiguration, ws *websocket.Conn, process func(
 	return err
 }
 
-// Disconnect calls Close() on the WebSocket connection.
-// Then we wait until the connection is fully closed or the timeout expires.
-func Disconnect(cfg *TestConfiguration, ws *websocket.Conn) error {
-	deadline := time.Now().Add(MillisToDuration(cfg.WSEventTimeoutMS))
-	if err := ws.SetDeadline(deadline); err != nil {
-		return fmt.Errorf("unable to set deadline to websocket: %v", err)
-	}
-
-	// We call Close(), which sends a WebSocket close message to the backend.
-	if err := ws.Close(); err != nil {
-		return fmt.Errorf("unable to close websocket: %v", err)
-	}
-
-	// Then the backend sends back a confirmation for the close message.
-	// We make sure we recieve any remaining messages from the server, including the confirmation,
-	// until we get an error, which means that the connection has been closed.
-	var payload []byte
-	for time.Now().Before(deadline) {
-		if err := websocket.Message.Receive(ws, &payload); err != nil {
-			// We only wait for the first possible error reading from the WebSocket.
-			// This could mean a timeout, but it's the best we can do after calling Close().
-			// Normally, by the time we get the first error, the connection has been closed,
-			// and the error is caused by the connection being closed.
-			return nil
-		}
-	}
-	return errors.New("timeout waiting for websocket connection to close")
-}
-
 // ExecuteOperation executes an operation of a feature
 func ExecuteOperation(cfg *TestConfiguration, featureURL string, operation string, params interface{}) ([]byte, error) {
 	url := fmt.Sprintf(featureOperationURLTemplate, featureURL, operation)
