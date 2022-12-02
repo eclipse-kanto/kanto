@@ -52,7 +52,7 @@ func (suite *SuiteInitializer) Setup(t *testing.T) {
 	}
 
 	if err != nil {
-		mqttClient.Disconnect(uint(cfg.MqttQuiesceMs))
+		mqttClient.Disconnect(uint(cfg.MQTTQuiesceMS))
 		require.NoError(t, err, "initialize ditto client")
 	}
 
@@ -69,5 +69,5 @@ func (suite *SuiteInitializer) Setup(t *testing.T) {
 // TearDown closes all connections
 func (suite *SuiteInitializer) TearDown() {
 	suite.DittoClient.Disconnect()
-	suite.MQTTClient.Disconnect(uint(suite.Cfg.MqttQuiesceMs))
+	suite.MQTTClient.Disconnect(uint(suite.Cfg.MQTTQuiesceMS))
 }

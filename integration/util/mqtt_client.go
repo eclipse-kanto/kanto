@@ -36,7 +36,7 @@ func NewMQTTClient(cfg *TestConfiguration) (MQTT.Client, error) {
 	opts := MQTT.NewClientOptions().
 		AddBroker(cfg.LocalBroker).
 		SetClientID(uuid.New().String()).
-		SetConnectTimeout(MillisToDuration(cfg.MqttConnectMs)).
+		SetConnectTimeout(MillisToDuration(cfg.MQTTConnectMS)).
 		SetKeepAlive(keepAliveTimeout).
 		SetCleanSession(true).
 		SetAutoReconnect(true)
@@ -57,7 +57,7 @@ func SendMQTTMessage(cfg *TestConfiguration, client MQTT.Client, topic string, m
 		return err
 	}
 	token := client.Publish(topic, 1, false, payload)
-	timeout := MillisToDuration(cfg.MqttAcknowledgeTimeoutMs)
+	timeout := MillisToDuration(cfg.MQTTAcknowledgeTimeoutMS)
 	if !token.WaitTimeout(timeout) {
 		return errors.New("timeout while sending MQTT message")
 	}
@@ -87,7 +87,7 @@ func GetThingConfiguration(cfg *TestConfiguration, mqttClient MQTT.Client) (*Thi
 		}
 		ch <- result{&cfg, nil}
 	})
-	if !token.WaitTimeout(MillisToDuration(cfg.MqttAcknowledgeTimeoutMs)) {
+	if !token.WaitTimeout(MillisToDuration(cfg.MQTTAcknowledgeTimeoutMS)) {
 		return nil, errors.New("timeout subscribing to thing configuration response")
 	}
 	if token.Error() != nil {
@@ -97,7 +97,7 @@ func GetThingConfiguration(cfg *TestConfiguration, mqttClient MQTT.Client) (*Thi
 	defer mqttClient.Unsubscribe(topicThingCfgResponse)
 
 	token = mqttClient.Publish(topicThingCfgRequest, 1, false, "")
-	if !token.WaitTimeout(MillisToDuration(cfg.MqttAcknowledgeTimeoutMs)) {
+	if !token.WaitTimeout(MillisToDuration(cfg.MQTTAcknowledgeTimeoutMS)) {
 		return nil, errors.New("timeout publishing thing configuration request")
 	}
 	if token.Error() != nil {
