@@ -284,3 +284,12 @@ func GetLiveMessageTopic(fullThingID string, action protocol.TopicAction) string
 		WithAction(action)
 	return t.String()
 }
+
+// ConvertValue marshals an object(i.e map) and unmarshals the produced json into a specific structure
+func ConvertValue(value interface{}, result interface{}) error {
+	jsonValue, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(jsonValue, result)
+}
