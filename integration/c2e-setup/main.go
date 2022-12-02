@@ -79,7 +79,7 @@ type c2eConfiguration struct {
 	DeviceRegistryAPIUsername string `env:"DEVICE_REGISTRY_API_USERNAME" envDefault:"ditto"`
 	DeviceRegistryAPIPassword string `env:"DEVICE_REGISTRY_API_PASSWORD" envDefault:"ditto"`
 
-	MqttAdapterAddress string `env:"MQTT_ADAPTER_ADDRESS"`
+	MQTTAdapterAddress string `env:"MQTT_ADAPTER_ADDRESS"`
 }
 
 func main() {
@@ -131,7 +131,7 @@ func main() {
 			fmt.Printf("unable to open local MQTT connection to %s, error: %v\n", cfg.LocalBroker, err)
 			os.Exit(1)
 		}
-		defer mqttClient.Disconnect(uint(cfg.MqttQuiesceMs))
+		defer mqttClient.Disconnect(uint(cfg.MQTTQuiesceMS))
 		thingConfiguration, err := util.GetThingConfiguration(&cfg, mqttClient)
 		if err != nil {
 			fmt.Printf("unable to get thing configuration from the local MQTT %s, error: %v\n", cfg.LocalBroker, err)
@@ -429,7 +429,7 @@ func writeConfigFile(path string) error {
 	cfg := &connectorConfig{
 		CaCert:   caCert,
 		LogFile:  logFile,
-		Address:  c2eCfg.MqttAdapterAddress,
+		Address:  c2eCfg.MQTTAdapterAddress,
 		DeviceID: deviceID,
 		TenantID: tenantID,
 		AuthID:   authID,
