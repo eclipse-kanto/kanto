@@ -14,11 +14,11 @@ package util
 
 import "encoding/json"
 
-// Convert marshals an object(e.g map) and unmarshals the produced JSON into a specific structure
-func Convert(value interface{}, result interface{}) error {
-	jsonValue, err := json.Marshal(value)
+// Convert marshals an object(e.g. map) to a JSON payload and unmarshals it to the given structure
+func Convert(from interface{}, to interface{}) error {
+	jsonValue, err := json.Marshal(from)
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(jsonValue, result)
+	return json.Unmarshal(jsonValue, to)
 }
