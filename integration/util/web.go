@@ -30,6 +30,14 @@ import (
 	"golang.org/x/net/websocket"
 )
 
+// SubscribeEventType is an event type description to be used with SubscribeForWSMessages.
+// It specifies the type of messages which should be listened for.
+type SubscribeEventType string
+
+// UnsubscribeEventType is an event type description to be used with UnsubscribeFromWSMessages.
+// It specifies the type of messages which should no longer be listened for.
+type UnsubscribeEventType string
+
 const (
 	thingURLTemplate                 = "%s/api/2/things/%s"
 	featureURLTemplate               = "%s/features/%s"
@@ -38,6 +46,18 @@ const (
 	featurePropertyPathTemplate      = "/features/%s/properties/%s"
 	featureMessageOutboxPathTemplate = "/features/%s/outbox/messages/%s"
 	featureMessageInboxPathTemplate  = "/features/%s/inbox/messages/%s"
+
+	// StartSendEvents specifies that events should be received.
+	StartSendEvents SubscribeEventType = "START-SEND-EVENTS"
+
+	// StopSendEvents specifies that events should no longer be received.
+	StopSendEvents UnsubscribeEventType = "STOP-SEND-EVENTS"
+
+	// StartSendMessages specifies that messages should be received.
+	StartSendMessages SubscribeEventType = "START-SEND-MESSAGES"
+
+	// StopSendMessages specifies that messages should no longer be received.
+	StopSendMessages UnsubscribeEventType = "STOP-SEND-MESSAGES"
 )
 
 // SendDigitalTwinRequest sends а new HTTP request to the Ditto REST API
@@ -131,20 +151,20 @@ func sendMessageAndAwaitAck(cfg *TestConfiguration, conn *websocket.Conn, msg st
 }
 
 // SubscribeForWSMessages subscribes for the messages that are sent from a WebSocket session and awaits confirmation response.
-func SubscribeForWSMessages(cfg *TestConfiguration, conn *websocket.Conn, eventType string, filter string) error {
+func SubscribeForWSMessages(cfg *TestConfiguration, conn *websocket.Conn, eventType SubscribeEventType, filter string) error {
 	var msg string
 	if len(filter) > 0 {
 		msg = fmt.Sprintf("%s?filter=%s", eventType, filter)
 	} else {
-		msg = eventType
+		msg = string(eventType)
 	}
-	return sendMessageAndAwaitAck(cfg, conn, msg, eventType)
+	return sendMessageAndAwaitAck(cfg, conn, msg, string(eventType))
 }
 
 // UnsubscribeFromWSMessages unsubscribes from the messages that are sent from a WebSocket session
 // and awaits confirmation response.
-func UnsubscribeFromWSMessages(cfg *TestConfiguration, ws *websocket.Conn, eventType string) error {
-	return sendMessageAndAwaitAck(cfg, ws, eventType, eventType)
+func UnsubscribeFromWSMessages(cfg *TestConfiguration, ws *websocket.Conn, eventType UnsubscribeEventType) error {
+	return sendMessageAndAwaitAck(cfg, ws, string(eventType), string(eventType))
 }
 
 // WaitForWSMessage waits for received a specific message from a WebSocket session or timeout expires
