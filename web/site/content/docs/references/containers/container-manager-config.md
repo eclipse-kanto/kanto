@@ -68,6 +68,10 @@ To control all aspects of the container manager behavior.
 | acknowledge_timeout | int | 15000 | Acknowledge timeout in milliseconds for the MQTT requests |
 | subscribe_timeout | int | 15000 | Subscribe timeout in milliseconds for the MQTT requests |
 | unsubscribe_timeout | int | 5000 | Unsubscribe timeout in milliseconds for the MQTT requests |
+| **Digital twin - connectivity - TLS** | | | |
+| root_ca | string | | PEM encoded CA certificates file |
+| client_cert | string | | PEM encoded certificate file to authenticate to the MQTT server/broker |
+| client_key | string | | PEM encoded unencrypted private key file to authenticate to the MQTT server/broker |
 | **Logging** | | | |
 | log_file | string | log/container-management.log | Path to the file where the container manager's log messages are written |
 | log_level | string | INFO | All log messages at this or a higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
@@ -174,7 +178,12 @@ Be aware that in the registry configuration the host (used as a key) has to be s
             "connect_timeout": 30000,
             "acknowledge_timeout": 15000,
             "subscribe_timeout": 15000,
-            "unsubscribe_timeout": 5000
+            "unsubscribe_timeout": 5000,
+            "transport": {
+                "root_ca": "",
+                "client_cert": "",
+                "client_key": ""
+            }
         }
     },
     "log": {
