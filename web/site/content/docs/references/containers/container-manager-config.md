@@ -68,7 +68,7 @@ To control all aspects of the container manager behavior.
 | acknowledge_timeout | int | 15000 | Acknowledge timeout in milliseconds for the MQTT requests |
 | subscribe_timeout | int | 15000 | Subscribe timeout in milliseconds for the MQTT requests |
 | unsubscribe_timeout | int | 5000 | Unsubscribe timeout in milliseconds for the MQTT requests |
-| **Digital twin - TLS** | | | |
+| **Digital twin - connectivity - TLS** | | | |
 | root_ca | string | | PEM encoded CA certificates file |
 | client_cert | string | | PEM encoded certificate file to authenticate to the MQTT server/broker |
 | client_key | string | | PEM encoded unencrypted private key file to authenticate to the MQTT server/broker |
