@@ -79,6 +79,9 @@ To control all aspects of the container manager behavior.
 | log_file_max_age | int | 28 | Log file rotations maximum age in days, use 0 to not remove old log files |
 | log_file_size | int | 2 | Log file size in MB before it gets rotated |
 | syslog | bool | false | Route logs to the local syslog |
+| **Deployment** | | | |
+| home_dir | string | /var/lib/container-management | Home directory for the deployment manager data |
+| init_dir | string | /etc/container-management/containers | Directory containing descriptors of containers that will be deployed on first start |
 
 ### Example
 
@@ -193,6 +196,10 @@ Be aware that in the registry configuration the host (used as a key) has to be s
         "log_file_size": 2,
         "log_file_max_age": 28,
         "syslog": false
+    },
+    "deployment": {
+        "home_dir": "/var/lib/container-management",
+        "init_dir": "/etc/container-management/containers"
     }
 }
 ```
