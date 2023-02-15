@@ -22,7 +22,7 @@ To control all aspects of the container instance behavior.
 | domain_name | string | <container_name>-domain | Domain name inside the container, if omitted the `container_name` with suffix -domain will be set |
 | host_name | string | <container_name>-host | Host name for the container, if omitted the `container_name` with suffix -host will be set |
 | network_mode | string | bridge | The container's networking capabilities type based on the desired communication mode, the possible options are: bridge or host |
-| extra_hosts | string[] | | Extra host name to IP address mappings added to the container network configuration, the format is: `hostname:ip` |
+| extra_hosts | string[] | | Extra host name to IP address mappings added to the container network configuration, the format is: `hostname:ip`. If the IP of the host machine is to be added to the container's hosts file the reserved host_ip[\_\<network-interface\>] must be provided. If only host_ip (the network-interface part is skipped) is used, by default it will be resolved to the host's IP on the default bridge network interface for containerm (the default configuration is kanto-cm0) and add it to the container's hosts file. If the IP of a container in the same bridge network is to be added to the hosts file the reserved container_<container-host_name> must be provided.|
 | **Networking - port mappings** | | | |
 | proto | string | tcp | Protocol used for the port mapping from the container to the host, the possible options are: tcp and udp |
 | container_port | int | | Port number on the container that is mapped to the host port |
