@@ -18,6 +18,7 @@ To control all aspects of the suite connector behavior.
 | deviceId | string | | Device unique identifier |
 | authId | string | | Authentication unique identifier that is a part of the credentials |
 | tenantId | string | | Tenant unique identifier that the device belongs to |
+| username | string | | MQTT username that is a part of the credentials. This parameter takes precedence over authId and tenantId  |
 | password | string | | Password that is a part of the credentials |
 | clientId | string | | MQTT client unique identifier |
 | policyId | string | | Policy unique identifier of the digital twin |
@@ -79,6 +80,7 @@ Be aware that some combinations may be incompatible
     "authId": "",
     "tenantId": "",
     "password": "",
+    "username": "",
     "clientId": "",
     "policyId": "",
     "caCert": "iothub.crt",
