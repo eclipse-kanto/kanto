@@ -22,11 +22,6 @@ import (
 )
 
 const (
-	Indent = " "
-
-	deletedTemplate = "%s '%s' deleted\n"
-	done            = "... done"
-
 	deviceJSON = `{"authorities":["auto-provisioning-enabled"]}`
 
 	authJSON = `[{
@@ -79,10 +74,11 @@ type ConnectorConfiguration struct {
 }
 
 // CreateDeviceResources creates device resources.
-func CreateDeviceResources(newDeviceId string, resources []*Resource,
-	tenantID, policyID, password, registryAPI, registryAPIUsername, registryAPIPassword string,
+func CreateDeviceResources(newDeviceId, tenantID, policyID, password, registryAPI,
+	registryAPIUsername, registryAPIPassword string,
 	cfg *TestConfiguration) (*Resource, []*Resource) {
 
+	resources := make([]*Resource, 0, 3)
 	devicePath := tenantID + "/" + newDeviceId
 	deviceResource := &Resource{url: registryAPI + "/devices/" + devicePath, method: http.MethodPost,
 		body: deviceJSON, user: registryAPIUsername, pass: registryAPIPassword, delete: true}
@@ -126,9 +122,10 @@ func getFileModeOrDefault(path string, defaultMode os.FileMode) os.FileMode {
 }
 
 // DeleteResources deletes all given resources and all related devices.
-func DeleteResources(cfg *TestConfiguration, resources []*Resource, deviceId, url, user, pass string) bool {
-	ok := deleteRelatedDevices(cfg, deviceId, url, user, pass)
-	fmt.Println("deleting initially created things...")
+func DeleteResources(cfg *TestConfiguration, resources []*Resource, deviceId, url, user, pass string) error {
+	if err := deleteRelatedDevices(cfg, deviceId, url, user, pass); err != nil {
+		return err
+	}
 	// Delete in reverse order of creation
 	for i := len(resources) - 1; i >= 0; i-- {
 		r := resources[i]
@@ -138,33 +135,27 @@ func DeleteResources(cfg *TestConfiguration, resources []*Resource, deviceId, ur
 		}
 
 		if _, err := SendDeviceRegistryRequest(nil, http.MethodDelete, r.url, r.user, r.pass); err != nil {
-			ok = false
-			fmt.Printf("%s unable to delete '%s', error: %v\n", Indent, r.url, err)
-		} else {
-			fmt.Printf(deletedTemplate, Indent, r.url)
+			return err
 		}
 	}
-	return ok
+	return nil
 }
 
-func deleteRelatedDevices(cfg *TestConfiguration, viaDeviceID, url, user, pass string) bool {
-	devicesVia, ok := findDeviceRegistryDevicesVia(viaDeviceID, url, user, pass)
+func deleteRelatedDevices(cfg *TestConfiguration, viaDeviceID, url, user, pass string) error {
+	devicesVia, err := findDeviceRegistryDevicesVia(viaDeviceID, url, user, pass)
+	if err != nil {
+		return err
+	}
 	// Digital Twin API things are created after Device Registry devices, so delete them first
-	fmt.Println("deleting automatically created things...")
-	if !deleteDigitalTwinThings(cfg, devicesVia) {
-		ok = false
+	if err = deleteDigitalTwinThings(cfg, devicesVia); err != nil {
+		return err
 	}
 	// Then delete Device Registry devices
-	fmt.Println("deleting automatically created devices...")
-	if !deleteRegistryDevices(devicesVia, url, user, pass) {
-		ok = false
-	}
-	return ok
+	return deleteRegistryDevices(devicesVia, url, user, pass)
 }
 
-func findDeviceRegistryDevicesVia(viaDeviceID, url, user, pass string) ([]string, bool) {
+func findDeviceRegistryDevicesVia(viaDeviceID, url, user, pass string) ([]string, error) {
 	var devicesVia []string
-	ok := true
 
 	type registryDevice struct {
 		ID  string   `json:"id"`
@@ -186,15 +177,13 @@ func findDeviceRegistryDevicesVia(viaDeviceID, url, user, pass string) ([]string
 
 	devicesJSON, err := SendDeviceRegistryRequest(nil, http.MethodGet, url, user, pass)
 	if err != nil {
-		ok = false
-		fmt.Printf("unable to list devices from the device registry, error: %v\n", err)
+		return devicesVia, err
 	} else {
 		devices := &registryDevices{}
 		err = json.Unmarshal(devicesJSON, devices)
 		if err != nil {
-			ok = false
-			fmt.Printf("unable to parse devices JSON returned from the device registry, error: %v\n", err)
 			devices.Devices = nil
+			return devicesVia, err
 		}
 		for _, device := range devices.Devices {
 			if contains(device.Via, viaDeviceID) {
@@ -203,64 +192,34 @@ func findDeviceRegistryDevicesVia(viaDeviceID, url, user, pass string) ([]string
 		}
 	}
 
-	return devicesVia, ok
+	return devicesVia, nil
 }
 
-func deleteDigitalTwinThings(cfg *TestConfiguration, things []string) bool {
-	ok := true
+func deleteDigitalTwinThings(cfg *TestConfiguration, things []string) error {
 	for _, thingID := range things {
 		url := GetThingURL(cfg.DigitalTwinAPIAddress, thingID)
 		_, err := SendDigitalTwinRequest(cfg, http.MethodDelete, url, nil)
 		if err != nil {
-			ok = false
-			fmt.Printf("error deleting thing: %v\n", err)
-		} else {
-			fmt.Printf(deletedTemplate, Indent, url)
+			return err
 		}
 	}
-	return ok
+	return nil
 }
 
-func deleteRegistryDevices(devices []string, tenantURL, user, pass string) bool {
-	ok := true
+func deleteRegistryDevices(devices []string, tenantURL, user, pass string) error {
 	for _, device := range devices {
 		url := tenantURL + device
 		if _, err := SendDeviceRegistryRequest(nil, http.MethodDelete, url, user, pass); err != nil {
-			ok = false
-			fmt.Printf("error deleting device: %v\n", err)
-		} else {
-			fmt.Printf(deletedTemplate, Indent, url)
+			return err
 		}
 	}
-	return ok
+	return nil
 }
 
-// RestartService restarts the service with given name
-func RestartService(service string) bool {
-	fmt.Printf("restarting %s...", service)
-	cmd := exec.Command(systemctl, "restart", service)
-	stdout, err := cmd.Output()
-	if err != nil {
-		fmt.Printf("error restarting %s: %v", service, err)
-		return false
-	}
-	fmt.Println(string(stdout))
-	fmt.Println(done)
-	return true
-}
-
-// StopService stops the service with given name
-func StopService(service string) bool {
-	fmt.Printf("stopping %s...", service)
-	cmd := exec.Command(systemctl, "stop", service)
-	stdout, err := cmd.Output()
-	if err != nil {
-		fmt.Printf("error stopping %s: %v", service, err)
-		return false
-	}
-	fmt.Println(string(stdout))
-	fmt.Println(done)
-	return true
+// ExecuteCommandToService executes command to the service with given name
+func ExecuteCommandToService(command, service string) ([]byte, error) {
+	cmd := exec.Command(systemctl, command, service)
+	return cmd.Output()
 }
 
 // CopyFile copies source file to the destination.
@@ -274,13 +233,4 @@ func CopyFile(src, dst string) error {
 	srcMode := getFileModeOrDefault(src, configDefaultMode)
 	dstMode := getFileModeOrDefault(dst, srcMode)
 	return os.WriteFile(dst, data, dstMode)
-}
-
-// DeleteFile removes the named file or directory.
-func DeleteFile(path string) bool {
-	if err := os.Remove(path); err != nil {
-		fmt.Printf("unable to delete file %s, error: %v", path, err)
-		return false
-	}
-	return true
 }
