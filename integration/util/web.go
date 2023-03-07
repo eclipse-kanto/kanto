@@ -62,7 +62,18 @@ const (
 
 // SendDigitalTwinRequest sends a new HTTP request to the Ditto REST API
 func SendDigitalTwinRequest(cfg *TestConfiguration, method string, url string, body interface{}) ([]byte, error) {
-	req, err := createRequest(make([]byte, 0), body, method, url, cfg.DigitalTwinAPIUsername, cfg.DigitalTwinAPIPassword)
+	var (
+		payload []byte
+		err     error
+	)
+	if body != nil {
+		payload, err = json.Marshal(body)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	req, err := createRequest(payload, true, method, url, cfg.DigitalTwinAPIUsername, cfg.DigitalTwinAPIPassword)
 	if err != nil {
 		return nil, err
 	}
@@ -71,23 +82,17 @@ func SendDigitalTwinRequest(cfg *TestConfiguration, method string, url string, b
 
 // SendDeviceRegistryRequest sends a new HTTP request to the Ditto API
 func SendDeviceRegistryRequest(payload []byte, method string, url string, username string, password string) ([]byte, error) {
-	req, err := createRequest(payload, nil, method, url, username, password)
+	req, err := createRequest(payload, false, method, url, username, password)
 	if err != nil {
 		return nil, err
 	}
 	return sendRequest(req, method, url)
 }
 
-func createRequest(payload []byte, body interface{}, method, url, username, password string) (*http.Request, error) {
+func createRequest(payload []byte, rspRequired bool, method, url, username, password string) (*http.Request, error) {
 	var reqBody io.Reader
 
-	if body != nil {
-		jsonValue, err := json.Marshal(body)
-		if err != nil {
-			return nil, err
-		}
-		reqBody = bytes.NewBuffer(jsonValue)
-	} else {
+	if payload != nil {
 		reqBody = bytes.NewBuffer(payload)
 	}
 
@@ -96,11 +101,13 @@ func createRequest(payload []byte, body interface{}, method, url, username, pass
 		return nil, err
 	}
 
-	req.Header.Add("Content-Type", "application/json")
-	if body != nil {
-		correlationID := uuid.New().String()
-		req.Header.Add("correlation-id", correlationID)
-		req.Header.Add("response-required", "true")
+	if payload != nil {
+		req.Header.Add("Content-Type", "application/json")
+		if rspRequired {
+			correlationID := uuid.New().String()
+			req.Header.Add("correlation-id", correlationID)
+			req.Header.Add("response-required", "true")
+		}
 	}
 
 	req.SetBasicAuth(username, password)
