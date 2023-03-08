@@ -67,8 +67,7 @@ type ConnectorConfiguration struct {
 
 // CreateDeviceResources creates device resources.
 func CreateDeviceResources(newDeviceId, tenantID, policyID, password, registryAPI,
-	registryAPIUsername, registryAPIPassword string,
-	cfg *TestConfiguration) (*Resource, []*Resource) {
+	registryAPIUsername, registryAPIPassword string, cfg *TestConfiguration) []*Resource {
 
 	resources := make([]*Resource, 0, 3)
 	devicePath := tenantID + "/" + newDeviceId
@@ -84,7 +83,7 @@ func CreateDeviceResources(newDeviceId, tenantID, policyID, password, registryAP
 	thing := fmt.Sprintf(thingJSON, policyID)
 	resources = append(resources, &Resource{url: thingURL, method: http.MethodPut,
 		body: thing, user: cfg.DigitalTwinAPIUsername, pass: cfg.DigitalTwinAPIPassword, delete: true})
-	return deviceResource, resources
+	return resources
 }
 
 func getCredentialsBody(authID, pass string) string {
