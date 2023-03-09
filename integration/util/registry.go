@@ -22,10 +22,6 @@ import (
 )
 
 const (
-	deviceJSON = `{"authorities":["auto-provisioning-enabled"]}`
-
-	thingJSON = `{"policyId": "%s"}`
-
 	configDefaultMode = 0666
 
 	systemctl = "systemctl"
@@ -69,21 +65,18 @@ type ConnectorConfiguration struct {
 func CreateDeviceResources(newDeviceId, tenantID, policyID, password, registryAPI,
 	registryAPIUsername, registryAPIPassword string, cfg *TestConfiguration) []*Resource {
 
-	resources := make([]*Resource, 0, 3)
 	devicePath := tenantID + "/" + newDeviceId
-	deviceResource := &Resource{url: registryAPI + "/devices/" + devicePath, method: http.MethodPost,
-		body: deviceJSON, user: registryAPIUsername, pass: registryAPIPassword, delete: true}
-	resources = append(resources, deviceResource)
-
-	authID := strings.ReplaceAll(newDeviceId, ":", "_")
-	resources = append(resources, &Resource{url: registryAPI + "/credentials/" + devicePath, method: http.MethodPut,
-		body: getCredentialsBody(authID, password), user: registryAPIUsername, pass: registryAPIPassword, delete: false})
-
-	thingURL := GetThingURL(cfg.DigitalTwinAPIAddress, newDeviceId)
-	thing := fmt.Sprintf(thingJSON, policyID)
-	resources = append(resources, &Resource{url: thingURL, method: http.MethodPut,
-		body: thing, user: cfg.DigitalTwinAPIUsername, pass: cfg.DigitalTwinAPIPassword, delete: true})
-	return resources
+	return []*Resource{
+		&Resource{url: registryAPI + "/devices/" + devicePath, method: http.MethodPost,
+			body: `{"authorities":["auto-provisioning-enabled"]}`,
+			user: registryAPIUsername, pass: registryAPIPassword, delete: true},
+		&Resource{url: registryAPI + "/credentials/" + devicePath, method: http.MethodPut,
+			body: getCredentialsBody(strings.ReplaceAll(newDeviceId, ":", "_"), password),
+			user: registryAPIUsername, pass: registryAPIPassword, delete: false},
+		&Resource{url: GetThingURL(cfg.DigitalTwinAPIAddress, newDeviceId), method: http.MethodPut,
+			body: fmt.Sprintf(`{"policyId": "%s"}`, policyID),
+			user: cfg.DigitalTwinAPIUsername, pass: cfg.DigitalTwinAPIPassword, delete: true},
+	}
 }
 
 func getCredentialsBody(authID, pass string) string {
@@ -96,11 +89,9 @@ func getCredentialsBody(authID, pass string) string {
 		AuthId  string     `json:"auth-id"`
 		Secrets []pwdPlain `json:"secrets"`
 	}
-	pwds := []pwdPlain{pwdPlain{pass}}
+	auth := authStruct{"hashed-password", authID, []pwdPlain{pwdPlain{pass}}}
 
-	auth := authStruct{"hashed-password", authID, pwds}
-	authJson := []authStruct{auth}
-	data, _ := json.MarshalIndent(authJson, "", "\t")
+	data, _ := json.MarshalIndent([]authStruct{auth}, "", "\t")
 	return string(data)
 }
 
