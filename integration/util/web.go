@@ -104,8 +104,7 @@ func createRequest(payload []byte, rspRequired bool, method, url, username, pass
 	if payload != nil {
 		req.Header.Add("Content-Type", "application/json")
 		if rspRequired {
-			correlationID := uuid.New().String()
-			req.Header.Add("correlation-id", correlationID)
+			req.Header.Add("correlation-id", uuid.New().String())
 			req.Header.Add("response-required", "true")
 		}
 	}

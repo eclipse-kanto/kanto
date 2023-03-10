@@ -16,15 +16,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
-	"os/exec"
 	"strings"
-)
-
-const (
-	configDefaultMode = 0666
-
-	systemctl = "systemctl"
 )
 
 type Resource struct {
@@ -67,15 +59,26 @@ func CreateDeviceResources(newDeviceId, tenantID, policyID, password, registryAP
 
 	devicePath := tenantID + "/" + newDeviceId
 	return []*Resource{
-		&Resource{url: registryAPI + "/devices/" + devicePath, method: http.MethodPost,
-			body: `{"authorities":["auto-provisioning-enabled"]}`,
-			user: registryAPIUsername, pass: registryAPIPassword, delete: true},
-		&Resource{url: registryAPI + "/credentials/" + devicePath, method: http.MethodPut,
-			body: getCredentialsBody(strings.ReplaceAll(newDeviceId, ":", "_"), password),
-			user: registryAPIUsername, pass: registryAPIPassword, delete: false},
-		&Resource{url: GetThingURL(cfg.DigitalTwinAPIAddress, newDeviceId), method: http.MethodPut,
-			body: fmt.Sprintf(`{"policyId": "%s"}`, policyID),
-			user: cfg.DigitalTwinAPIUsername, pass: cfg.DigitalTwinAPIPassword, delete: true},
+		&Resource{
+			url:    registryAPI + "/devices/" + devicePath,
+			method: http.MethodPost,
+			body:   `{"authorities":["auto-provisioning-enabled"]}`,
+			user:   registryAPIUsername,
+			pass:   registryAPIPassword,
+			delete: true},
+		&Resource{
+			url:    registryAPI + "/credentials/" + devicePath,
+			method: http.MethodPut,
+			body:   getCredentialsBody(strings.ReplaceAll(newDeviceId, ":", "_"), password),
+			user:   registryAPIUsername,
+			pass:   registryAPIPassword},
+		&Resource{
+			url:    GetThingURL(cfg.DigitalTwinAPIAddress, newDeviceId),
+			method: http.MethodPut,
+			body:   fmt.Sprintf(`{"policyId": "%s"}`, policyID),
+			user:   cfg.DigitalTwinAPIUsername,
+			pass:   cfg.DigitalTwinAPIPassword,
+			delete: true},
 	}
 }
 
@@ -95,35 +98,13 @@ func getCredentialsBody(authID, pass string) string {
 	return string(data)
 }
 
-// WriteConfigFile writes interface data to the path file, creating it if necessary.
-func WriteConfigFile(path string, cfg interface{}) error {
-	jsonContents, err := json.MarshalIndent(cfg, "", "\t")
-	if err != nil {
-		return fmt.Errorf("unable to marshal to json: %v", err)
-	}
-
-	// Preserve the file mode if the file already exists
-	mode, err := getFileModeOrDefault(path, configDefaultMode)
-	if err != nil {
-		return fmt.Errorf("unable to get file mode %s: %v", path, err)
-	}
-	if err = os.WriteFile(path, jsonContents, mode); err != nil {
-		return fmt.Errorf("unable to save file %s: %v", path, err)
-	}
-	return nil
-}
-
-func getFileModeOrDefault(path string, defaultMode os.FileMode) (os.FileMode, error) {
-	fileInfo, err := os.Stat(path)
-	if err != nil {
-		return defaultMode, err
-	}
-	return fileInfo.Mode(), nil
-}
-
 // DeleteResources deletes all given resources and all related devices.
-func DeleteResources(cfg *TestConfiguration, resources []*Resource, deviceId, url, user, pass string) []error {
-	deleteErrors := deleteRelatedDevices(cfg, deviceId, url, user, pass)
+func DeleteResources(cfg *TestConfiguration, resources []*Resource, deviceId, url, user, pass string) error {
+	var errStrings []string
+	if err := deleteRelatedDevices(cfg, deviceId, url, user, pass); err != nil {
+		errStrings = append(errStrings, err.Error())
+	}
+
 	// Delete in reverse order of creation
 	for i := len(resources) - 1; i >= 0; i-- {
 		r := resources[i]
@@ -133,62 +114,53 @@ func DeleteResources(cfg *TestConfiguration, resources []*Resource, deviceId, ur
 		}
 
 		if _, err := SendDeviceRegistryRequest(nil, http.MethodDelete, r.url, r.user, r.pass); err != nil {
-			deleteErrors = append(deleteErrors, err)
+			errStrings = append(errStrings, err.Error())
 		}
 	}
-	return deleteErrors
+	return combineErrors(errStrings)
 }
 
-func deleteRelatedDevices(cfg *TestConfiguration, viaDeviceID, url, user, pass string) []error {
-	var deleteErrors []error
+func deleteRelatedDevices(cfg *TestConfiguration, viaDeviceID, url, user, pass string) error {
 	devicesVia, err := findDeviceRegistryDevicesVia(viaDeviceID, url, user, pass)
 	if err != nil {
-		deleteErrors = append(deleteErrors, err)
+		return err
 	}
+
+	var errStrings []string
 	// Digital Twin API things are created after Device Registry devices, so delete them first
-	if delErrors := deleteDigitalTwinThings(cfg, devicesVia); delErrors != nil {
-		deleteErrors = append(deleteErrors, delErrors...)
+	if err = deleteDigitalTwinThings(cfg, devicesVia); err != nil {
+		errStrings = append(errStrings, err.Error())
 	}
 	// Then delete Device Registry devices
-	if delErrors := deleteRegistryDevices(devicesVia, url, user, pass); delErrors != nil {
-		deleteErrors = append(deleteErrors, delErrors...)
+	if err = deleteRegistryDevices(devicesVia, url, user, pass); err != nil {
+		errStrings = append(errStrings, err.Error())
 	}
-	return deleteErrors
+	return combineErrors(errStrings)
 }
 
 func findDeviceRegistryDevicesVia(viaDeviceID, url, user, pass string) ([]string, error) {
-	var devicesVia []string
-
 	type registryDevice struct {
 		ID  string   `json:"id"`
 		Via []string `json:"via"`
 	}
-
 	type registryDevices struct {
 		Devices []*registryDevice `json:"result"`
 	}
-
-	contains := func(where []string, what string) bool {
-		for _, item := range where {
-			if item == what {
-				return true
-			}
-		}
-		return false
-	}
-
 	devicesJSON, err := SendDeviceRegistryRequest(nil, http.MethodGet, url, user, pass)
 	if err != nil {
-		return devicesVia, err
-	} else {
-		devices := &registryDevices{}
-		err = json.Unmarshal(devicesJSON, devices)
-		if err != nil {
-			return devicesVia, err
-		}
-		for _, device := range devices.Devices {
-			if contains(device.Via, viaDeviceID) {
+		return nil, err
+	}
+	devices := &registryDevices{}
+	err = json.Unmarshal(devicesJSON, devices)
+	if err != nil {
+		return nil, err
+	}
+	var devicesVia []string
+	for _, device := range devices.Devices {
+		for _, via := range device.Via {
+			if via == viaDeviceID {
 				devicesVia = append(devicesVia, device.ID)
+				break
 			}
 		}
 	}
@@ -196,49 +168,30 @@ func findDeviceRegistryDevicesVia(viaDeviceID, url, user, pass string) ([]string
 	return devicesVia, nil
 }
 
-func deleteDigitalTwinThings(cfg *TestConfiguration, things []string) []error {
-	var deleteErrors []error
+func deleteDigitalTwinThings(cfg *TestConfiguration, things []string) error {
+	var errStrings []string
 	for _, thingID := range things {
-		url := GetThingURL(cfg.DigitalTwinAPIAddress, thingID)
-		if _, err := SendDigitalTwinRequest(cfg, http.MethodDelete, url, nil); err != nil {
-			deleteErrors = append(deleteErrors, err)
+		if _, err := SendDigitalTwinRequest(
+			cfg, http.MethodDelete, GetThingURL(cfg.DigitalTwinAPIAddress, thingID), nil); err != nil {
+			errStrings = append(errStrings, err.Error())
 		}
 	}
-	return deleteErrors
+	return combineErrors(errStrings)
 }
 
-func deleteRegistryDevices(devices []string, tenantURL, user, pass string) []error {
-	var deleteErrors []error
+func deleteRegistryDevices(devices []string, tenantURL, user, pass string) error {
+	var errStrings []string
 	for _, device := range devices {
-		url := tenantURL + device
-		if _, err := SendDeviceRegistryRequest(nil, http.MethodDelete, url, user, pass); err != nil {
-			deleteErrors = append(deleteErrors, err)
+		if _, err := SendDeviceRegistryRequest(nil, http.MethodDelete, tenantURL+device, user, pass); err != nil {
+			errStrings = append(errStrings, err.Error())
 		}
 	}
-	return deleteErrors
+	return combineErrors(errStrings)
 }
 
-// ExecuteCommandToService executes command to the service with given name
-func ExecuteCommandToService(command, service string) ([]byte, error) {
-	cmd := exec.Command(systemctl, command, service)
-	return cmd.Output()
-}
-
-// CopyFile copies source file to the destination.
-func CopyFile(src, dst string) error {
-	data, err := os.ReadFile(src)
-	if err != nil {
-		return err
+func combineErrors(errStrings []string) error {
+	if errStrings != nil {
+		return fmt.Errorf(strings.Join(errStrings, "\n"))
 	}
-	// If the destination file exists, preserve its file mode.
-	// If the destination file doesn't exist, use the file mode of the source file.
-	srcMode, err := getFileModeOrDefault(src, configDefaultMode)
-	if err != nil {
-		return err
-	}
-	dstMode, err := getFileModeOrDefault(dst, srcMode)
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(dst, data, dstMode)
+	return nil
 }
