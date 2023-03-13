@@ -100,24 +100,23 @@ func getCredentialsBody(authID, pass string) string {
 
 // DeleteResources deletes all given resources and all related devices.
 func DeleteResources(cfg *TestConfiguration, resources []*Resource, deviceId, url, user, pass string) error {
-	var errStrings []string
+	var errors []error
 	if err := deleteRelatedDevices(cfg, deviceId, url, user, pass); err != nil {
-		errStrings = append(errStrings, err.Error())
+		errors = append(errors, err)
 	}
 
 	// Delete in reverse order of creation
 	for i := len(resources) - 1; i >= 0; i-- {
 		r := resources[i]
 
-		if !r.delete {
-			continue
+		if r.delete {
+			if _, err := SendDeviceRegistryRequest(nil, http.MethodDelete, r.url, r.user, r.pass); err != nil {
+				errors = append(errors, err)
+			}
 		}
 
-		if _, err := SendDeviceRegistryRequest(nil, http.MethodDelete, r.url, r.user, r.pass); err != nil {
-			errStrings = append(errStrings, err.Error())
-		}
 	}
-	return combineErrors(errStrings)
+	return CombineErrors(errors)
 }
 
 func deleteRelatedDevices(cfg *TestConfiguration, viaDeviceID, url, user, pass string) error {
@@ -126,16 +125,16 @@ func deleteRelatedDevices(cfg *TestConfiguration, viaDeviceID, url, user, pass s
 		return err
 	}
 
-	var errStrings []string
+	var errors []error
 	// Digital Twin API things are created after Device Registry devices, so delete them first
 	if err = deleteDigitalTwinThings(cfg, devicesVia); err != nil {
-		errStrings = append(errStrings, err.Error())
+		errors = append(errors, err)
 	}
 	// Then delete Device Registry devices
 	if err = deleteRegistryDevices(devicesVia, url, user, pass); err != nil {
-		errStrings = append(errStrings, err.Error())
+		errors = append(errors, err)
 	}
-	return combineErrors(errStrings)
+	return CombineErrors(errors)
 }
 
 func findDeviceRegistryDevicesVia(viaDeviceID, url, user, pass string) ([]string, error) {
@@ -169,29 +168,22 @@ func findDeviceRegistryDevicesVia(viaDeviceID, url, user, pass string) ([]string
 }
 
 func deleteDigitalTwinThings(cfg *TestConfiguration, things []string) error {
-	var errStrings []string
+	var errors []error
 	for _, thingID := range things {
 		if _, err := SendDigitalTwinRequest(
 			cfg, http.MethodDelete, GetThingURL(cfg.DigitalTwinAPIAddress, thingID), nil); err != nil {
-			errStrings = append(errStrings, err.Error())
+			errors = append(errors, err)
 		}
 	}
-	return combineErrors(errStrings)
+	return CombineErrors(errors)
 }
 
 func deleteRegistryDevices(devices []string, tenantURL, user, pass string) error {
-	var errStrings []string
+	var errors []error
 	for _, device := range devices {
 		if _, err := SendDeviceRegistryRequest(nil, http.MethodDelete, tenantURL+device, user, pass); err != nil {
-			errStrings = append(errStrings, err.Error())
+			errors = append(errors, err)
 		}
 	}
-	return combineErrors(errStrings)
-}
-
-func combineErrors(errStrings []string) error {
-	if errStrings != nil {
-		return fmt.Errorf(strings.Join(errStrings, "\n"))
-	}
-	return nil
+	return CombineErrors(errors)
 }

@@ -18,9 +18,7 @@ import (
 	"os"
 )
 
-const (
-	configDefaultMode = 0666
-)
+const configDefaultMode = 0666
 
 // Convert marshals an object(e.g. map) to a JSON payload and unmarshals it to the given structure
 func Convert(from interface{}, to interface{}) error {
@@ -29,6 +27,14 @@ func Convert(from interface{}, to interface{}) error {
 		return err
 	}
 	return json.Unmarshal(jsonValue, to)
+}
+
+// CombineErrors combine multiple errors in one error.
+func CombineErrors(errors []error) error {
+	if errors != nil {
+		return fmt.Errorf("%s", errors)
+	}
+	return nil
 }
 
 // WriteConfigFile writes interface data to the path file, creating it if necessary.
