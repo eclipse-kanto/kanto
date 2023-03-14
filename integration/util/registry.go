@@ -19,6 +19,7 @@ import (
 	"strings"
 )
 
+// Resource holds all needed properties to create resources for the device.
 type Resource struct {
 	url string
 
@@ -31,6 +32,8 @@ type Resource struct {
 	delete bool
 }
 
+// BootstrapConfiguration holds the required configuration to suite bootstrapping to connect and
+// where to receive post bootstrapping files and script.
 type BootstrapConfiguration struct {
 	LogFile             string   `json:"logFile"`
 	PostBootstrapFile   string   `json:"postBootstrapFile"`
@@ -43,6 +46,7 @@ type BootstrapConfiguration struct {
 	Password            string   `json:"password"`
 }
 
+// ConnectorConfiguration holds the minimum required configuration to suite connector to connect.
 type ConnectorConfiguration struct {
 	CaCert   string `json:"caCert"`
 	LogFile  string `json:"logFile"`
@@ -54,10 +58,10 @@ type ConnectorConfiguration struct {
 }
 
 // CreateDeviceResources creates device resources.
-func CreateDeviceResources(newDeviceId, tenantID, policyID, password, registryAPI,
+func CreateDeviceResources(newDeviceID, tenantID, policyID, password, registryAPI,
 	registryAPIUsername, registryAPIPassword string, cfg *TestConfiguration) []*Resource {
 
-	devicePath := tenantID + "/" + newDeviceId
+	devicePath := tenantID + "/" + newDeviceID
 	return []*Resource{
 		&Resource{
 			url:    registryAPI + "/devices/" + devicePath,
@@ -69,11 +73,11 @@ func CreateDeviceResources(newDeviceId, tenantID, policyID, password, registryAP
 		&Resource{
 			url:    registryAPI + "/credentials/" + devicePath,
 			method: http.MethodPut,
-			body:   getCredentialsBody(strings.ReplaceAll(newDeviceId, ":", "_"), password),
+			body:   getCredentialsBody(strings.ReplaceAll(newDeviceID, ":", "_"), password),
 			user:   registryAPIUsername,
 			pass:   registryAPIPassword},
 		&Resource{
-			url:    GetThingURL(cfg.DigitalTwinAPIAddress, newDeviceId),
+			url:    GetThingURL(cfg.DigitalTwinAPIAddress, newDeviceID),
 			method: http.MethodPut,
 			body:   fmt.Sprintf(`{"policyId": "%s"}`, policyID),
 			user:   cfg.DigitalTwinAPIUsername,
@@ -89,7 +93,7 @@ func getCredentialsBody(authID, pass string) string {
 
 	type authStruct struct {
 		TypeStr string     `json:"type"`
-		AuthId  string     `json:"auth-id"`
+		AuthID  string     `json:"auth-id"`
 		Secrets []pwdPlain `json:"secrets"`
 	}
 	auth := authStruct{"hashed-password", authID, []pwdPlain{pwdPlain{pass}}}
@@ -99,9 +103,9 @@ func getCredentialsBody(authID, pass string) string {
 }
 
 // DeleteResources deletes all given resources and all related devices.
-func DeleteResources(cfg *TestConfiguration, resources []*Resource, deviceId, url, user, pass string) error {
+func DeleteResources(cfg *TestConfiguration, resources []*Resource, deviceID, url, user, pass string) error {
 	var errors []error
-	if err := deleteRelatedDevices(cfg, deviceId, url, user, pass); err != nil {
+	if err := deleteRelatedDevices(cfg, deviceID, url, user, pass); err != nil {
 		errors = append(errors, err)
 	}
 
