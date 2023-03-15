@@ -60,16 +60,40 @@ const (
 	StopSendMessages UnsubscribeEventType = "STOP-SEND-MESSAGES"
 )
 
-// SendDigitalTwinRequest sends а new HTTP request to the Ditto REST API
+// SendDigitalTwinRequest sends a new HTTP request to the Ditto REST API
 func SendDigitalTwinRequest(cfg *TestConfiguration, method string, url string, body interface{}) ([]byte, error) {
-	var reqBody io.Reader
-
+	var (
+		payload []byte
+		err     error
+	)
 	if body != nil {
-		jsonValue, err := json.Marshal(body)
+		payload, err = json.Marshal(body)
 		if err != nil {
 			return nil, err
 		}
-		reqBody = bytes.NewBuffer(jsonValue)
+	}
+
+	req, err := createRequest(payload, true, method, url, cfg.DigitalTwinAPIUsername, cfg.DigitalTwinAPIPassword)
+	if err != nil {
+		return nil, err
+	}
+	return sendRequest(req, method, url)
+}
+
+// SendDeviceRegistryRequest sends a new HTTP request to the Ditto API
+func SendDeviceRegistryRequest(payload []byte, method string, url string, username string, password string) ([]byte, error) {
+	req, err := createRequest(payload, false, method, url, username, password)
+	if err != nil {
+		return nil, err
+	}
+	return sendRequest(req, method, url)
+}
+
+func createRequest(payload []byte, rspRequired bool, method, url, username, password string) (*http.Request, error) {
+	var reqBody io.Reader
+
+	if payload != nil {
+		reqBody = bytes.NewBuffer(payload)
 	}
 
 	req, err := http.NewRequest(method, url, reqBody)
@@ -77,14 +101,19 @@ func SendDigitalTwinRequest(cfg *TestConfiguration, method string, url string, b
 		return nil, err
 	}
 
-	if body != nil {
-		correlationID := uuid.New().String()
+	if payload != nil {
 		req.Header.Add("Content-Type", "application/json")
-		req.Header.Add("correlation-id", correlationID)
-		req.Header.Add("response-required", "true")
+		if rspRequired {
+			req.Header.Add("correlation-id", uuid.New().String())
+			req.Header.Add("response-required", "true")
+		}
 	}
 
-	req.SetBasicAuth(cfg.DigitalTwinAPIUsername, cfg.DigitalTwinAPIPassword)
+	req.SetBasicAuth(username, password)
+	return req, nil
+}
+
+func sendRequest(req *http.Request, method string, url string) ([]byte, error) {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
