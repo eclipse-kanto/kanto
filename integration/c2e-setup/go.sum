@@ -3,8 +3,8 @@ github.com/caarlos0/env/v6 v6.10.1/go.mod h1:hvp/ryKXKipEkcuYjs9mI4bBCg+UI0Yhgm5
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/eclipse-kanto/kanto/integration/util v0.0.0-20221202082137-517d8d8a8766 h1:cGQNC9rZ4gqJKkATGLqcP4wZN1IKE/QUXvbJKvAPj1c=
-github.com/eclipse-kanto/kanto/integration/util v0.0.0-20221202082137-517d8d8a8766/go.mod h1:mhkMBNIG+JDz35JAj8JVWMe0/ROpKmk/i6RYHU6Rea4=
+github.com/eclipse-kanto/kanto/integration/util v0.0.0-20230320081313-fb02c520eb1e h1:1J/29FlMS0VW+MuD43kPfqJPJcjamhacv8veJ20XawI=
+github.com/eclipse-kanto/kanto/integration/util v0.0.0-20230320081313-fb02c520eb1e/go.mod h1:Dscvhc6K9RHiioYjZiQooqs13ffkPBhEvdlL4KdsJXs=
 github.com/eclipse/ditto-clients-golang v0.0.0-20220225085802-cf3b306280d3 h1:bfFGs26yNSfhSi6xmnmykB0jZn1Vu5e1/7JA5Wu5aGc=
 github.com/eclipse/ditto-clients-golang v0.0.0-20220225085802-cf3b306280d3/go.mod h1:ey7YwfHSQJsinGkGbgeEgqZA7qJnoB0YiFVTFEY50Jg=
 github.com/eclipse/paho.mqtt.golang v1.3.5/go.mod h1:eTzb4gxwwyWpqBUHGQZ4ABAV7+Jgm1PklsYT/eo8Hcc=

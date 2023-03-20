@@ -13,11 +13,8 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"flag"
 	"fmt"
-	"io"
 	"math/rand"
 	"net/http"
 	"os"
@@ -31,16 +28,16 @@ import (
 )
 
 const (
-	devices     = "devices/"
-	credentials = "credentials/"
-
 	indent = " "
 
-	systemctl             = "systemctl"
-	restart               = "restart"
-	suiteConnectorService = "suite-connector.service"
+	systemctl = "systemctl"
+	restart   = "restart"
 
-	configDefaultMode = 0666
+	suiteConnectorService     = "suite-connector.service"
+	suiteBootstrappingService = "suite-bootstrapping.service"
+	ldtService                = "local-digital-twins.service"
+
+	deleteResourcesTemplate = "%s unable to delete resources, error: %v\n"
 )
 
 var (
@@ -55,23 +52,27 @@ var (
 
 	policyID string
 
-	configFile       string
-	configFileBackup string
+	configConnectorFile       string
+	configConnectorFileBackup string
 
 	authID string
+
+	bootstrapCaCert           string
+	logBootstrapFile          string
+	postBootstrapFile         string
+	postBootstrapScript       string
+	configBootstrapFile       string
+	configBootstrapFileBackup string
+
+	ldtCaCert           string
+	logLdtFile          string
+	thingsDb            string
+	configLdtFile       string
+	configLdtFileBackup string
+
+	bootstrap bool
+	ldt       bool
 )
-
-type resource struct {
-	url string
-
-	method string
-	body   string
-
-	user string
-	pass string
-
-	delete bool
-}
 
 type c2eConfiguration struct {
 	DeviceRegistryAPIAddress string `env:"DEVICE_REGISTRY_API_ADDRESS"`
@@ -93,15 +94,47 @@ func main() {
 
 	flag.StringVar(&policyID, "policyId", "", "Test device's policy unique identifier")
 
-	flag.StringVar(&configFile, "configFile", "/etc/suite-connector/config.json",
+	flag.StringVar(&configConnectorFile, "configFile", "/etc/suite-connector/config.json",
 		"Path to Suite Connector configuration file. "+
 			"If set to the empty string, configuring Suite Connector and restarting it will be skipped")
 
-	flag.StringVar(&configFileBackup, "configFileBackup", "/etc/suite-connector/configBackup.json",
+	flag.StringVar(&configConnectorFileBackup, "configFileBackup", "/etc/suite-connector/configBackup.json",
 		"Path to Suite Connector configuration file backup. "+
 			"If set to the empty string, backing up the Suite Connector configuration file will be skipped")
 
+	flag.StringVar(&bootstrapCaCert, "bootstrapCaCert", "/etc/suite-bootstrapping/iothub.crt", "Path to Suite Bootstrapping CA certificates file")
+	flag.StringVar(&logBootstrapFile, "logBootstrapFile", "/var/log/suite-bootstrapping/suite-bootstrapping.log",
+		"Path to Suite Bootstrapping log file")
+	flag.StringVar(&postBootstrapFile, "postBootstrapFile", "/etc/suite-config/config.json",
+		"Path to the file used for a bootstrapping response data")
+	flag.StringVar(&postBootstrapScript, "postBootstrapScript", "/var/tmp/suite-bootstrapping/post_script.sh",
+		"Path to the script that is executed after a bootstrapping response")
+
+	flag.StringVar(&configBootstrapFile, "configBootstrapFile", "/etc/suite-bootstrapping/config.json",
+		"Path to Suite Bootstrapping configuration file. "+
+			"If set to the empty string, configuring Suite Bootstrapping and restarting it will be skipped")
+
+	flag.StringVar(&configBootstrapFileBackup, "configBootstrapFileBackup", "/etc/suite-bootstrapping/configBackup.json",
+		"Path to Suite Bootstrapping configuration file backup. "+
+			"If set to the empty string, backing up the Suite Bootstrapping configuration file will be skipped")
+
+	flag.StringVar(&ldtCaCert, "ldtCaCert", "/etc/local-digital-twins/iothub.crt", "Path to Local Digital Twins CA certificates file")
+	flag.StringVar(&logLdtFile, "logLdtFile", "/var/log/local-digital-twins/local-digital-twins.log",
+		"Path to Local Digital Twins log file")
+	flag.StringVar(&thingsDb, "thingsDb", "/var/lib/local-digital-twins/thing.db",
+		"Path to the file where digital twins will be stored")
+
+	flag.StringVar(&configLdtFile, "configLdtFile", "/etc/local-digital-twins/config.json",
+		"Path to Local Digital Twins configuration file. "+
+			"If set to the empty string, configuring Local Digital Twins and restarting it will be skipped")
+
+	flag.StringVar(&configLdtFileBackup, "configLdtFileBackup", "/etc/local-digital-twins/configBackup.json",
+		"Path to Local Digital Twins configuration file backup. "+
+			"If set to the empty string, backing up the Local Digital Twins configuration file will be skipped")
+
 	clean := flag.Bool("clean", false, "Clean up test resources")
+	bootstrap = *flag.Bool("bootstrap", false, "Create bootstrapping resources")
+	ldt = *flag.Bool("ldt", false, "Create local-digital-twins resources")
 
 	flag.Parse()
 
@@ -141,27 +174,15 @@ func main() {
 		tenantID = thingConfiguration.TenantID
 	}
 
-	registryAPI := strings.TrimSuffix(c2eCfg.DeviceRegistryAPIAddress, "/") + "/v1"
-	devicePath := tenantID + "/" + deviceID
-
-	resources := make([]*resource, 0, 3)
-	deviceResource := &resource{url: registryAPI + "/" + devices + devicePath, method: http.MethodPost,
-		body: deviceJSON, user: c2eCfg.DeviceRegistryAPIUsername, pass: c2eCfg.DeviceRegistryAPIPassword, delete: true}
-	resources = append(resources, deviceResource)
-
 	authID = strings.ReplaceAll(deviceID, ":", "_")
-	auth := fmt.Sprintf(authJSON, authID, password)
-	resources = append(resources, &resource{url: registryAPI + "/" + credentials + devicePath, method: http.MethodPut,
-		body: auth, user: c2eCfg.DeviceRegistryAPIUsername, pass: c2eCfg.DeviceRegistryAPIPassword, delete: false})
+	registryAPI := strings.TrimSuffix(c2eCfg.DeviceRegistryAPIAddress, "/") + "/v1"
 
-	thingURL := util.GetThingURL(cfg.DigitalTwinAPIAddress, deviceID)
-	thing := fmt.Sprintf(thingJSON, policyID)
-	resources = append(resources, &resource{url: thingURL, method: http.MethodPut,
-		body: thing, user: cfg.DigitalTwinAPIUsername, pass: cfg.DigitalTwinAPIPassword, delete: true})
+	resources := util.CreateDeviceResources(deviceID, tenantID, policyID, password, registryAPI,
+		c2eCfg.DeviceRegistryAPIUsername, c2eCfg.DeviceRegistryAPIPassword, &cfg)
 
 	var ok bool
 	if !*clean {
-		ok = performSetUp(deviceResource, resources)
+		ok = performSetUp(deviceID, resources)
 		fmt.Println("setup complete")
 	} else {
 		ok = performCleanUp(resources)
@@ -210,22 +231,34 @@ func assertFlag(value string, name string) {
 	}
 }
 
-func isDeviceIDPresentInRegistry(deviceID string, deviceResource *resource) bool {
-	_, err := sendDeviceRegistryRequest(http.MethodGet, deviceResource.url)
+func isDeviceIDPresentInRegistry(deviceResource *util.Resource) bool {
+	_, err := util.SendDeviceRegistryRequest(nil, http.MethodGet,
+		deviceResource.URL, c2eCfg.DeviceRegistryAPIUsername, c2eCfg.DeviceRegistryAPIPassword)
 	return err == nil
 }
 
-func performSetUp(deviceResource *resource, resources []*resource) bool {
-	if isDeviceIDPresentInRegistry(deviceID, deviceResource) {
-		fmt.Printf("device %s already exists in registry, aborting...\n", deviceID)
+func getServiceNameConfigAndBackupFile() (string, string, string) {
+	if bootstrap {
+		return suiteBootstrappingService, configBootstrapFile, configBootstrapFileBackup
+	} else if ldt {
+		return ldtService, configLdtFile, configLdtFileBackup
+	}
+	return suiteConnectorService, configConnectorFile, configConnectorFileBackup
+}
+
+func performSetUp(deviceId string, resources []*util.Resource) bool {
+	serviceName, configFile, configFileBackup := getServiceNameConfigAndBackupFile()
+
+	if len(resources) > 0 && isDeviceIDPresentInRegistry(resources[0]) {
+		fmt.Printf("device %s already exists in registry, aborting...\n", deviceId)
 		return false
 	}
 
 	fmt.Println("performing setup...")
 
 	if configFile != "" && configFileBackup != "" {
-		fmt.Println("saving a backup of the suite-connector configuration file...")
-		if err := copyFile(configFile, configFileBackup); err != nil {
+		fmt.Printf("saving a backup of the %s configuration file...\n", serviceName)
+		if err := util.CopyFile(configFile, configFileBackup); err != nil {
 			fmt.Printf(
 				"unable to save backup copy of configuration file %s to %s: %v\n",
 				configFile, configFileBackup, err)
@@ -234,8 +267,8 @@ func performSetUp(deviceResource *resource, resources []*resource) bool {
 	}
 
 	for i, r := range resources {
-		if b, err := sendRequest(r.method, r.url, ([]byte)(r.body), r.user, r.pass); err != nil {
-			fmt.Printf("unable to create device at %s, error: %v\n", r.url, err)
+		if b, err := util.SendDeviceRegistryRequest(([]byte)(r.Body), r.Method, r.URL, r.User, r.Pass); err != nil {
+			fmt.Printf("unable to create device at %s, error: %v\n", r.URL, err)
 
 			if b != nil {
 				fmt.Println(string(b))
@@ -243,26 +276,40 @@ func performSetUp(deviceResource *resource, resources []*resource) bool {
 			}
 
 			if i > 0 {
-				deleteResources(resources[:i])
+				if err = util.DeleteResources(&cfg, resources[:i], deviceID, getTenantURL(),
+					c2eCfg.DeviceRegistryAPIUsername, c2eCfg.DeviceRegistryAPIPassword); err != nil {
+					fmt.Printf(deleteResourcesTemplate, indent, err)
+				}
 			}
-			deleteBackupFile()
+			deleteBackupFile(configFileBackup)
 			return false
 		}
-		fmt.Printf("%s '%s' created\n", indent, r.url)
+		fmt.Printf("%s '%s' created\n", indent, r.URL)
 	}
 
 	ok := true
 	if configFile != "" {
-		if err := writeConfigFile(configFile); err != nil {
+		var err error
+		if serviceName == suiteBootstrappingService {
+			err = writeConfigBootstrapFile(configFile)
+		} else if serviceName == ldtService {
+			err = writeConfigLdtFile(configFile)
+		} else {
+			err = writeConfigFile(configFile)
+		}
+		if err != nil {
 			fmt.Printf("unable to write configuration file, error: %v\n", err)
-
-			deleteResources(resources)
-			deleteBackupFile()
+			if err = util.DeleteResources(&cfg, resources, deviceID, getTenantURL(),
+				c2eCfg.DeviceRegistryAPIUsername, c2eCfg.DeviceRegistryAPIPassword); err != nil {
+				fmt.Printf(deleteResourcesTemplate, indent, err)
+			}
+			deleteBackupFile(configFileBackup)
 			return false
 		}
 
 		fmt.Printf("%s configuration file '%s' written\n", indent, configFile)
-		ok = restartSuiteConnector()
+
+		ok = restartService(serviceName)
 	}
 
 	if ok {
@@ -272,161 +319,50 @@ func performSetUp(deviceResource *resource, resources []*resource) bool {
 	return ok
 }
 
-func performCleanUp(resources []*resource) bool {
+func performCleanUp(resources []*util.Resource) bool {
 	ok := true
+	serviceName, configFile, configFileBackup := getServiceNameConfigAndBackupFile()
+
 	if configFile != "" && configFileBackup != "" {
-		fmt.Println("restoring suite-connector configuration file and restarting suite-connector")
-		if err := copyFile(configFileBackup, configFile); err != nil {
+		fmt.Printf("restoring %s configuration file and restarting %s\n", serviceName, serviceName)
+		if err := util.CopyFile(configFileBackup, configFile); err != nil {
 			ok = false
 			fmt.Printf(
 				"unable to restore the backup copy of configuration file %s to %s: %v\n",
 				configFileBackup, configFile, err)
 		} else {
-			ok = restartSuiteConnector()
+			ok = restartService(serviceName)
 		}
 		if ok {
-			// Delete suite-connector configuration backup file
-			ok = deleteBackupFile()
+			// Delete service configuration backup file
+			ok = deleteBackupFile(configFileBackup)
 		}
 	}
 	// Delete devices and things
 	fmt.Printf("performing cleanup on device id: %s\n", deviceID)
-	if !deleteResources(resources) {
+	if err := util.DeleteResources(&cfg, resources, deviceID, getTenantURL(),
+		c2eCfg.DeviceRegistryAPIUsername, c2eCfg.DeviceRegistryAPIPassword); err != nil {
+		fmt.Printf(deleteResourcesTemplate, indent, err)
 		ok = false
 	}
 	return ok
 }
 
-func deleteBackupFile() bool {
-	if err := os.Remove(configFileBackup); err != nil {
-		fmt.Printf("unable to delete configuration file backup %s, error: %v", configFileBackup, err)
+func deleteBackupFile(path string) bool {
+	if err := os.Remove(path); err != nil {
+		fmt.Printf("unable to delete configuration file backup %s, error: %v", path, err)
 		return false
 	}
 	return true
 }
 
-func deleteResources(resources []*resource) bool {
-	ok := deleteRelatedDevices(deviceID)
-	fmt.Println("deleting initially created things...")
-	// Delete in reverse order of creation
-	for i := len(resources) - 1; i >= 0; i-- {
-		r := resources[i]
-
-		if !r.delete {
-			continue
-		}
-
-		if _, err := sendRequest(http.MethodDelete, r.url, nil, r.user, r.pass); err != nil {
-			ok = false
-			fmt.Printf("%s unable to delete '%s', error: %v\n", indent, r.url, err)
-		} else {
-			fmt.Printf("%s '%s' deleted\n", indent, r.url)
-		}
-	}
-	return ok
-}
-
-func deleteRelatedDevices(viaDeviceID string) bool {
-	devicesVia, ok := findDeviceRegistryDevicesVia(viaDeviceID)
-	// Digital Twin API things are created after Device Registry devices, so delete them first
-	fmt.Println("deleting automatically created things...")
-	if !deleteDigitalTwinThings(devicesVia) {
-		ok = false
-	}
-	// Then delete Device Registry devices
-	fmt.Println("deleting automatically created devices...")
-	if !deleteRegistryDevices(devicesVia) {
-		ok = false
-	}
-	return ok
-}
-
-func findDeviceRegistryDevicesVia(viaDeviceID string) ([]string, bool) {
-	var devicesVia []string
-	ok := true
-
-	type registryDevice struct {
-		ID  string   `json:"id"`
-		Via []string `json:"via"`
-	}
-
-	type registryDevices struct {
-		Devices []*registryDevice `json:"result"`
-	}
-
-	contains := func(where []string, what string) bool {
-		for _, item := range where {
-			if item == what {
-				return true
-			}
-		}
-		return false
-	}
-
-	devicesJSON, err := sendDeviceRegistryRequest(http.MethodGet, getTenantURL())
-	if err != nil {
-		ok = false
-		fmt.Printf("unable to list devices from the device registry, error: %v\n", err)
-	} else {
-		devices := &registryDevices{}
-		err = json.Unmarshal(devicesJSON, devices)
-		if err != nil {
-			ok = false
-			fmt.Printf("unable to parse devices JSON returned from the device registry, error: %v\n", err)
-			devices.Devices = nil
-		}
-		for _, device := range devices.Devices {
-			if contains(device.Via, viaDeviceID) {
-				devicesVia = append(devicesVia, device.ID)
-			}
-		}
-	}
-
-	return devicesVia, ok
-}
-
-func deleteDigitalTwinThings(things []string) bool {
-	ok := true
-	for _, thingID := range things {
-		url := util.GetThingURL(cfg.DigitalTwinAPIAddress, thingID)
-		_, err := util.SendDigitalTwinRequest(&cfg, http.MethodDelete, url, nil)
-		if err != nil {
-			ok = false
-			fmt.Printf("error deleting thing: %v\n", err)
-		} else {
-			fmt.Printf("%s '%s' deleted\n", indent, url)
-		}
-	}
-	return ok
-}
-
-func deleteRegistryDevices(devices []string) bool {
-	ok := true
-	tenantURL := getTenantURL()
-	for _, device := range devices {
-		url := tenantURL + device
-		if _, err := sendDeviceRegistryRequest(http.MethodDelete, url); err != nil {
-			ok = false
-			fmt.Printf("error deleting device: %v\n", err)
-		} else {
-			fmt.Printf("%s '%s' deleted\n", indent, url)
-		}
-	}
-	return ok
+func getTenantURL() string {
+	return fmt.Sprintf(
+		"%s/v1/devices/%s/", strings.TrimSuffix(c2eCfg.DeviceRegistryAPIAddress, "/"), tenantID)
 }
 
 func writeConfigFile(path string) error {
-	type connectorConfig struct {
-		CaCert   string `json:"caCert"`
-		LogFile  string `json:"logFile"`
-		Address  string `json:"address"`
-		TenantID string `json:"tenantId"`
-		DeviceID string `json:"deviceId"`
-		AuthID   string `json:"authId"`
-		Password string `json:"password"`
-	}
-
-	cfg := &connectorConfig{
+	cfg := &util.ConnectorConfiguration{
 		CaCert:   caCert,
 		LogFile:  logFile,
 		Address:  c2eCfg.MQTTAdapterAddress,
@@ -435,92 +371,57 @@ func writeConfigFile(path string) error {
 		AuthID:   authID,
 		Password: password,
 	}
-
-	jsonContents, err := json.MarshalIndent(cfg, "", "\t")
-	if err != nil {
-		return fmt.Errorf("unable to marshal to json: %v", err)
-	}
-
-	// Preserve the file mode if the file already exists
-	mode := getFileModeOrDefault(path, configDefaultMode)
-	err = os.WriteFile(path, jsonContents, mode)
-	if err != nil {
-		return fmt.Errorf("unable to save suite-connector configuration json file %s: %v", path, err)
-	}
-	return nil
+	return util.WriteConfigFile(path, cfg)
 }
 
-func getFileModeOrDefault(path string, defaultMode os.FileMode) os.FileMode {
-	mode := defaultMode
-	fileInfo, err := os.Stat(path)
-	if err == nil {
-		mode = fileInfo.Mode()
+func writeConfigBootstrapFile(path string) error {
+	postScriptArr := []string{postBootstrapScript}
+	cfg := &util.BootstrapConfiguration{
+		LogFile:             logBootstrapFile,
+		PostBootstrapFile:   postBootstrapFile,
+		PostBootstrapScript: postScriptArr,
+		Address:             c2eCfg.MQTTAdapterAddress,
+		TenantID:            tenantID,
+		DeviceID:            deviceID,
+		AuthID:              authID,
+		Password:            password,
 	}
-	return mode
+	return util.WriteConfigFile(path, cfg)
 }
 
-func sendDeviceRegistryRequest(method string, url string) ([]byte, error) {
-	return sendRequest(method, url, nil, c2eCfg.DeviceRegistryAPIUsername, c2eCfg.DeviceRegistryAPIPassword)
+func writeConfigLdtFile(path string) error {
+	type ldtConnectorConfig struct {
+		CaCert   string `json:"ldtCaCert"`
+		LogFile  string `json:"logLdtFile"`
+		Address  string `json:"address"`
+		TenantID string `json:"tenantId"`
+		DeviceID string `json:"deviceId"`
+		AuthID   string `json:"authId"`
+		Password string `json:"password"`
+		ThingsDb string `json:"thingsDb"`
+	}
+
+	cfg := &ldtConnectorConfig{
+		CaCert:   ldtCaCert,
+		LogFile:  logLdtFile,
+		Address:  c2eCfg.MQTTAdapterAddress,
+		DeviceID: deviceID,
+		TenantID: tenantID,
+		AuthID:   authID,
+		Password: password,
+		ThingsDb: thingsDb,
+	}
+	return util.WriteConfigFile(path, cfg)
 }
 
-func sendRequest(method string, url string, payload []byte, username string, password string) ([]byte, error) {
-	var reqBody io.Reader
-
-	if payload != nil {
-		// Unlike util.SendDigitalTwinRequest, we use the payload directly
-		reqBody = bytes.NewBuffer(payload)
-	}
-
-	req, err := http.NewRequest(method, url, reqBody)
+func restartService(service string) bool {
+	fmt.Printf("restarting %s...", service)
+	stdout, err := exec.Command(systemctl, restart, service).Output()
 	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", "application/json")
-	req.SetBasicAuth(username, password)
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, fmt.Errorf("%s %s request failed: %s", method, url, resp.Status)
-	}
-
-	return body, err
-}
-
-func restartSuiteConnector() bool {
-	fmt.Println("restarting suite-connector...")
-	cmd := exec.Command(systemctl, restart, suiteConnectorService)
-	stdout, err := cmd.Output()
-	if err != nil {
-		fmt.Printf("error restarting %s: %v", suiteConnectorService, err)
+		fmt.Printf("error restarting %s: %v", service, err)
 		return false
 	}
 	fmt.Println(string(stdout))
 	fmt.Println("... done")
 	return true
-}
-
-func copyFile(src, dst string) error {
-	data, err := os.ReadFile(src)
-	if err != nil {
-		return err
-	}
-	// If the destination file exists, preserve its file mode.
-	// If the destination file doesn't exist, use the file mode of the source file.
-	srcMode := getFileModeOrDefault(src, configDefaultMode)
-	dstMode := getFileModeOrDefault(dst, srcMode)
-	return os.WriteFile(dst, data, dstMode)
-}
-
-func getTenantURL() string {
-	return fmt.Sprintf(
-		"%s/v1/%s%s/", strings.TrimSuffix(c2eCfg.DeviceRegistryAPIAddress, "/"), devices, tenantID)
 }
