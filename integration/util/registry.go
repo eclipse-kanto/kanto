@@ -21,15 +21,15 @@ import (
 
 // Resource holds all needed properties to create resources for the device.
 type Resource struct {
-	url string
+	URL string
 
-	method string
-	body   string
+	Method string
+	Body   string
 
-	user string
-	pass string
+	User string
+	Pass string
 
-	delete bool
+	Delete bool
 }
 
 // BootstrapConfiguration holds the required configuration to suite bootstrapping to connect and
@@ -64,25 +64,25 @@ func CreateDeviceResources(newDeviceID, tenantID, policyID, password, registryAP
 	devicePath := tenantID + "/" + newDeviceID
 	return []*Resource{
 		&Resource{
-			url:    registryAPI + "/devices/" + devicePath,
-			method: http.MethodPost,
-			body:   `{"authorities":["auto-provisioning-enabled"]}`,
-			user:   registryAPIUsername,
-			pass:   registryAPIPassword,
-			delete: true},
+			URL:    registryAPI + "/devices/" + devicePath,
+			Method: http.MethodPost,
+			Body:   `{"authorities":["auto-provisioning-enabled"]}`,
+			User:   registryAPIUsername,
+			Pass:   registryAPIPassword,
+			Delete: true},
 		&Resource{
-			url:    registryAPI + "/credentials/" + devicePath,
-			method: http.MethodPut,
-			body:   getCredentialsBody(strings.ReplaceAll(newDeviceID, ":", "_"), password),
-			user:   registryAPIUsername,
-			pass:   registryAPIPassword},
+			URL:    registryAPI + "/credentials/" + devicePath,
+			Method: http.MethodPut,
+			Body:   getCredentialsBody(strings.ReplaceAll(newDeviceID, ":", "_"), password),
+			User:   registryAPIUsername,
+			Pass:   registryAPIPassword},
 		&Resource{
-			url:    GetThingURL(cfg.DigitalTwinAPIAddress, newDeviceID),
-			method: http.MethodPut,
-			body:   fmt.Sprintf(`{"policyId": "%s"}`, policyID),
-			user:   cfg.DigitalTwinAPIUsername,
-			pass:   cfg.DigitalTwinAPIPassword,
-			delete: true},
+			URL:    GetThingURL(cfg.DigitalTwinAPIAddress, newDeviceID),
+			Method: http.MethodPut,
+			Body:   fmt.Sprintf(`{"policyId": "%s"}`, policyID),
+			User:   cfg.DigitalTwinAPIUsername,
+			Pass:   cfg.DigitalTwinAPIPassword,
+			Delete: true},
 	}
 }
 
@@ -113,8 +113,8 @@ func DeleteResources(cfg *TestConfiguration, resources []*Resource, deviceID, ur
 	for i := len(resources) - 1; i >= 0; i-- {
 		r := resources[i]
 
-		if r.delete {
-			if _, err := SendDeviceRegistryRequest(nil, http.MethodDelete, r.url, r.user, r.pass); err != nil {
+		if r.Delete {
+			if _, err := SendDeviceRegistryRequest(nil, http.MethodDelete, r.URL, r.User, r.Pass); err != nil {
 				errors = append(errors, err)
 			}
 		}
