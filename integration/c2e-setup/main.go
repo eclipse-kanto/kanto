@@ -32,6 +32,7 @@ const (
 
 	systemctl = "systemctl"
 	restart   = "restart"
+	stop      = "stop"
 
 	suiteConnectorService     = "suite-connector.service"
 	suiteBootstrappingService = "suite-bootstrapping.service"
@@ -182,7 +183,7 @@ func main() {
 
 	var ok bool
 	if !*clean {
-		ok = performSetUp(deviceID, resources)
+		ok = performSetUp(resources)
 		fmt.Println("setup complete")
 	} else {
 		ok = performCleanUp(resources)
@@ -246,11 +247,11 @@ func getServiceNameConfigAndBackupFile() (string, string, string) {
 	return suiteConnectorService, configConnectorFile, configConnectorFileBackup
 }
 
-func performSetUp(deviceId string, resources []*util.Resource) bool {
+func performSetUp(resources []*util.Resource) bool {
 	serviceName, configFile, configFileBackup := getServiceNameConfigAndBackupFile()
 
 	if len(resources) > 0 && isDeviceIDPresentInRegistry(resources[0]) {
-		fmt.Printf("device %s already exists in registry, aborting...\n", deviceId)
+		fmt.Printf("device %s already exists in registry, aborting...\n", deviceID)
 		return false
 	}
 
@@ -281,7 +282,7 @@ func performSetUp(deviceId string, resources []*util.Resource) bool {
 					fmt.Printf(deleteResourcesTemplate, indent, err)
 				}
 			}
-			deleteBackupFile(configFileBackup)
+			deleteFile(configFileBackup)
 			return false
 		}
 		fmt.Printf("%s '%s' created\n", indent, r.URL)
@@ -303,12 +304,22 @@ func performSetUp(deviceId string, resources []*util.Resource) bool {
 				c2eCfg.DeviceRegistryAPIUsername, c2eCfg.DeviceRegistryAPIPassword); err != nil {
 				fmt.Printf(deleteResourcesTemplate, indent, err)
 			}
-			deleteBackupFile(configFileBackup)
+			deleteFile(configFileBackup)
 			return false
 		}
 
 		fmt.Printf("%s configuration file '%s' written\n", indent, configFile)
 
+		if serviceName != suiteConnectorService {
+			stdout, err := exec.Command(systemctl, stop, suiteConnectorService).Output()
+			if stdout != nil {
+				fmt.Println(string(stdout))
+			}
+			if err != nil {
+				fmt.Printf("error stopping %s: %v", suiteConnectorService, err)
+				return false
+			}
+		}
 		ok = restartService(serviceName)
 	}
 
@@ -331,11 +342,21 @@ func performCleanUp(resources []*util.Resource) bool {
 				"unable to restore the backup copy of configuration file %s to %s: %v\n",
 				configFileBackup, configFile, err)
 		} else {
-			ok = restartService(serviceName)
+			if serviceName != suiteConnectorService {
+				stdout, err := exec.Command(systemctl, stop, serviceName).Output()
+				if stdout != nil {
+					fmt.Println(string(stdout))
+				}
+				if err != nil {
+					fmt.Printf("error stopping %s: %v", serviceName, err)
+					ok = false
+				}
+			}
+			ok = restartService(suiteConnectorService)
 		}
 		if ok {
 			// Delete service configuration backup file
-			ok = deleteBackupFile(configFileBackup)
+			ok = deleteFile(configFileBackup)
 		}
 	}
 	// Delete devices and things
@@ -348,9 +369,9 @@ func performCleanUp(resources []*util.Resource) bool {
 	return ok
 }
 
-func deleteBackupFile(path string) bool {
+func deleteFile(path string) bool {
 	if err := os.Remove(path); err != nil {
-		fmt.Printf("unable to delete configuration file backup %s, error: %v", path, err)
+		fmt.Printf("unable to delete file %s, error: %v", path, err)
 		return false
 	}
 	return true
@@ -417,11 +438,13 @@ func writeConfigLdtFile(path string) error {
 func restartService(service string) bool {
 	fmt.Printf("restarting %s...", service)
 	stdout, err := exec.Command(systemctl, restart, service).Output()
+	if stdout != nil {
+		fmt.Println(string(stdout))
+	}
 	if err != nil {
 		fmt.Printf("error restarting %s: %v", service, err)
 		return false
 	}
-	fmt.Println(string(stdout))
 	fmt.Println("... done")
 	return true
 }
