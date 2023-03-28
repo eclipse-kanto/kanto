@@ -102,13 +102,13 @@ func getCredentialsBody(authID, pass string) string {
 	return string(data)
 }
 
-// RegisterDeviceResources registers all given resources. If some error ocurred delete resources.
+// RegisterDeviceResources registers all given resources. In case of error all resources registered by this function will be deleted.
 func RegisterDeviceResources(cfg *TestConfiguration,
-	resources []*Resource, deviceId, url, user, pass string) error {
+	resources []*Resource, deviceID, url, user, pass string) error {
 	for i, r := range resources {
 		if _, err := SendDeviceRegistryRequest(([]byte)(r.Body), r.Method, r.URL, r.User, r.Pass); err != nil {
 			if i > 0 {
-				DeleteResources(cfg, resources[:i], deviceId, url, user, pass)
+				DeleteResources(cfg, resources[:i], deviceID, url, user, pass)
 			}
 			return err
 		}
