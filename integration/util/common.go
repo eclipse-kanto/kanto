@@ -45,22 +45,19 @@ func WriteConfigFile(path string, cfg interface{}) error {
 	}
 
 	// Preserve the file mode if the file already exists
-	mode, err := getFileModeOrDefault(path, configDefaultMode)
-	if err != nil {
-		return fmt.Errorf("unable to get file mode %s: %v", path, err)
-	}
+	mode := getFileModeOrDefault(path, configDefaultMode)
 	if err = os.WriteFile(path, jsonContents, mode); err != nil {
 		return fmt.Errorf("unable to save file %s: %v", path, err)
 	}
 	return nil
 }
 
-func getFileModeOrDefault(path string, defaultMode os.FileMode) (os.FileMode, error) {
+func getFileModeOrDefault(path string, defaultMode os.FileMode) os.FileMode {
 	fileInfo, err := os.Stat(path)
 	if err != nil {
-		return defaultMode, err
+		return defaultMode
 	}
-	return fileInfo.Mode(), nil
+	return fileInfo.Mode()
 }
 
 // CopyFile copies source file to the destination.
@@ -71,13 +68,7 @@ func CopyFile(src, dst string) error {
 	}
 	// If the destination file exists, preserve its file mode.
 	// If the destination file doesn't exist, use the file mode of the source file.
-	srcMode, err := getFileModeOrDefault(src, configDefaultMode)
-	if err != nil {
-		return err
-	}
-	dstMode, err := getFileModeOrDefault(dst, srcMode)
-	if err != nil {
-		return err
-	}
+	srcMode := getFileModeOrDefault(src, configDefaultMode)
+	dstMode := getFileModeOrDefault(dst, srcMode)
 	return os.WriteFile(dst, data, dstMode)
 }
