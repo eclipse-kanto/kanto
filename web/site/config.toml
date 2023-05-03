@@ -1,4 +1,4 @@
-baseURL = "https://websites.eclipseprojects.io/kanto/"
+baseURL = "https://eclipse.dev/kanto/"
 title = "Eclipse Kanto™ | IoT edge software stack"
 
 enableRobotsTXT = true

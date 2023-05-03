@@ -81,7 +81,7 @@ To control all aspects of the container manager behavior.
 | syslog | bool | false | Route logs to the local syslog |
 | **Deployment** | | | |
 | enable | bool | true | Permit the deployment manager service providing installation/update of containers via the container descriptor files |
-| mode | string | update | Deployment manager mode, the possible values are: init (container descriptors are processed only on first start, new containers are deployed and started), update (container descriptors are processed on each restart, new containers can be deploed and started, existing containers may be updated, no container removals) |
+| mode | string | update | Deployment manager mode, the possible values are: init (container descriptors are processed only on first start, new containers are deployed and started), update (container descriptors are processed on each restart, new containers can be deployed and started, existing containers may be updated, no container removals) |
 | home_dir | string | /var/lib/container-management | Home directory for the deployment manager data |
 | ctr_dir | string | /etc/container-management/containers | Directory containing descriptors of containers that will be automatically deployed on first start or updated on restart |
 
