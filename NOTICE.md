@@ -2,7 +2,7 @@
 
 This content is produced and maintained by the Eclipse Kanto project.
 
-* Project home: https://eclipse.org/kanto
+* Project home: https://eclipse.dev/kanto
 
 ## Trademarks
 
