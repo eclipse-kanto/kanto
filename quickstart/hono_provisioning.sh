@@ -12,8 +12,9 @@
 #
 # SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
 
-# The Hono AMQP endpoint to connect to
-export HONO_EP=hono.eclipseprojects.io
+# The Hono endpoint to connect to
+export HONO_EP=https://hono.eclipseprojects.io:28443
+
 # The Hono tenant to be created
 export TENANT=
 # The identifier of the device on the tenant
@@ -24,12 +25,12 @@ export AUTH_ID=
 # A password for the device to authenticate with
 export PWD=
 
-curl -i -X POST http://$HONO_EP:28080/v1/tenants/$TENANT -H  "content-type: application/json"  --data-binary '{"ext": {"messaging-type": "amqp"}}'
-curl -i -X POST http://$HONO_EP:28080/v1/devices/$TENANT/$DEVICE_ID -H  "content-type: application/json" --data-binary '{"authorities":["auto-provisioning-enabled"]}'
-curl -i -X PUT -H "content-type: application/json" --data-binary '[{
+curl -i -X POST $HONO_EP/v1/tenants/$TENANT -H 'accept: application/json' -H  'Content-Type: application/json'  --data-binary '{"ext": {"messaging-type": "amqp"}}'
+curl -i -X POST $HONO_EP/v1/devices/$TENANT/$DEVICE_ID -H  'Content-Type: application/json' --data-binary '{"authorities":["auto-provisioning-enabled"]}'
+curl -i -X PUT -H 'Content-Type: application/json' --data-binary '[{
   "type": "hashed-password",
   "auth-id": "'$AUTH_ID'",
   "secrets": [{
       "pwd-plain": "'$PWD'"
   }]
-}]' http://$HONO_EP:28080/v1/credentials/$TENANT/$DEVICE_ID
+}]' $HONO_EP/v1/credentials/$TENANT/$DEVICE_ID

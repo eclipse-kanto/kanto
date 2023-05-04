@@ -175,7 +175,7 @@ else:
     exit(1)
 
 # AMQP global configurations
-uri = 'amqp://hono.eclipseprojects.io:15672'
+uri = 'amqps://hono.eclipseprojects.io:15671'
 command_address = 'command/{}'.format(tenant_id)
 event_address = 'event/{}'.format(tenant_id)
 reply_to_address = 'command_response/{}/replies'.format(tenant_id)
