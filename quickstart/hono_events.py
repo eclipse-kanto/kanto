@@ -20,7 +20,6 @@ import threading
 from proton.handlers import MessagingHandler
 from proton.reactor import Container, AtLeastOnce
 
-
 class EventsHandler(MessagingHandler):
     def __init__(self, server, address):
         super(EventsHandler, self).__init__()
@@ -44,7 +43,7 @@ class EventsHandler(MessagingHandler):
 options, reminder = getopt.getopt(sys.argv[1:], 't:')
 tenant_id = os.environ.get("TENANT") or dict(options)['-t']
 
-uri = 'amqp://hono.eclipseprojects.io:15672'
+uri = 'amqps://hono.eclipseprojects.io:15671'
 address = 'event/{}'.format(tenant_id)
 
 print('[starting] demo events handler for tenant [{}] at [{}]'.format(tenant_id, uri))

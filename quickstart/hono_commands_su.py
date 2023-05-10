@@ -121,7 +121,7 @@ device_id = os.environ.get("DEVICE_ID") or opts_dict['-d']
 
 
 # AMQP global configurations
-uri = 'amqp://hono.eclipseprojects.io:15672'
+uri = 'amqps://hono.eclipseprojects.io:15671'
 address = 'command/{}'.format(tenant_id)
 reply_to_address = 'command_response/{}/replies'.format(tenant_id)
 

@@ -30,6 +30,12 @@ they communicate remotely with Eclipse Hono only. To run them, you need:
   wget https://github.com/eclipse-kanto/kanto/raw/main/quickstart/hono_provisioning.sh
   ```
 
+* OpenSSL and the following SSL and SASL related libraries: `pkg-config`, `swig`, `libsasl2-dev`, `libsasl2-2` `libsasl2-modules-gssapi-mit` and `libssl-dev`, e.g.:
+
+  ```shell
+  sudo apt install openssl pkg-config swig libsasl2-dev libsasl2-2 libsasl2-modules-gssapi-mit libssl-dev
+  ```
+
 * Required Python dependencies to run the scripts
 
   You can install them by using the downloaded `requirements.txt` file via executing:
@@ -73,7 +79,7 @@ authentication data to establish the remote connection. Update it with the follo
 {
   "provisioningFile": "/etc/suite-connector/provisioning.json",
   "logFile": "/var/log/suite-connector/suite-connector.log",
-  "address":"hono.eclipseprojects.io:1883",
+  "address":"mqtts://hono.eclipseprojects.io:8883",
   "tenantId":"demo",
   "deviceId":"demo:device",
   "authId":"demo_device",
