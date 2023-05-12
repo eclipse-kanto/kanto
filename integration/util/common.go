@@ -67,8 +67,16 @@ func CopyFile(src, dst string) error {
 		return err
 	}
 	// If the destination file exists, preserve its file mode.
-	// If the destination file doesn't exist, use the file mode of the source file.
+	// If the destination file doesn't exist, use the file mode of the source file or default.
 	srcMode := getFileModeOrDefault(src, configDefaultMode)
-	dstMode := getFileModeOrDefault(dst, srcMode)
-	return os.WriteFile(dst, data, dstMode)
+	mode := srcMode
+	if srcMode < configDefaultMode {
+		mode = configDefaultMode
+	}
+	dstMode := getFileModeOrDefault(dst, mode)
+	err = os.WriteFile(dst, data, dstMode)
+	if err != nil && mode != srcMode {
+		return os.Chmod(dst, srcMode)
+	}
+	return err
 }
