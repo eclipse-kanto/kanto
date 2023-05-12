@@ -134,8 +134,8 @@ func main() {
 			"If set to the empty string, backing up the Local Digital Twins configuration file will be skipped")
 
 	clean := flag.Bool("clean", false, "Clean up test resources")
-	bootstrap = *flag.Bool("bootstrap", false, "Create bootstrapping resources")
-	ldt = *flag.Bool("ldt", false, "Create local-digital-twins resources")
+	flag.BoolVar(&bootstrap, "bootstrap", false, "Create bootstrapping resources")
+	flag.BoolVar(&ldt, "ldt", false, "Create local-digital-twins resources")
 
 	flag.Parse()
 
