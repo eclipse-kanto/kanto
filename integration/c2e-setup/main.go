@@ -412,8 +412,8 @@ func writeConfigBootstrapFile(path string) error {
 
 func writeConfigLdtFile(path string) error {
 	type ldtConnectorConfig struct {
-		CaCert   string `json:"ldtCaCert"`
-		LogFile  string `json:"logLdtFile"`
+		CaCert   string `json:"caCert"`
+		LogFile  string `json:"logFile"`
 		Address  string `json:"address"`
 		TenantID string `json:"tenantId"`
 		DeviceID string `json:"deviceId"`
