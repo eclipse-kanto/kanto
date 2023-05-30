@@ -21,8 +21,8 @@ at <a href="https://github.com/eclipse-kanto/kanto/releases" target="_blank">the
 Download and install it via executing the following (adjusted to your package name):
 
 ```shell
-wget https://github.com/eclipse-kanto/kanto/releases/download/v0.1.0-M2/kanto_0.1.0-M2_linux_x86_64.deb && \
-sudo apt install ./kanto_0.1.0-M2_linux_x86_64.deb
+wget https://github.com/eclipse-kanto/kanto/releases/download/v0.1.0-M3/kanto_0.1.0-M3_linux_x86_64.deb && \
+sudo apt install ./kanto_0.1.0-M3_linux_x86_64.deb
 ```
 
 ### Verify
