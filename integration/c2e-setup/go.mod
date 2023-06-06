@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/caarlos0/env/v6 v6.10.1
-	github.com/eclipse-kanto/kanto/integration/util v0.0.0-20230512120457-c081b6733173
+	github.com/eclipse-kanto/kanto/integration/util v0.0.0-20230602090336-c3a39aa38f00
 )
 
 require (

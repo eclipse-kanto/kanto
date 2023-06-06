@@ -106,7 +106,7 @@ func main() {
 	flag.StringVar(&bootstrapCaCert, "bootstrapCaCert", "/etc/suite-bootstrapping/iothub.crt", "Path to Suite Bootstrapping CA certificates file")
 	flag.StringVar(&logBootstrapFile, "logBootstrapFile", "/var/log/suite-bootstrapping/suite-bootstrapping.log",
 		"Path to Suite Bootstrapping log file")
-	flag.StringVar(&postBootstrapFile, "postBootstrapFile", "/etc/suite-config/config.json",
+	flag.StringVar(&postBootstrapFile, "postBootstrapFile", "/etc/suite-connector/config.json",
 		"Path to the file used for a bootstrapping response data")
 	flag.StringVar(&postBootstrapScript, "postBootstrapScript", "/var/tmp/suite-bootstrapping/post_script.sh",
 		"Path to the script that is executed after a bootstrapping response")
@@ -412,8 +412,8 @@ func writeConfigBootstrapFile(path string) error {
 
 func writeConfigLdtFile(path string) error {
 	type ldtConnectorConfig struct {
-		CaCert   string `json:"caCert"`
-		LogFile  string `json:"logFile"`
+		CaCert   string `json:"ldtCaCert"`
+		LogFile  string `json:"logLdtFile"`
 		Address  string `json:"address"`
 		TenantID string `json:"tenantId"`
 		DeviceID string `json:"deviceId"`
