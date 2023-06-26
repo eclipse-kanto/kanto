@@ -13,32 +13,49 @@ To control all aspects of the update manager.
 | Property | Type | Default | Description |
 | - | - | - | - |
 | **General** | | | |
-| domain | string | device | Specify the Domain of this update agent, used as MQTT topic prefix |
-| domains | string | containers,self-update,safety-domain| Specify a comma-separated list of domains handled by the update manager |
-| phaseTimeout | string | 10m | Specify the timeout for completing an Update Orchestration phase |
-| rebootAfter | string | 30s | Specify the timeout in cron format to wait before a reboot process is initiated after successful update operation |
-| rebootEnabled | bool | true | Specify a flag that controls the enabling/disabling of the reboot process after successful update operation |
-| reportFeedbackInterval | string | 1m | Specify the time interval for reporting intermediate desired state feedback messages during an active update operation |
-| currentStateDelay | string | 30s | Specify the time delay for reporting current state messages |
-| **Domain agent** | | | |
-| readTimeout | int | 1m | Specify the read timeout for the given domain |
-| rebootRequired | bool | false | Specify the reboot required flag for the given domain |
+| domain | string | device | The domain of this update agent, used as MQTT topic prefix |
+| domains | string | containers| A comma-separated list of domains handled by the update manager |
+| phaseTimeout | string | 10m | Timeout as duration string for completing an Update Orchestration phase |
+| rebootAfter | string | 30s | Time period in cron format to wait before a reboot process is initiated after successful update operation |
+| rebootEnabled | bool | true | Enable the reboot process after successful update operation |
+| reportFeedbackInterval | string | 1m | Time interval as duration string for reporting intermediate desired state feedback messages during an active update operation |
+| currentStateDelay | string | 30s | Time interval as duration string for reporting current state messages |
+| **Domain agents** | | | |
+| name | string | | Domain name |
+| readTimeout | string | 1m | Timeout as duration string for reading the current state for the domain |
+| rebootRequired | bool | false | Require a reboot for the domain |
 | **Local connectivity** | | | |
-| brokerUrl | string | tcp://localhost:1883 | Specify the MQTT broker URL to connect to |
-| keepAlive | bool | 20000 | Specify the keep alive duration for the MQTT requests in milliseconds |
-| acknowledgeTimeout | int | 15000 | Specify the acknowledgement timeout for the MQTT requests in milliseconds |
-| clientUsername | string | | Specify the MQTT client username to authenticate with |
-| clientPassword | string | | Specify the MQTT client password to authenticate with |
-| connectTimeout | int | 30000 | Specify the connect timeout for the MQTT in milliseconds |
-| disconnectTimeout | int | 250 | Specify the disconnection timeout for the MQTT connection in milliseconds |
-| subscribeTimeout | int | 15000 | Specify the subscribe timeout for the MQTT requests in milliseconds |
-| unsubscribeTimeout | int | 5000 | Specify the unsubscribe timeout for the MQTT requests in milliseconds |
+| brokerUrl | string | tcp://localhost:1883 | Address of the MQTT server/broker that the container manager will connect for the local communication, the format is: `scheme://host:port` |
+| keepAlive | bool | 20000 | Keep alive duration in milliseconds for the MQTT requests |
+| disconnectTimeout | int | 250 | Disconnect timeout in milliseconds for the MQTT server/broker |
+| clientUsername | string | | Username that is a part of the credentials |
+| clientPassword | string | | Password that is a part of the credentials |
+| acknowledgeTimeout | int | 15000 | Acknowledge timeout in milliseconds for the MQTT requests |
+| connectTimeout | int | 30000 | Connect timeout in milliseconds for the MQTT server/broker |
+| subscribeTimeout | int | 15000 | Subscribe timeout in milliseconds for the MQTT requests |
+| unsubscribeTimeout | int | 5000 | Unsubscribe timeout in milliseconds for the MQTT requests |
 | **Logging** | | | |
-| logFile | string | | Set the log file |
-| logLevel | string | INFO | Set the log level - possible values are ERROR, WARN, INFO, DEBUG, TRACE |
-| logFileCount | int | 5 | Set the maximum number of old log files to retain |
-| logFileMaxAge | int | 28 | Set the maximum number of days to retain old log files based on the timestamp encoded in their filename |
-| logFileSize | int | 2 | Set the maximum size in megabytes of the log file before it gets rotated |
+| logFile | string | | Path to the file where the update manager’s log messages are written |
+| logLevel | string | INFO | All log messages at this or a higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
+| logFileCount | int | 5 | Log file maximum rotations count |
+| logFileMaxAge | int | 28 | Log file rotations maximum age in days, use 0 to not remove old log files |
+| logFileSize | int | 2 | Log file size in MB before it gets rotated |
+
+### Example
+
+An example for configuring the update manager with two domains - `containers` and `self-update`, report feedback interval at 30 seconds, and log, written to custom log file `update-manager.log` with
+log level `DEBUG`.
+
+```json
+{
+	"domains": "containers,self-update",
+	"log": {
+		"logFile": "update-manager.log",
+		"logLevel": "DEBUG"
+	},
+	"reportFeedbackInterval": "30s"
+}
+```
 
 ### Template
 
@@ -48,27 +65,17 @@ The following template illustrates all possible properties with their default va
 ```json
 {
 	"domain": "device",
-	"domains": "containers,self-update,safety-domain",
+	"domains": "containers",
 	"agents": {
 		"containers": {
 			"name": "containers",
 			"rebootRequired": false,
 			"readTimeout": "30s"
-		},
-		"self-update": {
-			"name": "self-update",
-			"rebootRequired": true,
-			"readTimeout": "30s"
-		},
-		"safety-domain": {
-			"name": "safety-domain",
-			"rebootRequired": true,
-			"readTimeout": "30s"
 		}
 	},
 	"log": {
 		"logFile": "",
-		"logLevel": "DEBUG",
+		"logLevel": "INFO",
 		"logFileCount": 5,
 		"logFileMaxAge": 28,
 		"logFileSize": 2
