@@ -25,11 +25,11 @@ To control all aspects of the update manager.
 | readTimeout | string | 1m | Timeout as duration string for reading the current state for the domain |
 | rebootRequired | bool | false | Require a reboot for the domain |
 | **Local connectivity** | | | |
-| brokerUrl | string | tcp://localhost:1883 | Address of the MQTT server/broker that the container manager will connect for the local communication, the format is: `scheme://host:port` |
+| broker | string | tcp://localhost:1883 | Address of the MQTT server/broker that the container manager will connect for the local communication, the format is: `scheme://host:port` |
 | keepAlive | bool | 20000 | Keep alive duration in milliseconds for the MQTT requests |
 | disconnectTimeout | int | 250 | Disconnect timeout in milliseconds for the MQTT server/broker |
-| clientUsername | string | | Username that is a part of the credentials |
-| clientPassword | string | | Password that is a part of the credentials |
+| username | string | | Username that is a part of the credentials |
+| password | string | | Password that is a part of the credentials |
 | acknowledgeTimeout | int | 15000 | Acknowledge timeout in milliseconds for the MQTT requests |
 | connectTimeout | int | 30000 | Connect timeout in milliseconds for the MQTT server/broker |
 | subscribeTimeout | int | 15000 | Subscribe timeout in milliseconds for the MQTT requests |
@@ -80,12 +80,12 @@ The following template illustrates all possible properties with their default va
 		"logFileMaxAge": 28,
 		"logFileSize": 2
 	},
-	"mqtt": {
-		"brokerUrl": "tcp://localhost:1883",
+	"connection": {
+		"broker": "tcp://localhost:1883",
 		"keepAlive": 20000,
 		"acknowledgeTimeout": 15000,
-		"clientUsername": "",
-		"clientPassword": "",
+		"username": "",
+		"password": "",
 		"connectTimeout": 30000,
 		"disconnectTimeout": 250,
 		"subscribeTimeout": 15000,
