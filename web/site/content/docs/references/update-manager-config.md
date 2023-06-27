@@ -1,9 +1,9 @@
 ---
-title: "Configuration"
+title: "Update manager configuration"
 type: docs
 description: >
   Customize the update manager.
-weight: 1
+weight: 6
 ---
 
 ### Properties
