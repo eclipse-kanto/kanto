@@ -16,7 +16,7 @@ To control all aspects of the update manager.
 | domain | string | device | The domain of this update agent, used as MQTT topic prefix |
 | domains | string | containers| A comma-separated list of domains handled by the update manager |
 | phaseTimeout | string | 10m | Timeout as duration string for completing an Update Orchestration phase |
-| rebootAfter | string | 30s | Time period in cron format to wait before a reboot process is initiated after successful update operation |
+| rebootAfter | string | 30s | Time period as duration string to wait before a reboot process is initiated after successful update operation |
 | rebootEnabled | bool | true | Enable the reboot process after successful update operation |
 | reportFeedbackInterval | string | 1m | Time interval as duration string for reporting intermediate desired state feedback messages during an active update operation |
 | currentStateDelay | string | 30s | Time interval as duration string for reporting current state messages |
@@ -43,12 +43,12 @@ To control all aspects of the update manager.
 
 ### Example
 
-An example for configuring the update manager with two domains - `containers` and `self-update`, report feedback interval at 30 seconds, and log, written to custom log file `update-manager.log` with
+An example for configuring the update manager with two domains - `containers` and `custom-domain`, report feedback interval at 30 seconds, and log, written to custom log file `update-manager.log` with
 log level `DEBUG`.
 
 ```json
 {
-	"domains": "containers,self-update",
+	"domains": "containers,custom-domain",
 	"log": {
 		"logFile": "update-manager.log",
 		"logLevel": "DEBUG"
