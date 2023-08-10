@@ -434,6 +434,7 @@ builds:
     mod_timestamp: '{{ .CommitTimestamp }}'
 archives:
   - id: kanto-archive-all
+    name_template: '{{ .ProjectName }}_{{ .Version }}_linux_{{ if .Amd64 }}x86_64{{ else if .Arm }}armv7{{ else }}{{ .Runtime.Goarch }}{{ end }}'
     builds:
       - build-suite-connector
       - build-container-management
@@ -444,8 +445,6 @@ archives:
       - build-suite-bootstrapping
       - build-file-backup
       - build-system-metrics
-    replacements:
-      amd64: x86_64
     files:
       # common files
       - LICENSE
@@ -524,8 +523,7 @@ nfpms:
       - build-file-backup-pkg
       - build-system-metrics-pkg
     bindir: /usr/bin
-    replacements:
-      amd64: x86_64
+    file_name_template: '{{ .ProjectName }}_{{ .Version }}_linux_{{ if .Amd64 }}x86_64{{ else if .Arm }}armv7{{ else }}{{ .Runtime.Goarch }}{{ end }}'
     maintainer: Contributors to the Eclipse Foundation, Kanto Project <kanto-dev@eclipse.org>
     description: |-
       Eclipse Kanto™ is a modular IoT edge software that enables devices for IoT with all essentials
