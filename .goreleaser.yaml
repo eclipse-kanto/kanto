@@ -432,6 +432,53 @@ builds:
     ldflags:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
+    # update-manager builds
+  - id: build-update-manager
+    dir: ./build-tmp/update-manager
+    main:  ./cmd/update-manager
+    binary: update-manager/update-manager
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  - id: build-update-manager-pkg
+    dir: ./build-tmp/update-manager
+    main:  ./cmd/update-manager
+    binary: update-manager
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
 archives:
   - id: kanto-archive-all
     name_template: '{{ .ProjectName }}_{{ .Version }}_linux_{{ if .Amd64 }}x86_64{{ else if .Arm }}armv7{{ else }}{{ .Runtime.Goarch }}{{ end }}'
@@ -445,6 +492,7 @@ archives:
       - build-suite-bootstrapping
       - build-file-backup
       - build-system-metrics
+      - build-update-manager
     files:
       # common files
       - LICENSE
@@ -511,6 +559,12 @@ archives:
         strip_parent: true
         info:
           mode: 0644
+      # update-manager additional files
+      - src: ./build-tmp/update-manager/NOTICE.md
+        dst: update-manager
+        strip_parent: true
+        info:
+          mode: 0644
 nfpms:
   - builds:
       - build-suite-connector-pkg
@@ -522,6 +576,7 @@ nfpms:
       - build-suite-bootstrapping-pkg
       - build-file-backup-pkg
       - build-system-metrics-pkg
+      - build-update-manager-pkg
     bindir: /usr/bin
     file_name_template: '{{ .ProjectName }}_{{ .Version }}_linux_{{ if .Amd64 }}x86_64{{ else if .Arm }}armv7{{ else }}{{ .Runtime.Goarch }}{{ end }}'
     maintainer: Contributors to the Eclipse Foundation, Kanto Project <kanto-dev@eclipse.org>
@@ -802,6 +857,34 @@ nfpms:
           mode: 0644
       - src: ./build-tmp/system-metrics/LICENSE
         dst: /usr/share/doc/system-metrics/LICENSE
+        file_info:
+          mode: 0644
+      # update-manager additional resources
+      - src: ./build-tmp/update-manager/resources/update-manager.service
+        dst: /etc/systemd/system/update-manager.service
+        file_info:
+          mode: 0644
+        packager: deb
+      - src: ./build-tmp/update-manager/resources/update-manager.service
+        dst: /usr/lib/systemd/system/update-manager.service
+        file_info:
+          mode: 0644
+        packager: rpm
+      - src: ./build-tmp/update-manager/resources/config.json
+        dst: /etc/update-manager/config.json
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/update-manager/NOTICE.md
+        dst: /usr/share/doc/update-manager/NOTICE.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/update-manager/README.md
+        dst: /usr/share/doc/update-manager/README.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/update-manager/LICENSE
+        dst: /usr/share/doc/update-manager/LICENSE
         file_info:
           mode: 0644
 checksum:
