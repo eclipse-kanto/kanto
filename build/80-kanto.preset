@@ -11,3 +11,4 @@ enable file-upload.service
 enable software-update.service
 enable file-backup.service
 enable system-metrics.service
+enable update-manager.service
