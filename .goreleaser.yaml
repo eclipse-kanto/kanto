@@ -436,7 +436,7 @@ builds:
   - id: build-update-manager
     dir: ./build-tmp/update-manager
     main:  ./cmd/update-manager
-    binary: update-manager/kanto-update-manager
+    binary: kanto-update-manager/kanto-update-manager
     goos:
       - linux
     goarch:
@@ -861,12 +861,12 @@ nfpms:
           mode: 0644
       # update-manager additional resources
       - src: ./build-tmp/update-manager/resources/update-manager.service
-        dst: /etc/systemd/system/update-manager.service
+        dst: /etc/systemd/system/kanto-update-manager.service
         file_info:
           mode: 0644
         packager: deb
       - src: ./build-tmp/update-manager/resources/update-manager.service
-        dst: /usr/lib/systemd/system/update-manager.service
+        dst: /usr/lib/systemd/system/kanto-update-manager.service
         file_info:
           mode: 0644
         packager: rpm

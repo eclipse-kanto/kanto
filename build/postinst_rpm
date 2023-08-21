@@ -18,7 +18,7 @@ if [ $1 -eq 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
     /usr/lib/systemd/systemd-update-helper install-system-units software-update.service || :
     /usr/lib/systemd/systemd-update-helper install-system-units file-backup.service || :
     /usr/lib/systemd/systemd-update-helper install-system-units system-metrics.service || :
-    /usr/lib/systemd/systemd-update-helper install-system-units update-manager.service || :
+    /usr/lib/systemd/systemd-update-helper install-system-units kanto-update-manager.service || :
 
     # Start the Kanto services if enabled
     if [ -d /run/systemd/system ]; then
@@ -30,6 +30,6 @@ if [ $1 -eq 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
         systemctl is-enabled -q software-update.service && systemctl start software-update.service >/dev/null || :
         systemctl is-enabled -q file-backup.service && systemctl start file-backup.service >/dev/null || :
         systemctl is-enabled -q system-metrics.service && systemctl start system-metrics.service >/dev/null || :
-        systemctl is-enabled -q update-manager.service && systemctl start update-manager.service >/dev/null || :
+        systemctl is-enabled -q kanto-update-manager.service && systemctl start kanto-update-manager.service >/dev/null || :
     fi
 fi

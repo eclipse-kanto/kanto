@@ -101,17 +101,17 @@ if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-decon
     fi
 
         # This will only remove masks created by d-s-h on package removal.
-    deb-systemd-helper unmask 'update-manager.service' >/dev/null || true
+    deb-systemd-helper unmask 'kanto-update-manager.service' >/dev/null || true
 
     # was-enabled defaults to true, so new installations run enable.
-    if deb-systemd-helper --quiet was-enabled 'update-manager.service'; then
+    if deb-systemd-helper --quiet was-enabled 'kanto-update-manager.service'; then
         # Enables the unit on first installation, creates new
         # symlinks on upgrades if the unit file has changed.
-        deb-systemd-helper enable 'update-manager.service' >/dev/null || true
+        deb-systemd-helper enable 'kanto-update-manager.service' >/dev/null || true
     else
         # Update the statefile to add new symlinks (if any), which need to be
         # cleaned up on purge. Also remove old symlinks.
-        deb-systemd-helper update-state 'update-manager.service' >/dev/null || true
+        deb-systemd-helper update-state 'kanto-update-manager.service' >/dev/null || true
     fi
     
 fi
@@ -133,7 +133,7 @@ if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-decon
         deb-systemd-invoke $_dh_action 'software-update.service' >/dev/null || true
         deb-systemd-invoke $_dh_action 'file-backup.service' >/dev/null || true
         deb-systemd-invoke $_dh_action 'system-metrics.service' >/dev/null || true
-        deb-systemd-invoke $_dh_action 'update-manager.service' >/dev/null || true
+        deb-systemd-invoke $_dh_action 'kanto-update-manager.service' >/dev/null || true
     fi
 fi
 # End automatically added section
