@@ -436,7 +436,7 @@ builds:
   - id: build-update-manager
     dir: ./build-tmp/update-manager
     main:  ./cmd/update-manager
-    binary: update-manager/update-manager
+    binary: update-manager/kanto-update-manager
     goos:
       - linux
     goarch:
@@ -459,7 +459,7 @@ builds:
   - id: build-update-manager-pkg
     dir: ./build-tmp/update-manager
     main:  ./cmd/update-manager
-    binary: update-manager
+    binary: kanto-update-manager
     goos:
       - linux
     goarch:
@@ -481,7 +481,7 @@ builds:
     mod_timestamp: '{{ .CommitTimestamp }}'
 archives:
   - id: kanto-archive-all
-    name_template: '{{ .ProjectName }}_{{ .Version }}_linux_{{ if .Amd64 }}x86_64{{ else if .Arm }}armv7{{ else }}{{ .Runtime.Goarch }}{{ end }}'
+    name_template: '{{ .ProjectName }}_{{ .Version }}_linux_{{ if .Amd64 }}x86_64{{ else if .Arm }}armv7{{ else }}{{ .Arch }}{{ end }}'
     builds:
       - build-suite-connector
       - build-container-management
@@ -561,7 +561,7 @@ archives:
           mode: 0644
       # update-manager additional files
       - src: ./build-tmp/update-manager/NOTICE.md
-        dst: update-manager
+        dst: kanto-update-manager
         strip_parent: true
         info:
           mode: 0644
@@ -578,7 +578,7 @@ nfpms:
       - build-system-metrics-pkg
       - build-update-manager-pkg
     bindir: /usr/bin
-    file_name_template: '{{ .ProjectName }}_{{ .Version }}_linux_{{ if .Amd64 }}x86_64{{ else if .Arm }}armv7{{ else }}{{ .Runtime.Goarch }}{{ end }}'
+    file_name_template: '{{ .ProjectName }}_{{ .Version }}_linux_{{ if .Amd64 }}x86_64{{ else if .Arm }}armv7{{ else }}{{ .Arch }}{{ end }}'
     maintainer: Contributors to the Eclipse Foundation, Kanto Project <kanto-dev@eclipse.org>
     description: |-
       Eclipse Kanto™ is a modular IoT edge software that enables devices for IoT with all essentials
@@ -871,20 +871,20 @@ nfpms:
           mode: 0644
         packager: rpm
       - src: ./build-tmp/update-manager/resources/config.json
-        dst: /etc/update-manager/config.json
+        dst: /etc/kanto-update-manager/config.json
         type: config
         file_info:
           mode: 0644
       - src: ./build-tmp/update-manager/NOTICE.md
-        dst: /usr/share/doc/update-manager/NOTICE.md
+        dst: /usr/share/doc/kanto-update-manager/NOTICE.md
         file_info:
           mode: 0644
       - src: ./build-tmp/update-manager/README.md
-        dst: /usr/share/doc/update-manager/README.md
+        dst: /usr/share/doc/kanto-update-manager/README.md
         file_info:
           mode: 0644
       - src: ./build-tmp/update-manager/LICENSE
-        dst: /usr/share/doc/update-manager/LICENSE
+        dst: /usr/share/doc/kanto-update-manager/LICENSE
         file_info:
           mode: 0644
 checksum:
