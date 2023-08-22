@@ -76,6 +76,13 @@ jobs:
           path: ${{ env.BUILD_TMP }}/system-metrics
           ref: ${{ github.ref }}
           token: ${{ secrets.WF_AUTH }}
+      - name: Checkout update-manager
+        uses: actions/checkout@v2
+        with:
+          repository: eclipse-kanto/update-manager
+          path: ${{ env.BUILD_TMP }}/update-manager
+          ref: ${{ github.ref }}
+          token: ${{ secrets.WF_AUTH }}
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
