@@ -22,11 +22,6 @@ To ensure that all steps in this guide can be executed, you need:
 * If you don't have a connected Eclipse Kanto to Eclipse Hono sandbox,
   follow {{% relrefn "hono" %}} Explore via Eclipse Hono {{% /relrefn %}}
 
-* Enable the `things` functionality of the `Update Manager` by adding the `"thingsEnabled": true` property to the `kanto-update-manager` service configuration (by default located at `/etc/kanto-update-manager/config.json`)
-  and restart the service: 
-  ```shell
-  systemctl restart kanto-update-manager
-  ```
 * Enable the `containers update agent` service of the `Container Management` by adding the ` "update_agent": {"enable": true}` property to the `container-management` service configuration (by default located at `/etc/container-management/config.json`)
   and restart the service: 
   ```shell
@@ -39,12 +34,12 @@ First, start the monitoring application that requires the configured Eclipse Hon
 received feedback events triggered by the device:
 
 ```shell
-python3 hono_events.py -t demo -f kanto/device/things/live/messages/feedback
+python3 hono_events.py -t demo -f demo/device/things/live/messages/feedback
 ```
 
 The starting point of the OTA update process is to publish the example `Desired State` specification:
 ```shell
-python3 hono_commands_um.py -t kanto-um-test-1 -d kanto:device -o apply
+python3 hono_commands_um.py -t demo -d demo:device -o apply
 ```
 
 The `Desired State` specification in this case consists of single domain section definition for the containers domain and a three container components - `influxdb`, `hello-world` and `alpine` image.
@@ -59,7 +54,7 @@ The update process is organized into multiple phases, which are triggered by sen
 In the example scenario, the three images for the three container components will be pulled (if not available in the cache locally), created as containers during the `UPDATING` phase and
 started in the `ACTIVATING` phase.
 
-### Monitor OTA update progress
+### Monitor OTA update progress - TODO Rewrite this
 
 During the OTA update, the progress can be tracked and monitored by the Mosquitto listener for the `Desired State` feedback messages, started in the prerequisite section above.
 
@@ -118,7 +113,7 @@ c36523d7-8d17-4255-ae0c-37f11003f658  |hello-world  |docker.io/library/hello-wor
 To update the existing `Desired State` run the command below. The update changes affect two containers - `alpine` and `influxdb`. Being not present in the updated `Desired State` specification, the `alpine` container will be removed from the system. The `influxdb` will be updated to the latest version. The last container - `hello-world` is not affected and any events will be not reported from the container update agent for this particular container.
 
 ```shell
-python3 hono_commands_um.py -t kanto-um-test-1 -d kanto:device -o apply
+python3 hono_commands_um.py -t demo -d demo:device -o apply
 ```
 
 ### List updated containers
@@ -137,7 +132,7 @@ c36523d7-8d17-4255-ae0c-37f11003f658  |hello-world  |docker.io/library/hello-wor
 
 To remove all containers, publish an empty `Desired State` specification (with empty `components` section):
 ```shell
-python3 hono_commands_um.py -t kanto-um-test-1 -d kanto:device -o clean
+python3 hono_commands_um.py -t demo -d demo:device -o clean
 ```
 
 As a final step, execute the command `kanto-cm list` to verify that the containers are actually removed from the Kanto container management.
