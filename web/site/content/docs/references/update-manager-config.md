@@ -13,17 +13,17 @@ To control all aspects of the update manager.
 | Property | Type | Default | Description |
 | - | - | - | - |
 | **General** | | | |
-| domain | string | device | The domain of this update agent, used as MQTT topic prefix |
-| domains | string | containers| A comma-separated list of domains handled by the update manager |
+| domain | string | device | The domain of the update manager, used as MQTT topic prefix |
+| domains | string | containers| A comma-separated list of domains handled by the update manager. This configuration option is available only as a flag, but not inside the JSON config file. In JSON config file, the keys inside the Domain agents structure serve as domain names. |
 | phaseTimeout | string | 10m | Timeout as duration string for completing an Update Orchestration phase |
 | rebootAfter | string | 30s | Time period as duration string to wait before a reboot process is initiated after successful update operation |
 | rebootEnabled | bool | true | Enable the reboot process after successful update operation |
 | reportFeedbackInterval | string | 1m | Time interval as duration string for reporting intermediate desired state feedback messages during an active update operation |
 | currentStateDelay | string | 30s | Time interval as duration string for reporting current state messages |
-| **Domain agents** | | | |
-| name | string | | Domain name |
+| thingsEnabled | bool | true | Specify whether the Update Manager will behave as a thing's feature |
+| **Domain agents** | | | Holds a map structure (_agents_) with update agent configurations where each map key is treated as domain name |
 | readTimeout | string | 1m | Timeout as duration string for reading the current state for the domain |
-| rebootRequired | bool | false | Require a reboot for the domain |
+| rebootRequired | bool | false | Require a reboot for the domain after successful update |
 | **Local connectivity** | | | |
 | broker | string | tcp://localhost:1883 | Address of the MQTT server/broker that the container manager will connect for the local communication, the format is: `scheme://host:port` |
 | keepAlive | bool | 20000 | Keep alive duration in milliseconds for the MQTT requests |
@@ -48,10 +48,17 @@ log level `DEBUG`.
 
 ```json
 {
-	"domains": "containers,custom-domain",
 	"log": {
 		"logFile": "update-manager.log",
 		"logLevel": "DEBUG"
+	},
+	"agents": {
+		"containers": {
+			"readTimeout": "30s"
+		},
+		"custom-domain": {
+			"rebootRequired": true
+		}
 	},
 	"reportFeedbackInterval": "30s"
 }
@@ -65,12 +72,10 @@ The following template illustrates all possible properties with their default va
 ```json
 {
 	"domain": "device",
-	"domains": "containers",
 	"agents": {
 		"containers": {
-			"name": "containers",
 			"rebootRequired": false,
-			"readTimeout": "30s"
+			"readTimeout": "1m"
 		}
 	},
 	"log": {
@@ -95,6 +100,7 @@ The following template illustrates all possible properties with their default va
 	"rebootAfter": "30s",
 	"rebootEnabled": true,
 	"reportFeedbackInterval": "1m",
-	"currentStateDelay": "30s"
+	"currentStateDelay": "30s",
+	"thingsEnabled": true
 }
 ```
