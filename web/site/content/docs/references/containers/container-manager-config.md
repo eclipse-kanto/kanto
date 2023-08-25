@@ -3,7 +3,7 @@ title: "Manager configuration"
 type: docs
 description: >
   Customize the container manager components.
-weight: 2
+weight: 1
 ---
 
 ### Properties
