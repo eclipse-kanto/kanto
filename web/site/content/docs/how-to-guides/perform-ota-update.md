@@ -6,7 +6,7 @@ description: >
 weight: 3
 ---
 
-By following the steps below you will publish a simple `Desired State` specification via a publicly available Eclipse Hono sandbox and then the specification will handled by the Eclipse Kanto Update Manager, which will trigger an OTA update on
+By following the steps below you will publish a simple `Desired State` specification via a publicly available Eclipse Hono sandbox and then the specification will be handled by the Eclipse Kanto Update Manager, which will trigger an OTA update on
 the edge device.
 
 A simple monitoring application will track the progress and the status of the update process.
@@ -105,7 +105,7 @@ The Update Manager reports at a time interval of a second the status of the acti
 
 ### List containers
 
-After the update process is completed, list the installed containers by executing the command `kanto-cm list` to the verify the `Desired State` is applied correctly.
+After the update process is completed, list the installed containers by executing the command `kanto-cm list` to verify if the `Desired State` is applied correctly.
 
 The output of the command should display the info about the three containers, described in the `Desired State` specification. The `influxdb` is expected to be in `RUNNING` state and
 the other containers in status `EXITED`. For example :
