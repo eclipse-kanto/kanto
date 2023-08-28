@@ -6,11 +6,10 @@ description: >
 weight: 3
 ---
 
-By following the steps below you will publish a simple `Desired State` specification to a MQTT topic
-and then the specification will be forwarded to the Update Manager, which will trigger an OTA update on
+By following the steps below you will publish a simple `Desired State` specification via a publicly available Eclipse Hono sandbox and then the specification will handled by the Eclipse Kanto Update Manager, which will trigger an OTA update on
 the edge device.
 
-A simple listener for MQTT messages will track the progress and the status of the update process.
+A simple monitoring application will track the progress and the status of the update process.
 ### Before you begin
 
 To ensure that all steps in this guide can be executed, you need:
@@ -21,6 +20,15 @@ To ensure that all steps in this guide can be executed, you need:
 
 * If you don't have a connected Eclipse Kanto to Eclipse Hono sandbox,
   follow {{% relrefn "hono" %}} Explore via Eclipse Hono {{% /relrefn %}}
+
+* The {{% refn "https://github.com/eclipse-kanto/kanto/blob/main/quickstart/hono_commands_um.py" %}}
+  update manager application {{% /refn %}}
+
+  Navigate to the `quickstart` folder where the resources from the {{% relrefn "hono" %}} Explore via Eclipse Hono {{% /relrefn %}}
+  guide are located and execute the following script:
+
+  ```shell
+  wget https://github.com/eclipse-kanto/kanto/raw/main/quickstart/hono_commands_um.py
 
 * Enable the `containers update agent` service of the `Container Management` by adding the ` "update_agent": {"enable": true}` property to the `container-management` service configuration (by default located at `/etc/container-management/config.json`)
   and restart the service: 
@@ -54,43 +62,44 @@ The update process is organized into multiple phases, which are triggered by sen
 In the example scenario, the three images for the three container components will be pulled (if not available in the cache locally), created as containers during the `UPDATING` phase and
 started in the `ACTIVATING` phase.
 
-### Monitor OTA update progress - TODO Rewrite this
+### Monitor OTA update progress
 
-During the OTA update, the progress can be tracked and monitored by the Mosquitto listener for the `Desired State` feedback messages, started in the prerequisite section above.
+During the OTA update, the progress can be tracked in the monitoring application fot the `Desired State` feedback messages, started in the prerequisite section above.
 
-The Update Manager reports to the local Mosquitto broker at a time interval of a second the status of the active update process. For example:
+The Update Manager reports at a time interval of a second the status of the active update process. For example:
 ```
 {
-	"activityId": "testActivityId",
-	"payload": {
-		"status": "RUNNING",
-		"actions": [
-			{
-				"component": {
-					"id": "containers:hello-world",
-					"version": "latest"
-				},
-				"status": "UPDATE_SUCCESS",
-				"message": "New container instance is started."
-			},
-			{
-				"component": {
-					"id": "containers:influxdb",
-					"version": "2.7.1"
-				},
-				"status": "UPDATE_SUCCESS",
-				"message": "New container instance is started."
-			},
-			{
-				"component": {
-					"id": "containers:alpine",
-					"version": "latest"
-				},
-				"status": "UPDATING",
-				"message": "New container created."
-			}
-		]
-	}
+   "activityId":"e5c858cc-2057-41b0-bd5f-83aee0aad22e",
+   "timestamp":1693201088401,
+   "desiredStateFeedback":{
+      "status":"RUNNING",
+      "actions":[
+         {
+            "component":{
+               "id":"containers:alpine",
+               "version":"latest"
+            },
+            "status":"UPDATE_SUCCESS",
+            "message":"New container instance is started."
+         },
+         {
+            "component":{
+               "id":"containers:hello-world",
+               "version":"latest"
+            },
+            "status":"UPDATE_SUCCESS",
+            "message":"New container instance is started."
+         },
+         {
+            "component":{
+               "id":"containers:influxdb",
+               "version":"2.7.1"
+            },
+            "status":"UPDATING",
+            "message":"New container created."
+         }
+      ]
+   }
 }
 ```
 
@@ -110,21 +119,21 @@ c36523d7-8d17-4255-ae0c-37f11003f658  |hello-world  |docker.io/library/hello-wor
 
 ### Update `Desired State` specification
 
-To update the existing `Desired State` run the command below. The update changes affect two containers - `alpine` and `influxdb`. Being not present in the updated `Desired State` specification, the `alpine` container will be removed from the system. The `influxdb` will be updated to the latest version. The last container - `hello-world` is not affected and any events will be not reported from the container update agent for this particular container.
+To update the existing `Desired State` run the command below. The update changes affect two containers - `alpine` and `influxdb`. Being not present in the updated `Desired State` specification, the `alpine` container will be removed from the system. The `influxdb` will be updated to version 1.8.5. The last container - `hello-world` is not affected and any events will be not reported from the container update agent for this particular container.
 
 ```shell
-python3 hono_commands_um.py -t demo -d demo:device -o apply
+python3 hono_commands_um.py -t demo -d demo:device -o update
 ```
 
 ### List updated containers
 
 After the update process of the existing `Desired State` is completed, list again the available containers to the verify the `Desired State` is updated correctly.
 
-The output of the command should display the info about the two containers, described in the `Desired State` specification. The `influxdb` is expected to be updated with the latest version and in `RUNNING` state and `hello-world` container to be status `EXITED` with version unchanged. The `alpine` container must be removed and not displayed.
+The output of the command should display the info about the two containers, described in the `Desired State` specification. The `influxdb` is expected to be updated with the version 1.8.5 and in `RUNNING` state and `hello-world` container to be status `EXITED` with version unchanged. The `alpine` container must be removed and not displayed.
 ```
 ID                                    |Name         |Image                               |Status   |Finished At |Exit Code
 |-------------------------------------|-------------|------------------------------------|----------------------|---------
-7fe6b689-eb76-476d-a730-c2f422d6e8ea  |influxdb     |docker.io/library/influxdb:latest   |Running  |            |0
+7fe6b689-eb76-476d-a730-c2f422d6e8ea  |influxdb     |docker.io/library/influxdb:1.8.5    |Running  |            |0
 c36523d7-8d17-4255-ae0c-37f11003f658  |hello-world  |docker.io/library/hello-world:latest|Exited   |            |0
 ```
 

@@ -46,7 +46,7 @@ containers_desired_state = Template("""
     },
     "path": "/features/UpdateManager/inbox/messages/apply",
     "value": {
-    "activityId": "testActivityId",
+    "activityId": "$activity_id",
     "desiredState": {
         "domains": [
             {
@@ -92,7 +92,7 @@ containers_desired_state_clean_up = Template("""
     },
     "path": "/features/UpdateManager/inbox/messages/apply",
     "value": {
-    "activityId": "testActivityId",
+    "activityId": "$activity_id",
     "desiredState": {
         "domains": [
             {
@@ -116,7 +116,7 @@ um_refresh_state = Template("""
     },
     "path": "/features/UpdateManager/inbox/messages/refresh",
     "value": {
-        "activityId": "testActivityId",
+        "activityId": "$activity_id",
     }
 }
 """)
@@ -138,7 +138,7 @@ class CommandResponsesHandler(MessagingHandler):
         response = json.loads(event.message.body)
         print(json.dumps(response, indent=2))
         if response["status"] == 204:
-            print('[ok]', "su")
+            print('[ok]', "um")
         else:
             print('[error]')
         event.receiver.close()
@@ -164,21 +164,24 @@ class CommandsInvoker(MessagingHandler):
         print('[sending command]')
         correlation_id = str(uuid.uuid4())
         namespaced_id = device_id.split(':', 1)
+        activity_id = str(uuid.uuid4())
 
         influxdb_version = "1.8.4"
         alpine_container = alpine_container_template
         if operation == "update":
-            influxdb_version = "latest"
+            influxdb_version = "1.8.5"
             alpine_container = ""
         if operation == "clean":
             payload = containers_desired_state_clean_up.substitute(namespace=namespaced_id[0],
                                                                    name=namespaced_id[1],
-                                                                   correlation_id=correlation_id)
+                                                                   correlation_id=correlation_id,
+                                                                   activity_id=activity_id)
         else:
             payload = containers_desired_state.substitute(namespace=namespaced_id[0], name=namespaced_id[1],
                                                           correlation_id=correlation_id,
                                                           influxdb_version=influxdb_version,
-                                                          alpine_container=alpine_container)
+                                                          alpine_container=alpine_container,
+                                                          activity_id=activity_id)
         print(json.dumps(json.loads(payload), indent=2))
         msg = Message(body=payload, address='{}/{}'.format(address, device_id),
                       content_type="application/json",
