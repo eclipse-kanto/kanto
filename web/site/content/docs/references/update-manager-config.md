@@ -26,14 +26,14 @@ To control all aspects of the update manager.
 | rebootRequired | bool | false | Require a reboot for the domain after successful update |
 | **Local connectivity** | | | |
 | broker | string | tcp://localhost:1883 | Address of the MQTT server/broker that the container manager will connect for the local communication, the format is: `scheme://host:port` |
-| keepAlive | bool | 20000 | Keep alive duration in milliseconds for the MQTT requests |
-| disconnectTimeout | int | 250 | Disconnect timeout in milliseconds for the MQTT server/broker |
+| keepAlive | string | 20s | Keep alive duration for the MQTT requests as duration string |
+| disconnectTimeout | string | 250ms | Disconnect timeout for the MQTT server/broker as duration string |
 | username | string | | Username that is a part of the credentials |
 | password | string | | Password that is a part of the credentials |
-| acknowledgeTimeout | int | 15000 | Acknowledge timeout in milliseconds for the MQTT requests |
-| connectTimeout | int | 30000 | Connect timeout in milliseconds for the MQTT server/broker |
-| subscribeTimeout | int | 15000 | Subscribe timeout in milliseconds for the MQTT requests |
-| unsubscribeTimeout | int | 5000 | Unsubscribe timeout in milliseconds for the MQTT requests |
+| acknowledgeTimeout | string | 15s | Acknowledge timeout for the MQTT requests as duration string |
+| connectTimeout | string | 30s | Connect timeout for the MQTT server/broker as duration string |
+| subscribeTimeout | string | 15s | Subscribe timeout for the MQTT requests as duration string |
+| unsubscribeTimeout | string | 5s | Unsubscribe timeout for the MQTT requests as duration string |
 | **Logging** | | | |
 | logFile | string | | Path to the file where the update manager’s log messages are written |
 | logLevel | string | INFO | All log messages at this or a higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
@@ -87,14 +87,14 @@ The following template illustrates all possible properties with their default va
 	},
 	"connection": {
 		"broker": "tcp://localhost:1883",
-		"keepAlive": 20000,
-		"acknowledgeTimeout": 15000,
+		"keepAlive": "20s",
+		"acknowledgeTimeout": "15s",
 		"username": "",
 		"password": "",
-		"connectTimeout": 30000,
-		"disconnectTimeout": 250,
-		"subscribeTimeout": 15000,
-		"unsubscribeTimeout": 5000
+		"connectTimeout": "30a",
+		"disconnectTimeout": "250ms",
+		"subscribeTimeout": "15s",
+		"unsubscribeTimeout": "5s"
 	},
 	"phaseTimeout": "10m",
 	"rebootAfter": "30s",
