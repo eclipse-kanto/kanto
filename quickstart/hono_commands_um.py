@@ -32,6 +32,10 @@ alpine_container_template = """
         {
             "key": "image",
             "value": "docker.io/library/alpine:latest"
+        },
+        {
+            "key": "restartPolicy",
+            "value": "no"
         }
     ]
 },"""
@@ -71,6 +75,10 @@ containers_desired_state = Template("""
                             {
                                 "key": "image",
                                 "value": "docker.io/library/hello-world:latest"
+                            },
+                            {
+                                "key": "restartPolicy",
+                                "value": "no"
                             }
                         ]
                     }
