@@ -67,7 +67,8 @@ started in the `ACTIVATING` phase.
 During the OTA update, the progress can be tracked in the monitoring application fot the `Desired State` feedback messages, started in the prerequisite section above.
 
 The Update Manager reports at a time interval of a second the status of the active update process. For example:
-```
+
+```json
 {
    "activityId":"e5c858cc-2057-41b0-bd5f-83aee0aad22e",
    "timestamp":1693201088401,
@@ -109,7 +110,8 @@ After the update process is completed, list the installed containers by executin
 
 The output of the command should display the info about the three containers, described in the `Desired State` specification. The `influxdb` is expected to be in `RUNNING` state and
 the other containers in status `EXITED`. For example :
-```
+
+```text
 ID                                    |Name         |Image                               |Status   |Finished At |Exit Code
 |-------------------------------------|-------------|------------------------------------|----------------------|---------
 7fe6b689-eb76-476d-a730-c2f422d6e8ea  |influxdb     |docker.io/library/influxdb:1.8.4    |Running  |            |0
@@ -130,7 +132,8 @@ python3 hono_commands_um.py -t demo -d demo:device -o update
 After the update process of the existing `Desired State` is completed, list again the available containers to the verify the `Desired State` is updated correctly.
 
 The output of the command should display the info about the two containers, described in the `Desired State` specification. The `influxdb` is expected to be updated with the version 1.8.5 and in `RUNNING` state and `hello-world` container to be status `EXITED` with version unchanged. The `alpine` container must be removed and not displayed.
-```
+
+```text
 ID                                    |Name         |Image                               |Status   |Finished At |Exit Code
 |-------------------------------------|-------------|------------------------------------|----------------------|---------
 7fe6b689-eb76-476d-a730-c2f422d6e8ea  |influxdb     |docker.io/library/influxdb:1.8.5    |Running  |            |0
