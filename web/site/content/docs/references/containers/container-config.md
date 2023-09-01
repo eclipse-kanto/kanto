@@ -34,7 +34,6 @@ To control all aspects of the container instance behavior.
 | path_in_container | string | | Path to the device in the container |
 | cgroup_permissions | string | rwm | Cgroup permissions for the device access, possible options are: r(read), w(write), m(mknod) and all combinations are possible |
 | privileged | bool | false | Grant root capabilities to all devices on the host system |
-| extra_capabilities | string[] | | Add additional Linux capabilities to the container |
 | **Host resources - mount points** | | | |
 | source | string | | Path to the file or directory on the host that is referred from within the container |
 | destination | string | | Path to the file or directory that is mounted inside the container |
@@ -119,7 +118,6 @@ Be aware that some combinations may require property removal
         "network_mode": "bridge",
         "privileged": false,
         "extra_hosts": [],
-        "extra_capabilities": [],
         "port_mappings": [
             {
                 "proto": "tcp",
