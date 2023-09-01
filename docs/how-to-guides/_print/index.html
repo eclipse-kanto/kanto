@@ -84,51 +84,51 @@ received feedback events triggered by the device:</p><div class=highlight><pre t
 </span></span></code></pre></div><p>The starting point of the OTA update process is to publish the example <code>Desired State</code> specification:</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>python3 hono_commands_um.py -t demo -d demo:device -o apply
 </span></span></code></pre></div><p>The <code>Desired State</code> specification in this case consists of single domain section definition for the containers domain and a three container components - <code>influxdb</code>, <code>hello-world</code> and <code>alpine</code> image.</p><h3 id=apply-desired-state-specification>Apply <code>Desired State</code> specification</h3><p>The Update Manager receives the published <code>Desired State</code> to the local Mosquitto broker, splits the specification (in this case into single domain) and then
 distributes the processed specification to the domain agents which initiates the actual update process logic on the domain agents side.</p><p>The update process is organized into multiple phases, which are triggered by sending specific <code>Desired State</code> commands (<code>DOWNLOAD/UPDATE/ACTIVATE</code>).</p><p>In the example scenario, the three images for the three container components will be pulled (if not available in the cache locally), created as containers during the <code>UPDATING</code> phase and
-started in the <code>ACTIVATING</code> phase.</p><h3 id=monitor-ota-update-progress>Monitor OTA update progress</h3><p>During the OTA update, the progress can be tracked in the monitoring application fot the <code>Desired State</code> feedback messages, started in the prerequisite section above.</p><p>The Update Manager reports at a time interval of a second the status of the active update process. For example:</p><pre tabindex=0><code>{
-   &#34;activityId&#34;:&#34;e5c858cc-2057-41b0-bd5f-83aee0aad22e&#34;,
-   &#34;timestamp&#34;:1693201088401,
-   &#34;desiredStateFeedback&#34;:{
-      &#34;status&#34;:&#34;RUNNING&#34;,
-      &#34;actions&#34;:[
-         {
-            &#34;component&#34;:{
-               &#34;id&#34;:&#34;containers:alpine&#34;,
-               &#34;version&#34;:&#34;latest&#34;
-            },
-            &#34;status&#34;:&#34;UPDATE_SUCCESS&#34;,
-            &#34;message&#34;:&#34;New container instance is started.&#34;
-         },
-         {
-            &#34;component&#34;:{
-               &#34;id&#34;:&#34;containers:hello-world&#34;,
-               &#34;version&#34;:&#34;latest&#34;
-            },
-            &#34;status&#34;:&#34;UPDATE_SUCCESS&#34;,
-            &#34;message&#34;:&#34;New container instance is started.&#34;
-         },
-         {
-            &#34;component&#34;:{
-               &#34;id&#34;:&#34;containers:influxdb&#34;,
-               &#34;version&#34;:&#34;2.7.1&#34;
-            },
-            &#34;status&#34;:&#34;UPDATING&#34;,
-            &#34;message&#34;:&#34;New container created.&#34;
-         }
-      ]
-   }
-}
-</code></pre><h3 id=list-containers>List containers</h3><p>After the update process is completed, list the installed containers by executing the command <code>kanto-cm list</code> to verify if the <code>Desired State</code> is applied correctly.</p><p>The output of the command should display the info about the three containers, described in the <code>Desired State</code> specification. The <code>influxdb</code> is expected to be in <code>RUNNING</code> state and
-the other containers in status <code>EXITED</code>. For example :</p><pre tabindex=0><code>ID                                    |Name         |Image                               |Status   |Finished At |Exit Code
-|-------------------------------------|-------------|------------------------------------|----------------------|---------
-7fe6b689-eb76-476d-a730-c2f422d6e8ea  |influxdb     |docker.io/library/influxdb:1.8.4    |Running  |            |0
-c36523d7-8d17-4255-ae0c-37f11003f658  |hello-world  |docker.io/library/hello-world:latest|Exited   |            |0
-9b99978b-2593-4736-bb52-7a07be4a7ed1  |alpine       |docker.io/library/alpine:latest     |Exited   |            |0
-</code></pre><h3 id=update-desired-state-specification>Update <code>Desired State</code> specification</h3><p>To update the existing <code>Desired State</code> run the command below. The update changes affect two containers - <code>alpine</code> and <code>influxdb</code>. Being not present in the updated <code>Desired State</code> specification, the <code>alpine</code> container will be removed from the system. The <code>influxdb</code> will be updated to version 1.8.5. The last container - <code>hello-world</code> is not affected and any events will be not reported from the container update agent for this particular container.</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>python3 hono_commands_um.py -t demo -d demo:device -o update
-</span></span></code></pre></div><h3 id=list-updated-containers>List updated containers</h3><p>After the update process of the existing <code>Desired State</code> is completed, list again the available containers to the verify the <code>Desired State</code> is updated correctly.</p><p>The output of the command should display the info about the two containers, described in the <code>Desired State</code> specification. The <code>influxdb</code> is expected to be updated with the version 1.8.5 and in <code>RUNNING</code> state and <code>hello-world</code> container to be status <code>EXITED</code> with version unchanged. The <code>alpine</code> container must be removed and not displayed.</p><pre tabindex=0><code>ID                                    |Name         |Image                               |Status   |Finished At |Exit Code
-|-------------------------------------|-------------|------------------------------------|----------------------|---------
-7fe6b689-eb76-476d-a730-c2f422d6e8ea  |influxdb     |docker.io/library/influxdb:1.8.5    |Running  |            |0
-c36523d7-8d17-4255-ae0c-37f11003f658  |hello-world  |docker.io/library/hello-world:latest|Exited   |            |0
-</code></pre><h3 id=remove-all-containers>Remove all containers</h3><p>To remove all containers, publish an empty <code>Desired State</code> specification (with empty <code>components</code> section):</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>python3 hono_commands_um.py -t demo -d demo:device -o clean
+started in the <code>ACTIVATING</code> phase.</p><h3 id=monitor-ota-update-progress>Monitor OTA update progress</h3><p>During the OTA update, the progress can be tracked in the monitoring application fot the <code>Desired State</code> feedback messages, started in the prerequisite section above.</p><p>The Update Manager reports at a time interval of a second the status of the active update process. For example:</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>   <span style=color:#1e90ff;font-weight:700>&#34;activityId&#34;</span>:<span style=color:#a50>&#34;e5c858cc-2057-41b0-bd5f-83aee0aad22e&#34;</span>,
+</span></span><span style=display:flex><span>   <span style=color:#1e90ff;font-weight:700>&#34;timestamp&#34;</span>:<span style=color:#099>1693201088401</span>,
+</span></span><span style=display:flex><span>   <span style=color:#1e90ff;font-weight:700>&#34;desiredStateFeedback&#34;</span>:{
+</span></span><span style=display:flex><span>      <span style=color:#1e90ff;font-weight:700>&#34;status&#34;</span>:<span style=color:#a50>&#34;RUNNING&#34;</span>,
+</span></span><span style=display:flex><span>      <span style=color:#1e90ff;font-weight:700>&#34;actions&#34;</span>:[
+</span></span><span style=display:flex><span>         {
+</span></span><span style=display:flex><span>            <span style=color:#1e90ff;font-weight:700>&#34;component&#34;</span>:{
+</span></span><span style=display:flex><span>               <span style=color:#1e90ff;font-weight:700>&#34;id&#34;</span>:<span style=color:#a50>&#34;containers:alpine&#34;</span>,
+</span></span><span style=display:flex><span>               <span style=color:#1e90ff;font-weight:700>&#34;version&#34;</span>:<span style=color:#a50>&#34;latest&#34;</span>
+</span></span><span style=display:flex><span>            },
+</span></span><span style=display:flex><span>            <span style=color:#1e90ff;font-weight:700>&#34;status&#34;</span>:<span style=color:#a50>&#34;UPDATE_SUCCESS&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#1e90ff;font-weight:700>&#34;message&#34;</span>:<span style=color:#a50>&#34;New container instance is started.&#34;</span>
+</span></span><span style=display:flex><span>         },
+</span></span><span style=display:flex><span>         {
+</span></span><span style=display:flex><span>            <span style=color:#1e90ff;font-weight:700>&#34;component&#34;</span>:{
+</span></span><span style=display:flex><span>               <span style=color:#1e90ff;font-weight:700>&#34;id&#34;</span>:<span style=color:#a50>&#34;containers:hello-world&#34;</span>,
+</span></span><span style=display:flex><span>               <span style=color:#1e90ff;font-weight:700>&#34;version&#34;</span>:<span style=color:#a50>&#34;latest&#34;</span>
+</span></span><span style=display:flex><span>            },
+</span></span><span style=display:flex><span>            <span style=color:#1e90ff;font-weight:700>&#34;status&#34;</span>:<span style=color:#a50>&#34;UPDATE_SUCCESS&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#1e90ff;font-weight:700>&#34;message&#34;</span>:<span style=color:#a50>&#34;New container instance is started.&#34;</span>
+</span></span><span style=display:flex><span>         },
+</span></span><span style=display:flex><span>         {
+</span></span><span style=display:flex><span>            <span style=color:#1e90ff;font-weight:700>&#34;component&#34;</span>:{
+</span></span><span style=display:flex><span>               <span style=color:#1e90ff;font-weight:700>&#34;id&#34;</span>:<span style=color:#a50>&#34;containers:influxdb&#34;</span>,
+</span></span><span style=display:flex><span>               <span style=color:#1e90ff;font-weight:700>&#34;version&#34;</span>:<span style=color:#a50>&#34;2.7.1&#34;</span>
+</span></span><span style=display:flex><span>            },
+</span></span><span style=display:flex><span>            <span style=color:#1e90ff;font-weight:700>&#34;status&#34;</span>:<span style=color:#a50>&#34;UPDATING&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#1e90ff;font-weight:700>&#34;message&#34;</span>:<span style=color:#a50>&#34;New container created.&#34;</span>
+</span></span><span style=display:flex><span>         }
+</span></span><span style=display:flex><span>      ]
+</span></span><span style=display:flex><span>   }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=list-containers>List containers</h3><p>After the update process is completed, list the installed containers by executing the command <code>kanto-cm list</code> to verify if the <code>Desired State</code> is applied correctly.</p><p>The output of the command should display the info about the three containers, described in the <code>Desired State</code> specification. The <code>influxdb</code> is expected to be in <code>RUNNING</code> state and
+the other containers in status <code>EXITED</code>. For example :</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text><span style=display:flex><span>ID                                    |Name         |Image                               |Status   |Finished At |Exit Code
+</span></span><span style=display:flex><span>|-------------------------------------|-------------|------------------------------------|----------------------|---------
+</span></span><span style=display:flex><span>7fe6b689-eb76-476d-a730-c2f422d6e8ea  |influxdb     |docker.io/library/influxdb:1.8.4    |Running  |            |0
+</span></span><span style=display:flex><span>c36523d7-8d17-4255-ae0c-37f11003f658  |hello-world  |docker.io/library/hello-world:latest|Exited   |            |0
+</span></span><span style=display:flex><span>9b99978b-2593-4736-bb52-7a07be4a7ed1  |alpine       |docker.io/library/alpine:latest     |Exited   |            |0
+</span></span></code></pre></div><h3 id=update-desired-state-specification>Update <code>Desired State</code> specification</h3><p>To update the existing <code>Desired State</code> run the command below. The update changes affect two containers - <code>alpine</code> and <code>influxdb</code>. Being not present in the updated <code>Desired State</code> specification, the <code>alpine</code> container will be removed from the system. The <code>influxdb</code> will be updated to version 1.8.5. The last container - <code>hello-world</code> is not affected and any events will be not reported from the container update agent for this particular container.</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>python3 hono_commands_um.py -t demo -d demo:device -o update
+</span></span></code></pre></div><h3 id=list-updated-containers>List updated containers</h3><p>After the update process of the existing <code>Desired State</code> is completed, list again the available containers to the verify the <code>Desired State</code> is updated correctly.</p><p>The output of the command should display the info about the two containers, described in the <code>Desired State</code> specification. The <code>influxdb</code> is expected to be updated with the version 1.8.5 and in <code>RUNNING</code> state and <code>hello-world</code> container to be status <code>EXITED</code> with version unchanged. The <code>alpine</code> container must be removed and not displayed.</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text><span style=display:flex><span>ID                                    |Name         |Image                               |Status   |Finished At |Exit Code
+</span></span><span style=display:flex><span>|-------------------------------------|-------------|------------------------------------|----------------------|---------
+</span></span><span style=display:flex><span>7fe6b689-eb76-476d-a730-c2f422d6e8ea  |influxdb     |docker.io/library/influxdb:1.8.5    |Running  |            |0
+</span></span><span style=display:flex><span>c36523d7-8d17-4255-ae0c-37f11003f658  |hello-world  |docker.io/library/hello-world:latest|Exited   |            |0
+</span></span></code></pre></div><h3 id=remove-all-containers>Remove all containers</h3><p>To remove all containers, publish an empty <code>Desired State</code> specification (with empty <code>components</code> section):</p><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>python3 hono_commands_um.py -t demo -d demo:device -o clean
 </span></span></code></pre></div><p>As a final step, execute the command <code>kanto-cm list</code> to verify that the containers are actually removed from the Kanto container management.
 The expected output is <code>No found containers.</code>.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-6fde9501abfa40949911a42750ff0751>5 - Monitor system metrics</h1><div class=lead>Monitor system metrics from your edge device.</div><p>By following the steps below you will be able to monitor the system metrics from your edge device
 via a publicly available Eclipse Hono sandbox using Eclipse Kanto. A simple Eclipse Hono
