@@ -53,7 +53,7 @@ class CommandResponsesHandler(MessagingHandler):
         print('[got response]')
         response = json.loads(event.message.body)
         print(json.dumps(response, indent=2))
-        if 200 <= response["status"] <= 299:
+        if response["status"] == 204:
             print('[ok]', command)
         else:
             print('[error]')
