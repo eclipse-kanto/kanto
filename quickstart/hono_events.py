@@ -32,24 +32,16 @@ class EventsHandler(MessagingHandler):
         print('[connected]')
 
     def on_message(self, event):
+        print('[event received]')
         if event.message.body is not None:
-            body = json.loads(event.message.body)
-            if topic_filter != "" and topic_filter != body['topic']:
-                return
-            print('[event received]')
-            print(json.dumps(body, indent=2))
+            print(json.dumps(json.loads(event.message.body), indent=2))
         else:
-            print('[empty event received]')
+            print('<empty>')
 
 
 # Parse command line args
-options, reminder = getopt.getopt(sys.argv[1:], 't:f:')
-opts_dict = dict(options)
-tenant_id = os.environ.get("TENANT") or opts_dict['-t']
-if '-f' in opts_dict:
-    topic_filter = opts_dict['-f']
-else:
-    topic_filter = ""
+options, reminder = getopt.getopt(sys.argv[1:], 't:')
+tenant_id = os.environ.get("TENANT") or dict(options)['-t']
 
 uri = 'amqps://hono.eclipseprojects.io:15671'
 address = 'event/{}'.format(tenant_id)

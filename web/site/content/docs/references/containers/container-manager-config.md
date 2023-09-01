@@ -58,7 +58,7 @@ To control all aspects of the container manager behavior.
 | enable | bool | true | Permit the container manager digital twin representation |
 | home_dir | string | /var/lib/container-management | Home directory for the digital twin data |
 | features | string[] | ContainerFactory, SoftwareUpdatable, Metrics | Features that will be registered for the container manager digital twin, the possible values are: ContainerFactory, SoftwareUpdatable and Metrics |
-| **Digital twin - connectivity (Deprecated since v0.1.0-M4, replaced by Local connectivity)** | | | |
+| **Digital twin - connectivity** | | | |
 | broker_url | string | tcp://localhost:1883 | Address of the MQTT server/broker that the container manager will connect for the local communication, the format is: `scheme://host:port` |
 | keep_alive | int | 20000 | Keep alive duration in milliseconds for the MQTT requests |
 | disconnect_timeout | int | 250 | Disconnect timeout in milliseconds for the MQTT server/broker |
@@ -68,26 +68,7 @@ To control all aspects of the container manager behavior.
 | acknowledge_timeout | int | 15000 | Acknowledge timeout in milliseconds for the MQTT requests |
 | subscribe_timeout | int | 15000 | Subscribe timeout in milliseconds for the MQTT requests |
 | unsubscribe_timeout | int | 5000 | Unsubscribe timeout in milliseconds for the MQTT requests |
-| **Digital twin - connectivity - TLS (Deprecated since v0.1.0-M4, replaced by Local Connectivity - TLS)** | | | |
-| root_ca | string | | PEM encoded CA certificates file |
-| client_cert | string | | PEM encoded certificate file to authenticate to the MQTT server/broker |
-| client_key | string | | PEM encoded unencrypted private key file to authenticate to the MQTT server/broker |
-| **Update Agent** | | | |
-| enable | bool | true | Permit the containers update agent service |
-| domain | string | containers | The domain of the update agent, used as a prefix in MQTT topic handled by the update agent implementation |
-| containers | string[] | | List of system (core) containers that shall not be updated/destroyed by the containers update agent |
-| verbose_inventory_report | bool | false | Includes extensive, verbose key-value properties in containers software nodes for the current state report. If not set, only valuable and non-default key-value parameters are reported |
-| **Local connectivity** | | | |
-| broker_url | string | tcp://localhost:1883 | Address of the MQTT server/broker that the container manager will connect for the local communication, the format is: `scheme://host:port` |
-| keep_alive | string | 20s | Keep alive duration for the MQTT requests, duration string format, e.g. 1h2m3s5ms |
-| disconnect_timeout | string | 250ms | Disconnect timeout for the MQTT server/broker, duration string format, e.g. 1h2m3s5ms |
-| client_username | string | | Username that is a part of the credentials |
-| client_password | string | | Password that is a part of the credentials |
-| connect_timeout | string | 30s | Connect timeout for the MQTT server/broker, duration string format, e.g. 1h2m3s5ms |
-| acknowledge_timeout | string | 15s | Acknowledge timeout for the MQTT requests, duration string format, e.g. 1h2m3s5ms |
-| subscribe_timeout | string | 15s | Subscribe timeout for the MQTT requests, duration string format, e.g. 1h2m3s5ms |
-| unsubscribe_timeout | string | 5s | Unsubscribe timeout for the MQTT requests, duration string format, e.g. 1h2m3s5ms |
-| **Local connectivity - TLS** | | | |
+| **Digital twin - connectivity - TLS** | | | |
 | root_ca | string | | PEM encoded CA certificates file |
 | client_cert | string | | PEM encoded certificate file to authenticate to the MQTT server/broker |
 | client_key | string | | PEM encoded unencrypted private key file to authenticate to the MQTT server/broker |
@@ -192,30 +173,22 @@ Be aware that in the registry configuration the host (used as a key) has to be s
             "ContainerFactory",
             "SoftwareUpdatable",
             "Metrics"
-        ]
-    },
-    "update_agent": {
-        "enable": true,
-        "domain": "containers",
-        "system_containers": [
-            "my-core-container-that-is-auto-deployed-and-updatable-only-through-firmware-update"
         ],
-        "verbose_inventory_report": false,
-    },
-    "connection": {
-        "broker_url": "tcp://localhost:1883",
-        "keep_alive": "20s",
-        "disconnect_timeout": "250ms",
-        "client_username": "",
-        "client_password": "",
-        "connect_timeout": "30s",
-        "acknowledge_timeout": "15s",
-        "subscribe_timeout": "15s",
-        "unsubscribe_timeout": "5s",
-        "transport": {
-            "root_ca": "",
-            "client_cert": "",
-            "client_key": ""
+        "connection": {
+            "broker_url": "tcp://localhost:1883",
+            "keep_alive": 20000,
+            "disconnect_timeout": 250,
+            "client_username": "",
+            "client_password": "",
+            "connect_timeout": 30000,
+            "acknowledge_timeout": 15000,
+            "subscribe_timeout": 15000,
+            "unsubscribe_timeout": 5000,
+            "transport": {
+                "root_ca": "",
+                "client_cert": "",
+                "client_key": ""
+            }
         }
     },
     "log": {
