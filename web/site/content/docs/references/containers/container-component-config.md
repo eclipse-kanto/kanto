@@ -7,7 +7,7 @@ weight: 3
 ---
 
 ### Domain Identifier
-The deafult domain identifier for the Containers Update Agent is `containers`.
+The default domain identifier for the Containers Update Agent is `containers`.
 This can be modified within the update agent section in the [container management JSON config file](./container-manager-config).
 
 ### Containers Update Agent Properties 
@@ -35,7 +35,7 @@ To control all aspects of the container instance behavior. As defined in the Des
 | **IO config** | | | |
 | terminal | No | false | Boolean flag. Enables terminal for the current container, e.g. attach standard streams to a TTY. |
 | interactive | No | false | Boolean flag. Enables interaction with the container, e.g. open the terminal's standard input for an interaction with the container. |
-| priviledged | No | false | Boolean flag. Creates the container as privileged, grants root capabilities to all devices on the host system |
+| privileged | No | false | Boolean flag. Creates the container as privileged, grants root capabilities to all devices on the host system |
 | **Restart policy config** | | | |
 | restartPolicy | string | unless-stopped | The container's restart policy, the supported values are: `always` - an attempt to restart the container will be me made each time the container exits regardless of the exit code, `no` - no attempts to restart the container for any reason will be made, `on-failure` - restart attempts will be made if the container exits with an exit code != 0, `unless-stopped` - restart attempts will be made only if the container has not been stopped by the user. |
 | restartMaxRetries | No | 1 | Integer value. Maximum number of retries that are made to restart the container on exit with fail, valid only if the `restartPolicy` is `on-failure`. |
@@ -119,7 +119,7 @@ To control all aspects of the container instance behavior. As defined in the Des
 							"value": "true"
 						},
 						{
-							"key": "priviledged",
+							"key": "privileged",
 							"value": "true"
 						},
 						{
