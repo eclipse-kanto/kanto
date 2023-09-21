@@ -37,7 +37,7 @@ To control all aspects of the container instance behavior. As defined in the Des
 | interactive | No | false | Boolean flag. Enables interaction with the container, e.g. open the terminal's standard input for an interaction with the container. |
 | privileged | No | false | Boolean flag. Creates the container as privileged, grants root capabilities to all devices on the host system |
 | **Restart policy config** | | | |
-| restartPolicy | string | unless-stopped | The container's restart policy, the supported values are: `always` - an attempt to restart the container will be me made each time the container exits regardless of the exit code, `no` - no attempts to restart the container for any reason will be made, `on-failure` - restart attempts will be made if the container exits with an exit code != 0, `unless-stopped` - restart attempts will be made only if the container has not been stopped by the user. |
+| restartPolicy | string | unless-stopped | The container's restart policy, the supported values are: `always` - an attempt to restart the container will be made made each time the container exits regardless of the exit code, `no` - no attempts to restart the container for any reason will be made, `on-failure` - restart attempts will be made if the container exits with an exit code != 0, `unless-stopped` - restart attempts will be made only if the container has not been stopped by the user. |
 | restartMaxRetries | No | 1 | Integer value. Maximum number of retries that are made to restart the container on exit with fail, valid only if the `restartPolicy` is `on-failure`. |
 | restartTimeout | No | 30 | Integer value. Timeout period in seconds for each retry that is made to restart the container on exit with fail, valid only if the `restartPolicy` is `on-failure`. |
 | **Logging config** | | | |
@@ -49,7 +49,7 @@ To control all aspects of the container instance behavior. As defined in the Des
 | logMaxBufferSize | No | 1M | Sets the max size of the logger buffer in the form of 1, 1.2m - applicable for `non-blocking` mode only. |
 | **Resources config** | | | |
 | memory | No | | Sets the max amount of memory the container can use in the form of 200m, 1.2g. The minimum allowed value is 3m. By default, a container has no memory constraints. |
-| memorySwap | No | | Sets the total amount of memory + swap that the container can use in the form of 200m, 1.2g. If set must not be smaller than `memory`. If equal to `memory`, than the container will not have access to swap. If not set and `memory` is set, than the container can use as much swap as the `memory` setting. If set to -1, the container can use unlimited swap, up to the amount available on the host. |
+| memorySwap | No | | Sets the total amount of memory + swap that the container can use in the form of 200m, 1.2g. If set must not be smaller than `memory`. If equal to `memory`, then the container will not have access to swap. If not set and `memory` is set, than the container can use as much swap as the `memory` setting. If set to -1, the container can use unlimited swap, up to the amount available on the host. |
 | memoryReservation | No | | Sets a soft memory limitation in the form of 200m, 1.2g. Must be smaller than `memory`. When the system detects memory contention or low memory, control groups are pushed back to their soft limits. There is no guarantee that the container memory usage will not exceed the soft limit. |
 
 #### Desired State Containers Domain Example
