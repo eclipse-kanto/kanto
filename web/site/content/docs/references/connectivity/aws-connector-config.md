@@ -16,10 +16,10 @@ To control all aspects of the suite connector behavior.
 | payloadFilters | string ​| | Regex filters used to exclude parts of the incoming messages payload |
 | **Remote connectivity** | | | |
 | address | string | | Address of the MQTT endpoint that the connector will connect for the remote communication, the format is: `scheme://host:port` |
-| alpn | string[] | | TLS application layer protocol negotiation options space separated for cloud access |
 | tenantId | string | default-tenant-id | Tenant unique identifier that the device belongs to |
 | clientId | string | | MQTT client unique identifier |
 | **Remote connectivity - TLS** | | | |
+| alpn | string[] | | TLS application layer protocol negotiation options space separated for cloud access |
 | caCert | string | aws.crt | PEM encoded CA certificates file |
 | cert | string | | PEM encoded certificate file to authenticate to the MQTT endpoint |
 | key | string | | PEM encoded unencrypted private key file to authenticate to the MQTT endpoint |
