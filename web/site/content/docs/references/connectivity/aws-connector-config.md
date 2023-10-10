@@ -43,6 +43,21 @@ To control all aspects of the suite connector behavior.
 | logFileMaxAge | int | 28 | Log file rotations maximum age in days, use 0 to not remove old log files |
 | logFileSize | int | 2 | Log file size in MB before it gets rotated |
 
+### Example
+
+The minimal required configuration to connect.
+
+```json
+{
+    "address": "tls://<AWS-endpoint-address>:8883",
+    "caCert": "AmazonRootCA1.pem",
+    "cert": "example-device.crt",
+    "key": "example-device.key",
+    "clientId": "org.eclipse.kanto:exampleDevice",
+    "logFile": "/var/log/aws-connector/aws-connector.log"
+}
+```
+
 ### Template
 
 The configuration can be further adjusted according to the use case.
