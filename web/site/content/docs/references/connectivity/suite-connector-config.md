@@ -14,15 +14,16 @@ To control all aspects of the suite connector behavior.
 | - | - | - | - |
 | **Remote connectivity** | | | |
 | address | string | mqtts://mqtt.bosch-iot-hub.com:8883 | Address of the MQTT endpoint that the suite connector will connect for the remote communication, the format is: `scheme://host:port` |
-| alpn | string[] | | TLS application layer protocol negotiation options space separated for cloud access |
 | deviceId | string | | Device unique identifier |
 | authId | string | | Authentication unique identifier that is a part of the credentials |
+| generic | bool | | Force use of modified topics for cloud access |
 | tenantId | string | | Tenant unique identifier that the device belongs to |
 | username | string | | MQTT username that is a part of the credentials. This parameter takes precedence over authId and tenantId  |
 | password | string | | Password that is a part of the credentials |
 | clientId | string | | MQTT client unique identifier |
 | policyId | string | | Policy unique identifier of the digital twin |
 | **Remote connectivity - TLS** | | | |
+| alpn | string[] | | TLS application layer protocol negotiation options space separated for cloud access |
 | caCert | string | iothub.crt | PEM encoded CA certificates file |
 | cert | string | | PEM encoded certificate file to authenticate to the MQTT endpoint |
 | key | string | | PEM encoded unencrypted private key file to authenticate to the MQTT endpoint |
