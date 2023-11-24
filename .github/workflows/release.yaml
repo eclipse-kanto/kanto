@@ -87,12 +87,68 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.21.0
+      - name: Generate suite-connector Coverage
+        working-directory: ${{ env.BUILD_TMP }}/suite-connector
+        run: |
+          docker system prune -f
+          docker-compose -f ./docker/docker-compose-tests.yml up --build --no-color tests
+          go tool cover -func=coverage.out -o coverage.txt
+          go tool cover -html=coverage.out -o coverage.html
+          docker-compose -f ./docker/docker-compose-tests.yml down
+      - name: Generate container-management Coverage
+        working-directory: ${{ env.BUILD_TMP }}/container-management
+        run: |
+          go test ./... -v -coverprofile coverage.out
+          go tool cover -func=coverage.out -o coverage.txt
+          go tool cover -html=coverage.out -o coverage.html
+      - name: Generate file-upload Coverage
+        working-directory: ${{ env.BUILD_TMP }}/file-upload
+        run: |
+          go test ./... -v -coverprofile coverage.out -tags=unit
+          go tool cover -func=coverage.out -o coverage.txt
+          go tool cover -html=coverage.out -o coverage.html
+      - name: Generate software-update Coverage
+        working-directory: ${{ env.BUILD_TMP }}/software-update
+        run: |
+          go test ./... -v -coverprofile coverage.out -tags=unit
+          go tool cover -func=coverage.out -o coverage.txt
+          go tool cover -html=coverage.out -o coverage.html
+      - name: Generate local-digital-twins Coverage
+        working-directory: ${{ env.BUILD_TMP }}/local-digital-twins
+        run: |
+          go test ./... -v -coverprofile coverage.out -tags=unit
+          go tool cover -func=coverage.out -o coverage.txt
+          go tool cover -html=coverage.out -o coverage.html
+      - name: Generate suite-bootstrapping Coverage
+        working-directory: ${{ env.BUILD_TMP }}/suite-bootstrapping
+        run: |
+          go test ./... -v -coverprofile coverage.out -tags=unit
+          go tool cover -func=coverage.out -o coverage.txt
+          go tool cover -html=coverage.out -o coverage.html
+      - name: Generate file-backup Coverage
+        run: |
+          go test ./... -v -coverprofile coverage.out -tags=unit
+          go tool cover -func=coverage.out -o coverage.txt
+          go tool cover -html=coverage.out -o coverage.html
+        working-directory: ${{ env.BUILD_TMP }}/file-backup
+      - name: Generate system-metrics Coverage
+        working-directory: ${{ env.BUILD_TMP }}/system-metrics
+        run: |
+          go test ./... -v -coverprofile coverage.out -tags=unit
+          go tool cover -func=coverage.out -o coverage.txt
+          go tool cover -html=coverage.out -o coverage.html
+      - name: Generate update-manager Coverage
+        working-directory: ${{ env.BUILD_TMP }}/update-manager
+        run: |
+          go test -v -race ./... -coverprofile coverage.out -covermode atomic
+          go tool cover -func=coverage.out -o coverage.txt
+          go tool cover -html=coverage.out -o coverage.html
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
           distribution: goreleaser
-          version: ~> 1.5
-          args: release --rm-dist
+          version: latest
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # GOPATH is no longer exported by the actions/setup-go@v2

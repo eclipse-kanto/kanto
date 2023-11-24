@@ -565,6 +565,145 @@ archives:
         strip_parent: true
         info:
           mode: 0644
+  - id: code-coverage
+    name_template: '{{ .ProjectName }}_{{ .Version }}_code_coverage'
+    meta: true
+    files:    
+      - src: ./build-tmp/software-update/coverage.html
+        dst: software-update
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/software-update/coverage.txt
+        dst: software-update
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/software-update/coverage.out
+        dst: software-update
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/suite-connector/coverage.html
+        dst: suite-connector
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/suite-connector/coverage.txt
+        dst: suite-connector
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/suite-connector/coverage.out
+        dst: suite-connector
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/container-management/coverage.html
+        dst: container-management
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/container-management/coverage.txt
+        dst: container-management
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/container-management/coverage.out
+        dst: container-management
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/file-upload/coverage.html
+        dst: file-upload
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/file-upload/coverage.txt
+        dst: file-upload
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/file-upload/coverage.out
+        dst: file-upload
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/local-digital-twins/coverage.html
+        dst: local-digital-twins
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/local-digital-twins/coverage.txt
+        dst: local-digital-twins
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/local-digital-twins/coverage.out
+        dst: local-digital-twins
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/suite-bootstrapping/coverage.html
+        dst: suite-bootstrapping
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/suite-bootstrapping/coverage.txt
+        dst: suite-bootstrapping
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/suite-bootstrapping/coverage.out
+        dst: suite-bootstrapping
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/file-backup/coverage.html
+        dst: file-backup
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/file-backup/coverage.txt
+        dst: file-backup
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/file-backup/coverage.out
+        dst: file-backup
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/system-metrics/coverage.html
+        dst: system-metrics
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/system-metrics/coverage.txt
+        dst: system-metrics
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/system-metrics/coverage.out
+        dst: system-metrics
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/update-manager/coverage.html
+        dst: update-manager
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/update-manager/coverage.txt
+        dst: update-manager
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/update-manager/coverage.out
+        dst: update-manager
+        strip_parent: true
+        info:
+          mode: 0644
 nfpms:
   - builds:
       - build-suite-connector-pkg
