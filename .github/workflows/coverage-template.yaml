@@ -1,0 +1,26 @@
+on:
+  workflow_call:
+    inputs:
+      coverage-command:
+        required: true
+        type: string
+permissions: write-all
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.21.0'
+      - name: Generate coverage profile
+        run: ${{ inputs.coverage-command }}
+      - name: Update coverage report
+        uses: ncruces/go-coverage-report@v0
+        with:
+          coverage-file: coverage.out
+          report: false
+          chart: false
+          amend: true
+          reuse-go: true
