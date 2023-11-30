@@ -32,7 +32,7 @@ ditto_live_inbox_msg_template = Template("""
 {
     "topic": "$namespace/$name/things/live/messages/response",
     "headers": {
-        "content-type": "application/json",
+        "Content-Type": "application/json",
         "correlation-id": "$correlation_id",
         "response-required": true
     },
@@ -48,7 +48,8 @@ ditto_live_inbox_msg_template = Template("""
 
 config_json_template = Template("""{
     "logFile": "/var/log/suite-connector/suite-connector.log",
-    "address": "hono.eclipseprojects.io:1883",
+    "address": "mqtts://hono.eclipseprojects.io:8883",
+    "caCert": "/etc/suite-connector/iothub.crt",
     "tenantId": "$tenant_id",
     "deviceId": "$device_id",
     "authId": "$auth_id",
@@ -108,25 +109,27 @@ class CommandsInvoker(MessagingHandler):
     def on_sendable(self, event):
         print('[provisioning tenant]')
         headers = {
-            'content-type': 'application/json',
+            'Content-Type': 'application/json',
+        }
+        tenant_headers = {
+            'accept': 'application/json',
+            'Content-Type': 'application/json',
         }
         response = requests.post(
-            'http://{}:28080/v1/tenants/{}'.format(hono_ep, new_tenant_id), headers=headers,
-            data='{"ext": {'
-                 '"messaging-type":'
-                 ' "amqp"}}')
+            '{}/v1/tenants/{}'.format(hono_ep, new_tenant_id), headers=tenant_headers,
+            data='{"ext":{"messaging-type": "amqp"}}')
 
         print("Creating tenant [{}]".format(response.status_code))
 
         response = requests.post(
-            'http://{}:28080/v1/devices/{}/{}'.format(hono_ep, new_tenant_id, new_device_id),
+            '{}/v1/devices/{}/{}'.format(hono_ep, new_tenant_id, new_device_id),
             headers=headers,
             data='{"authorities":["auto-provisioning-enabled"]}')
 
         print("Creating device [{}]".format(response.status_code))
 
         response = requests.put(
-            'http://{}:28080/v1/credentials/{}/{}'.format(hono_ep, new_tenant_id, new_device_id),
+            '{}/v1/credentials/{}/{}'.format(hono_ep, new_tenant_id, new_device_id),
             headers=headers,
             data=update_credentials_template.substitute(auth_id=new_authentication_id, pwd=new_password))
 
@@ -178,7 +181,27 @@ class EventsHandler(MessagingHandler):
                 event.connection.close()
 
             elif body["topic"].split("/")[0] == new_tenant_id:
-                print('[event received from new tenant]')
+                print('[event received from new tenant [{}]]'.format(new_tenant_id))
+                print('[remove new created resources]')
+                headers = {
+                    'Content-Type': 'application/json',
+                }
+
+                response = requests.delete(
+                    '{}/v1/devices/{}/{}'.format(hono_ep, new_tenant_id, new_device_id), headers=headers)
+
+                print("Deleting device [{}] with code [{}]".format(new_device_id, response.status_code))
+
+                response = requests.delete(
+                    '{}/v1/credentials/{}/{}'.format(hono_ep, new_tenant_id, new_device_id), headers=headers)
+
+                print("Delete credentials [{}]".format(response.status_code))
+
+                response = requests.delete(
+                    '{}/v1/tenants/{}'.format(hono_ep, new_tenant_id), headers=headers)
+
+                print("Deleting tenant [{}] with code[{}]".format(new_tenant_id, response.status_code))
+
                 event.receiver.close()
                 event.connection.close()
 
@@ -195,19 +218,16 @@ tenant_id = os.environ.get("TENANT") or opts_dict['-t']
 device_id = os.environ.get("DEVICE_ID") or opts_dict['-d']
 new_password = os.environ.get("PASSWORD") or opts_dict['-p']
 
-hono_ep = 'hono.eclipseprojects.io'
+hono_ep = 'https://hono.eclipseprojects.io:28443'
 
-if ".bootstrap" not in tenant_id:
-    print('[error] unsupported tenant_id', tenant_id)
-    exit(1)
-
-new_tenant_id = tenant_id.removesuffix(".bootstrap")
-new_device = device_id.removeprefix("{}:".format(tenant_id))
+pref = "FromBootstrapping"
+new_tenant_id = pref + tenant_id
+new_device = device_id.removeprefix("{}:".format(tenant_id)) + pref
 new_device_id = '{}:{}'.format(new_tenant_id, new_device)
-new_authentication_id = '{}_{}'.format(new_tenant_id, new_device)
+new_authentication_id = new_device_id.replace(":","_")
 
 # AMQP global configurations
-uri = 'amqp://hono.eclipseprojects.io:15672'
+uri = 'amqps://hono.eclipseprojects.io:15671'
 address = 'command/{}'.format(tenant_id)
 reply_to_address = 'command_response/{}/replies'.format(tenant_id)
 event_address = 'event/{}'.format(tenant_id)

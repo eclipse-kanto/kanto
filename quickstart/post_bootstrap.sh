@@ -11,4 +11,4 @@
 #
 # SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
 
-systemctl restart suite-connector.service
+sudo systemctl restart suite-connector.service
