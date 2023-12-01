@@ -4,7 +4,6 @@ on:
       coverage-command:
         required: true
         type: string
-permissions: write-all
 
 jobs:
   coverage:
