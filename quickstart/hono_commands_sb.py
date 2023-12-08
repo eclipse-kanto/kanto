@@ -84,7 +84,6 @@ class CommandResponsesHandler(MessagingHandler):
         print(json.dumps(response, indent=2))
         if response["status"] == 204:
             print('[ok]', "sb")
-            new_tenant_events_thread.start()
         else:
             print('[error]')
         event.receiver.close()
@@ -119,21 +118,40 @@ class CommandsInvoker(MessagingHandler):
             '{}/v1/tenants/{}'.format(hono_ep, new_tenant_id), headers=tenant_headers,
             data='{"ext":{"messaging-type": "amqp"}}')
 
-        print("Creating tenant [{}]".format(response.status_code))
+        status_code = response.status_code
+        print("Creating tenant [{}]".format(status_code))
+        if status_code < 200 or status_code > 300:
+            print("Error creating tenant [{}] with code [{}]".format(new_tenant_id, status_code))
+            event.sender.close()
+            event.connection.close()
+            os.kill(os.getpid(), signal.SIGINT)
+            exit(0)
 
         response = requests.post(
             '{}/v1/devices/{}/{}'.format(hono_ep, new_tenant_id, new_device_id),
             headers=headers,
             data='{"authorities":["auto-provisioning-enabled"]}')
-
-        print("Creating device [{}]".format(response.status_code))
+        status_code = response.status_code
+        print("Creating device [{}]".format(status_code))
+        if status_code < 200 or status_code > 300:
+            print("Error creating device [{}] with code [{}]".format(new_device_id, status_code))
+            event.sender.close()
+            event.connection.close()
+            os.kill(os.getpid(), signal.SIGINT)
+            exit(0)
 
         response = requests.put(
             '{}/v1/credentials/{}/{}'.format(hono_ep, new_tenant_id, new_device_id),
             headers=headers,
             data=update_credentials_template.substitute(auth_id=new_authentication_id, pwd=new_password))
-
-        print("Update credentials [{}]".format(response.status_code))
+        status_code = response.status_code
+        print("Update credentials [{}]".format(status_code))
+        if status_code < 200 or status_code > 300:
+            print("Error update credentials for device [{}] with code [{}]".format(new_device_id, status_code))
+            event.sender.close()
+            event.connection.close()
+            os.kill(os.getpid(), signal.SIGINT)
+            exit(0)
 
         print('[sending command]')
         correlation_id = str(uuid.uuid4())
@@ -247,6 +265,7 @@ events_thread.start()
 new_tenant_events_thread = threading.Thread(target=lambda: new_tenant_events_handler.run(), daemon=True)
 # Give it some time to link
 time.sleep(2)
+new_tenant_events_thread.start()
 
 
 def handler(signum, frame):
