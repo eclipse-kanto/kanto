@@ -6,9 +6,9 @@ description: >
 weight: 5
 ---
 
-Following the steps below you will automatically provision a new device via a publicly available Eclipse Hono sandbox using Eclipse Kanto.
+By following the steps below you will automatically provision a new device via a publicly available Eclipse Hono sandbox using Eclipse Kanto.
 A simple Eclipse Hono northbound business application written in Python is
-provided to explore the capabilities for device bootstrapping and automatically provision new device.
+provided to explore the capabilities for device bootstrapping and automatically provision a new device.
 
 First a bootstrapping request is sent from the edge.
 The custom Python application handles the request by automatically
@@ -28,7 +28,7 @@ To ensure that your edge device is capable to execute the steps in this guide, y
   follow {{% relrefn "hono" %}} Explore via Eclipse Hono {{% /relrefn %}}
 * The {{% refn "https://github.com/eclipse-kanto/kanto/blob/main/quickstart/hono_commands_sb.py" %}}
   suite bootstrapping application {{% /refn %}} and {{% refn "https://github.com/eclipse-kanto/kanto/blob/main/quickstart/post_bootstrap.sh" %}} 
-  post bootstrap {{% /refn %}}
+  post bootstrap script{{% /refn %}}
 
   Navigate to the `quickstart` folder where the resources from the {{% relrefn "hono" %}} Explore via Eclipse Hono {{% /relrefn %}}
   guide are located and execute the following script:
@@ -42,18 +42,19 @@ To ensure that your edge device is capable to execute the steps in this guide, y
   ```shell
   sudo mkdir -p /var/tmp/suite-bootstrapping/ && sudo cp ./post_bootstrap.sh /var/tmp/suite-bootstrapping/
   ```
-* Back up `/ect/suite-connector/config.json` as this file will be modified from this guide
-* Stop suite-connector.service. Suite Connector and Suite Bootstrapping cannot work together
+* Back up `/etc/suite-connector/config.json` as this file will be modified from this guide
+* Stop suite-connector.service. Suite bootstrapping automatically provision device and try to start the suite connector service with new device
   ```shell
   sudo systemctl stop suite-connector.service
   ```
 
 ### Configure Suite Bootstrapping
 
-Open file `/etc/suite-connector/config.json`, copy `tenantId`, `deviceId`, `authId` and `password`
+Open file `/etc/suite-connector/config.json`, copy `address`, `tenantId`, `deviceId`, `authId` and `password`.
 ```json
 {
     ...
+    "address": "mqtts://hono.eclipseprojects.io:8883",
     "tenantId": "demo",
     "deviceId": "demo:device",
     "authId": "demo_device",
@@ -61,10 +62,11 @@ Open file `/etc/suite-connector/config.json`, copy `tenantId`, `deviceId`, `auth
     ...
 }
 ```
-Eclipse Kanto uses the `/etc/suite-bootstrapping/config.json` to acquire all the remote communication, identification and
+Bootstrapping uses the `/etc/suite-bootstrapping/config.json` to acquire all the remote communication, identification and
 authentication data to establish the remote connection for bootstrapping.
 It is also where you need to specify the path to the post bootstrapping script and where to store received response data.
-Update it with previous copied settings and with following:
+Update the configuration as shown below and replace `tenantId`, `deviceId`, `authId` and `password`
+with the settings that you copied in the previous step.
 
 ```json
 {
@@ -80,7 +82,7 @@ Update it with previous copied settings and with following:
 }
 ```
 
-Restart the Suite Bootstrapping service for the changes to take effect:
+Restart the suite bootstrapping service for the changes to take effect:
 
 ```shell
 sudo systemctl restart suite-bootstrapping.service
@@ -88,12 +90,13 @@ sudo systemctl restart suite-bootstrapping.service
 When configured correctly the Suite Bootstrapping service automatically sends the bootstrapping request.
 
 ### Automatically provision via bootstrapping
+
 To explore the suite bootstrapping, we will use a Python script to automatically provision and monitor the new device.
 The location where the Python application will run does not have to be your edge device as it communicates remotely
 with Eclipse Hono only.
 
 Now we are ready to handle the bootstrapping request via executing the application
-that requires the Eclipse Hono tenant (`-t`), the device identifier (`-d`) and the password you wish to use for the new device (`-p`) :
+that requires the Eclipse Hono tenant (`-t`), the device identifier (`-d`) and the password (`-p`) you wish to use for the new device:
 
 ```shell
 python3 hono_commands_sb.py -t demo -d demo:device -p secret
@@ -109,12 +112,13 @@ sudo systemctl status suite-connector.service
 ```
 
 ### Clean up
-Revert previous backed up `/ect/suite-connector/config.json` file.
+
+Revert previous back up `/etc/suite-connector/config.json` file.
 Remove temporary directory for post bootstrap file /var/tmp/suite-bootstrapping via executing:
 ```shell
 sudo rm -r -f /var/tmp/suite-bootstrapping/
 ```
-Stop Suite Bootstrapping service and Restart the Suite Connector service by executing:
+Stop suite bootstrapping service and restart suite connector service by executing:
 ```shell
 sudo systemctl stop suite-bootstrapping.service && \
 sudo systemctl restart suite-connector.service

@@ -86,6 +86,11 @@ class CommandResponsesHandler(MessagingHandler):
             print('[ok]', "sb")
         else:
             print('[error]')
+            delete_res()
+            event.receiver.close()
+            event.connection.close()
+            os.kill(os.getpid(), signal.SIGINT)
+            exit(1)
         event.receiver.close()
         event.connection.close()
 
@@ -125,7 +130,7 @@ class CommandsInvoker(MessagingHandler):
             event.sender.close()
             event.connection.close()
             os.kill(os.getpid(), signal.SIGINT)
-            exit(0)
+            exit(1)
 
         response = requests.post(
             '{}/v1/devices/{}/{}'.format(hono_ep, new_tenant_id, new_device_id),
@@ -138,7 +143,7 @@ class CommandsInvoker(MessagingHandler):
             event.sender.close()
             event.connection.close()
             os.kill(os.getpid(), signal.SIGINT)
-            exit(0)
+            exit(1)
 
         response = requests.put(
             '{}/v1/credentials/{}/{}'.format(hono_ep, new_tenant_id, new_device_id),
@@ -151,7 +156,7 @@ class CommandsInvoker(MessagingHandler):
             event.sender.close()
             event.connection.close()
             os.kill(os.getpid(), signal.SIGINT)
-            exit(0)
+            exit(1)
 
         print('[sending command]')
         correlation_id = str(uuid.uuid4())
@@ -188,6 +193,7 @@ class EventsHandler(MessagingHandler):
         print('[events handler connected for tenant {}]'.format(self.tenant_id))
 
     def on_message(self, event):
+        print('[events handler on message for tenant {}]'.format(self.tenant_id))
         if event.message.body is not None:
             body = json.loads(event.message.body)
             if body["topic"].split("/")[-1] == "request":
@@ -200,25 +206,7 @@ class EventsHandler(MessagingHandler):
 
             elif body["topic"].split("/")[0] == new_tenant_id:
                 print('[event received from new tenant [{}]]'.format(new_tenant_id))
-                print('[remove new created resources]')
-                headers = {
-                    'Content-Type': 'application/json',
-                }
-
-                response = requests.delete(
-                    '{}/v1/devices/{}/{}'.format(hono_ep, new_tenant_id, new_device_id), headers=headers)
-
-                print("Deleting device [{}] with code [{}]".format(new_device_id, response.status_code))
-
-                response = requests.delete(
-                    '{}/v1/credentials/{}/{}'.format(hono_ep, new_tenant_id, new_device_id), headers=headers)
-
-                print("Delete credentials [{}]".format(response.status_code))
-
-                response = requests.delete(
-                    '{}/v1/tenants/{}'.format(hono_ep, new_tenant_id), headers=headers)
-
-                print("Deleting tenant [{}] with code[{}]".format(new_tenant_id, response.status_code))
+                delete_res()
 
                 event.receiver.close()
                 event.connection.close()
@@ -232,9 +220,9 @@ class EventsHandler(MessagingHandler):
 # Parse command line args
 options, reminder = getopt.getopt(sys.argv[1:], 't:d:p:')
 opts_dict = dict(options)
-tenant_id = os.environ.get("TENANT") or opts_dict['-t']
-device_id = os.environ.get("DEVICE_ID") or opts_dict['-d']
-new_password = os.environ.get("PASSWORD") or opts_dict['-p']
+tenant_id = opts_dict['-t'] or os.environ.get("TENANT")
+device_id = opts_dict['-d'] or os.environ.get("DEVICE_ID")
+new_password = opts_dict['-p'] or os.environ.get("PASSWORD")
 
 hono_ep = 'https://hono.eclipseprojects.io:28443'
 
@@ -267,6 +255,21 @@ new_tenant_events_thread = threading.Thread(target=lambda: new_tenant_events_han
 time.sleep(2)
 new_tenant_events_thread.start()
 
+def delete_res():
+    print('[remove new created resources]')
+    headers = {
+        'Content-Type': 'application/json',
+    }
+    response = requests.delete(
+        '{}/v1/devices/{}/{}'.format(hono_ep, new_tenant_id, new_device_id), headers=headers)
+
+    print("Deleting device [{}] with code [{}]".format(new_device_id, response.status_code))
+    response = requests.delete(
+        '{}/v1/credentials/{}/{}'.format(hono_ep, new_tenant_id, new_device_id), headers=headers)
+    print("Delete credentials [{}]".format(response.status_code))
+    response = requests.delete(
+        '{}/v1/tenants/{}'.format(hono_ep, new_tenant_id), headers=headers)
+    print("Deleting tenant [{}] with code[{}]".format(new_tenant_id, response.status_code))
 
 def handler(signum, frame):
     print('[stopping] demo suite bootstrapping app for tenant [{}], device [{}] at [{}]'.format(tenant_id, device_id,
