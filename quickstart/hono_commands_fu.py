@@ -141,8 +141,8 @@ class EventsHandler(MessagingHandler):
 # Parse command line args
 options, reminder = getopt.getopt(sys.argv[1:], 't:d:')
 opts_dict = dict(options)
-tenant_id = opts_dict['-t'] or os.environ.get("TENANT")
-device_id = opts_dict['-d'] or os.environ.get("DEVICE_ID")
+tenant_id = opts_dict.get('-t') or os.environ["TENANT"]
+device_id = opts_dict.get('-d') or os.environ["DEVICE_ID"]
 
 # AMQP global configurations
 uri = 'amqps://hono.eclipseprojects.io:15671'
