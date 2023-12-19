@@ -220,9 +220,9 @@ class EventsHandler(MessagingHandler):
 # Parse command line args
 options, reminder = getopt.getopt(sys.argv[1:], 't:d:p:')
 opts_dict = dict(options)
-tenant_id = opts_dict['-t'] or os.environ.get("TENANT")
-device_id = opts_dict['-d'] or os.environ.get("DEVICE_ID")
-new_password = opts_dict['-p'] or os.environ.get("PASSWORD")
+tenant_id = opts_dict.get('-t') or os.environ["TENANT"]
+device_id = opts_dict.get('-d') or os.environ["DEVICE_ID"]
+new_password = opts_dict.get('-p') or os.environ["PASSWORD"]
 
 hono_ep = 'https://hono.eclipseprojects.io:28443'
 

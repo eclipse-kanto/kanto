@@ -105,8 +105,8 @@ CLI_OPT_RM_CMD = "rm"
 # Parse command line args
 options, reminder = getopt.getopt(sys.argv[2:], 't:d:', ["img=", "id="])
 opts_dict = dict(options)
-tenant_id = os.environ.get("TENANT") or opts_dict['-t']
-device_id = os.environ.get("DEVICE_ID") or opts_dict['-d']
+tenant_id = opts_dict.get('-t') or os.environ["TENANT"]
+device_id = opts_dict.get('-d') or os.environ["DEVICE_ID"]
 command = sys.argv[1]
 if command == CLI_OPT_RUN_CMD:
     container_img_ref = opts_dict['--img']

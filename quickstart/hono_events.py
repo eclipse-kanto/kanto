@@ -41,7 +41,7 @@ class EventsHandler(MessagingHandler):
 
 # Parse command line args
 options, reminder = getopt.getopt(sys.argv[1:], 't:')
-tenant_id = os.environ.get("TENANT") or dict(options)['-t']
+tenant_id = dict(options).get('-t') or os.environ["TENANT"]
 
 uri = 'amqps://hono.eclipseprojects.io:15671'
 address = 'event/{}'.format(tenant_id)
