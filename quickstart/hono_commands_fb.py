@@ -162,9 +162,9 @@ CLI_OPT_RESTORE_CMD = "restore"
 # Parse command line args
 options, reminder = getopt.getopt(sys.argv[2:], 't:d:h:')
 opts_dict = dict(options)
-tenant_id = os.environ.get("TENANT") or opts_dict['-t']
-device_id = os.environ.get("DEVICE_ID") or opts_dict['-d']
-host = os.environ.get("HOST") or opts_dict['-h']
+tenant_id = opts_dict['-t'] or os.environ.get("TENANT")
+device_id = opts_dict['-d'] or os.environ.get("DEVICE_ID")
+host = opts_dict['-h'] or os.environ.get("HOST")
 command = sys.argv[1]
 if command == CLI_OPT_BACKUP_CMD:
     action = "backup"
