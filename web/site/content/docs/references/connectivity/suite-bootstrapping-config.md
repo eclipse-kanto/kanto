@@ -18,7 +18,6 @@ To control all aspects of the suite bootstrapping behavior.
 | postBootstrapFile | string | | Path to the file used for a bootstrapping response data |
 | bootstrapProvisioningFile | string | | Path to the file that stores the provisioning information from a bootstrapping response |
 | maxChunkSize | int | 46080 | Maximum chunk size of the request data in bytes |
-| provisioningFile | string | provisioning.json | Path to the provisioning file, if {{% relrefn "dmp" %}}Bosch IoT Device Management{{% /relrefn %}} is in use |
 | **Remote connectivity** | | | |
 | address | string | mqtts://mqtt.bosch-iot-hub.com:8883 | Address of the MQTT endpoint that the suite bootstrapping will connect for the remote communication, the format is: `scheme://host:port` |
 | deviceId | string | | Device unique identifier |

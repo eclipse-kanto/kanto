@@ -13,7 +13,6 @@ To control all aspects of the local digital twins behavior.
 | Property | Type | Default | Description |
 | - | - | - | - |
 | thingsDb | string | things.db | Path to the file where digital twins will be stored |
-| provisioningFile | string ​| provisioning.json | Path to the provisioning file, if {{% relrefn "dmp" %}}Bosch IoT Device Management{{% /relrefn %}} is in use |
 | **Remote connectivity** | | | |
 | address | string | mqtts://mqtt.bosch-iot-hub.com:8883 | Address of the MQTT endpoint that the local digital twins will connect for the remote communication, the format is: `scheme://host:port` |
 | deviceId | string | | Device unique identifier |
