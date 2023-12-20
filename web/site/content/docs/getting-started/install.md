@@ -45,5 +45,3 @@ All listed services must be in an active running state.
 ### What's next
 
 [Explore via Eclipse Hono]({{< relref "hono" >}})
-
-[Explore via Bosch IoT Device Management]({{< relref "dmp" >}})
