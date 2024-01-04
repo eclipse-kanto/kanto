@@ -28,6 +28,8 @@ To control all aspects of the container manager behavior.
 | image_expiry | string | 744h | Time period for the cached images and content to be kept in the form of e.g. 72h3m0.5s |
 | image_expiry_disable | bool | false | Disable expiry management of cached images and content, must be used with caution as it may lead to large memory volumes being persistently allocated |
 | lease_id | string | kanto-cm.lease | Lease identifier to be used for container resources persistence |
+| image_verifier_type | string | none | The image verifier type - possible values are none and notation, when set to none image signatures wil not be verified |
+| image_verifier_config | string |  | The configuration of the image verifier, as comma separated {key}={value} pairs - possible keys for notation verifier are `configDir` and `libexecDir`, for more info check [notation documentation](https://notaryproject.dev/docs/user-guides/how-to/directory-structure/#user-level) |
 | **Registry access - secure** | | | |
 | user_id | string | | User unique identifier to authenticate to the image registry |
 | password | string | | Password to authenticate to the image registry |
@@ -128,6 +130,8 @@ Be aware that in the registry configuration the host (used as a key) has to be s
         "runc_runtime": "io.containerd.runc.v2",
         "image_expiry": "744h",
         "image_expiry_disable": false,
+        "image_verifier_type": "none",
+        "image_verifier_config": "configDir=/home/user/.config/notation",
         "lease_id": "kanto-cm.lease",
         "registry_configurations": {
             "": {
