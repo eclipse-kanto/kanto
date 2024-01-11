@@ -7,7 +7,7 @@ weight: 6
 ---
 
 By following the steps below you will get the structure of the edge digital twins with all its features and properties using Eclipse Kanto.
-A simple Eclipse Hono northbound business application written in Python is provided to display the things' and its features' structure.
+A simple Eclipse Hono northbound business application written in Python is provided to display the things' and their features' structure.
 
 ### Before you begin
 
@@ -70,7 +70,7 @@ sudo systemctl start local-digital-twins.service
 
 ### Receive the structure of the edge device
 
-Now we are ready to request the structure of the edge digital twins via executing the Eclipse kanto client that requires the local digital twins tenant (`-t`) and the device identifier (`-d`):
+Now we are ready to request the structure of the edge digital twins via executing the offline explore application that requires the local digital twins tenant (`-t`) and the device identifier (`-d`):
 
 ```shell
 python3 hono_commands_ldt.py -t demo -d demo:device

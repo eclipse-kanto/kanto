@@ -51,20 +51,16 @@ class MQTTClient(mqtt.Client):
 
     def run(self):
         self.connect("localhost")
+        self.loop_start()
         time.sleep(2)
-
-        rc = 0
-        while rc == 0:
-            rc = self.loop_start()
-            namespaced_id = device_id.split(':', 1)
-            payload = retrieve_things_template.substitute(
-                namespace=namespaced_id[0], name=namespaced_id[1],
-                tenant_id=tenant_id, correlation_id=str(uuid.uuid4()))
-            pub_topic = 'event/{}/{}'.format(tenant_id, device_id)
-            print(payload)
-            self.publish(pub_topic, payload)
-            time.sleep(1)
-            rc = self.loop_stop()
+        namespaced_id = device_id.split(':', 1)
+        payload = retrieve_things_template.substitute(
+            namespace=namespaced_id[0], name=namespaced_id[1],
+            tenant_id=tenant_id, correlation_id=str(uuid.uuid4()))
+        pub_topic = 'event/{}/{}'.format(tenant_id, device_id)
+        self.publish(pub_topic, payload)
+        time.sleep(1)
+        self.loop_stop()
 
 # Parse command line args
 options, reminder = getopt.getopt(sys.argv[1:], 't:d:')
