@@ -42,7 +42,7 @@ class MQTTClient(mqtt.Client):
 
     def on_connect(self, mqttc, obj, flags, rc):
         print('[client connected]')
-        self.subscribe("command/#")
+        self.subscribe("command//+/req/#")
 
     def on_message(self, mqttc, obj, msg):
         print('[got response]')
