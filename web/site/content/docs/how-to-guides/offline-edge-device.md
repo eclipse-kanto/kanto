@@ -6,7 +6,7 @@ description: >
 weight: 6
 ---
 
-By following the steps below you will get the structure of the edge digital twins with all its features and properties using Eclipse Kanto.
+By following the steps below, you will get the structure of the edge digital twins with all its features and properties using Eclipse Kanto.
 A simple Eclipse Hono northbound business application written in Python is provided to display the things' and their features' structure.
 
 ### Before you begin
@@ -19,7 +19,7 @@ To ensure that your edge device is capable to execute the steps in this guide, y
 * If you don't have a connected Eclipse Kanto to Eclipse Hono sandbox,
   follow {{% relrefn "hono" %}} Explore via Eclipse Hono {{% /relrefn %}}
 
-* Stop `suite-connector.service`. The local digital twins is a replacement of suite connector that's why only one of the services need to running.
+* Stop `suite-connector.service`. The local digital twins service is a replacement for the suite connector service, that is why either one of the services must be running.
 
   ```shell
   sudo systemctl stop suite-connector.service
@@ -46,7 +46,7 @@ Open file `/etc/suite-connector/config.json`, copy `tenantId`, `deviceId`, `auth
     ...
 }
 ```
-Local digital twins uses the `/etc/local-digital-twins/config.json` to acquire all the remote communication, identification and
+The local digital twins service uses the `/etc/local-digital-twins/config.json` to acquire all the remote communication, identification and
 authentication data to establish the remote connection. Update the configuration as shown below and
 replace `tenantId`, `deviceId`, `authId` and `password` with the settings that you copied in the previous step.
 
@@ -62,7 +62,7 @@ replace `tenantId`, `deviceId`, `authId` and `password` with the settings that y
   }
 ```
 
-Start the local digital twins service with previous set configuration:
+Save the configuration and start the local digital twins service using the following command:
 
 ```shell
 sudo systemctl start local-digital-twins.service
@@ -78,13 +78,13 @@ python3 hono_commands_ldt.py -t demo -d demo:device
 
 ### Verify
 
-On the shell there will be output of the structure of the edge digital twins with all it's features and properties. Things with following identifiers will be presented:
+On the shell there will be output of the structure of the edge digital twins with all its features and properties. Things with the following identifiers will be presented:
 * demo:device
 * demo:device:edge:containers
 
 ### Clean up
 
-Stop local digital twins service and start suite connector service by executing:
+Stop the local digital twins service and start suite connector service by executing:
 ```shell
 sudo systemctl stop local-digital-twins.service && \
 sudo systemctl restart suite-connector.service
