@@ -16,7 +16,8 @@ To control all aspects of the container manager behavior.
 | exec_root_dir | string | /var/run/container-management | Root directory for the container manager's executable artifacts |
 | container_client_sid | string | container-management.service.local.v1.service-containerd-client | Unique identifier that is used for an interaction with the runtime |
 | network_manager_sid | string | container-management.service.local.v1.service-libnetwork-manager | Unique identifier that is used for networking |
-| default_ctrs_stop_timeout | int | 30 | Timeout in seconds for a container to stop gracefully, otherwise its root process will be force stopped |
+| default_ctrs_stop_timeout | int | 30 | (Deprecated since v0.1.0-M4, type changed to string) Timeout in seconds for a container to stop gracefully, otherwise its root process will be forcefully stopped |
+| default_ctrs_stop_timeout | string | 30s | Timeout for a container to stop gracefully in duration string format (e.g. 1h2m3s5ms), otherwise its root process will be forcefully stopped |
 | **Runtime** | | | |
 | default_ns | string | kanto-cm | Namespace that is used by the runtime for isolation |
 | address_path | string | /run/containerd/containerd.sock | Path to the runtime's communication endpoint |
