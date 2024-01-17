@@ -6,7 +6,7 @@ description: >
 weight: 5
 ---
 
-By following the steps below you will sign a container image and push it to a local registry using a{{% refn "https://github.com/notaryproject/notation" %}}`notation`{{% /refn %}}. Then notation trust policy and Kanto Container Management be configured in a way that running containers from the signed image via kanto-cm CLI will be successfull, while running containers from unsigned images will fail.
+By following the steps below, you will sign a container image and push it to a local registry using a{{% refn "https://github.com/notaryproject/notation" %}}`notation`{{% /refn %}}. Then a notation trust policy and the Kanto Container Management service will be configured in a way that running containers from the signed image via kanto-cm CLI will be successful, while running containers from unsigned images will fail.
 
 ### Before you begin
 
@@ -18,9 +18,10 @@ To ensure that your edge device is capable to execute the steps in this guide, y
 
 ### Create an image and push it to a local registry using docker and than sign it with notation
 
-Run a local container registry:
+Create and run a local container registry:
 ```shell
-sudo docker run -d -p 5000:5000 -e REGISTRY_STORAGE_DELETE_ENABLED=true --name registry registry
+sudo kanto-cm create --ports 5000:5000 --e REGISTRY_STORAGE_DELETE_ENABLED=true --name registry docker.io/library/registry:latest
+sudo kanto-cm start -n registry
 ```
 
 Build a dummy hello world image and push it to the registry:
@@ -41,7 +42,7 @@ export IMAGE=$(sudo docker inspect --format='{{index .RepoDigests 0}}' localhost
 echo $IMAGE
 ```
 
-Generate a key-pair with notation and add it as the default key to be used by notation when signing:
+Generate a key-pair with notation and add it as the default signing key:
 ```shell
 notation cert generate-test --default "kanto"
 ```
@@ -84,7 +85,7 @@ Create a backup of the initial Kanto Container Management configuration that is 
 sudo cp /etc/container-management/config.json /etc/container-management/config-backup.json
 ```
 
-Configure the use of notation verifier, set it's config directory and also mark the local registry as a insecure one:
+Configure the use of notation verifier, set its config directory, mark the local registry as an insecure one, and set the image expiry time to zero seconds, so the local cache of the images used in the how-to will be deleted upon container removal:
 ```shell
 cat <<EOF | sudo tee /etc/container-management/config.json
 {
@@ -96,7 +97,8 @@ cat <<EOF | sudo tee /etc/container-management/config.json
     "image_verifier_config": {
       "configDir": "$NOTATION_CONFIG"
     },
-    "insecure_registries": [ "localhost:5000" ]
+    "insecure_registries": [ "localhost:5000" ],
+    "image_expiry": "0s"
   }
 }
 EOF
@@ -109,25 +111,25 @@ sudo systemctl restart container-management.service
 
 ### Verify
 
-Create and run container from the signed image. The container prints `Hello world` to the console:
+Create and run a container from the signed image. The container prints `Hello world` to the console:
 ```shell
 sudo kanto-cm create --name dummy-hello --rp no --t $IMAGE
 sudo kanto-cm start --name dummy-hello --a
 ```
 
 
-Make sure that docker hub hello_world image is not cached localy and verify that creating containers from it fails, as the image is not signed and the signature verification fails:
+Make sure that a docker hub hello-world image is not cached locally, by removing any containers with this image, and verify that creating containers from it fails, as the image is not signed, and the signature verification fails:
 ```shell
-sudo ctr -n kanto-cm image remove docker.io/library/hello-world:latest
+sudo kanto-cm remove -f $(sudo kanto-cm list --quiet --filter image=docker.io/library/hello-world:latest)
 sudo kanto-cm create --name dockerhub-hello --rp no --t docker.io/library/hello-world:latest
 ```
 
 ### Clean up
 
-Remove the created container from Kanto Container Management and the localy cached image:
+Remove the created containers from the Kanto Container Management:
 ```shell
 sudo kanto-cm remove -n dummy-hello
-sudo ctr -n kanto-cm image rm $IMAGE
+sudo kanto-cm remove -n registry -f
 ```
 
 Restore the initial Kanto Container Management configuration and restart the service:
@@ -136,9 +138,8 @@ sudo mv -f /etc/container-management/config-backup.json /etc/container-managemen
 sudo systemctl restart container-management.service
 ```
 
-Remove the local container registry running Docker and the localy cached images:
+Remove the localy cached images from Docker:
 ```shell
-sudo docker rm -f registry
 sudo docker image rm localhost:5000/dummy-hello:signed registry:latest
 ```
 
