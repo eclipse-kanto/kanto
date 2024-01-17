@@ -44,6 +44,9 @@ get_distribution_version() {
     debian|raspbian)
         dist_version="$(sed 's/\/.*//' /etc/debian_version | sed 's/\..*//')"
         case "$dist_version" in
+            12)
+                dist_version="bookworm"
+            ;;
             11)
                 dist_version="bullseye"
             ;;
