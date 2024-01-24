@@ -11,3 +11,4 @@
 # SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
 
 python-qpid-proton==0.36.0
+paho-mqtt==1.6.1
