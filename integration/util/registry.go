@@ -35,7 +35,7 @@ type Resource struct {
 // BootstrapConfiguration holds the required configuration to suite bootstrapping to connect and
 // where to receive post bootstrapping files and script.
 type BootstrapConfiguration struct {
-	LogFile             string   `json:"logBootstrapFile"`
+	LogFile             string   `json:"logFile"`
 	PostBootstrapFile   string   `json:"postBootstrapFile"`
 	PostBootstrapScript []string `json:"postBootstrapScript"`
 	CaCert              string   `json:"caCert"`
