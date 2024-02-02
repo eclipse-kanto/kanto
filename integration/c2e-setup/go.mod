@@ -9,7 +9,7 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/eclipse/ditto-clients-golang v0.0.0-20230504175246-3e6e17510ac4 // indirect
+	github.com/eclipse/ditto-clients-golang v0.0.0-20220225085802-cf3b306280d3 // indirect
 	github.com/eclipse/paho.mqtt.golang v1.4.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
