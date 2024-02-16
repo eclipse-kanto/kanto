@@ -20,15 +20,15 @@
 footer {
   min-height: 200px;
 
-  @include media-breakpoint-down(xs) {
+  @include media-breakpoint-down(sm) {
     min-height: 200px;
   }
 
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     min-height: 210px;
   }
 
-  @include media-breakpoint-down(lg) {
+  @include media-breakpoint-down(xl) {
     min-height: 260px;
   }
 }
