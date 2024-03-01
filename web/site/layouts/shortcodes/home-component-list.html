@@ -4,7 +4,7 @@
 {{ $type   := .Get "type" | default "" }}
 <a id="td-block-{{ .Ordinal }}" class="td-offset-anchor"></a>
 {{ with .Get "title" }}
-<div class="row justify-content-center td-box--{{ $col_id }} pt-4 title-section">
+<div class="row text-center td-box--{{ $col_id }} pt-4 title-section">
   <h1 class="kanto border-bottom-light border-bottom-light">{{ . }}</h1>
 </div>
 {{ end }}

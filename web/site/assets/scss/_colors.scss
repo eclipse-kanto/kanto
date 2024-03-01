@@ -9,6 +9,29 @@ h1, .h1 {
   font-weight: 200;
 }
 
+display-1, .display-1 {
+  font-size: 3rem;
+}
+
+display-2, .display-2 {
+  font-size: 2.5rem;
+}
+
+display-5, .display-5 {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.td-box .row {
+  padding-left: 5vw;
+  padding-right: 5vw;
+  width: auto;
+}
+
+.row > * {
+  flex-shrink: 1;
+}
+
 .kanto-feature {
   color: $kanto-feature-color;
 }
