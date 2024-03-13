@@ -1,3 +1,4 @@
+#!/bin/sh
 if [ -d /run/systemd/system ] && [ "$1" = remove ]; then
     deb-systemd-invoke stop 'kanto-update-manager.service' >/dev/null || true
     deb-systemd-invoke stop 'system-metrics.service' >/dev/null || true
