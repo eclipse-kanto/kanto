@@ -2,8 +2,8 @@
   <li>
     <div class="kanto-button-container">
       <a {{if .PrevInSection}}href="{{.PrevInSection.RelPermalink}}"aria-label="{{ T "ui_pager_prev" }} - {{.PrevInSection.Title}}"{{end}}
-        class="kanto-button kanto text-uppercase font-weight-bold {{if not .PrevInSection}} disabled{{end}}">
-        <i class="pl-3 fas fa-arrow-left"></i>
+        class="kanto-button kanto text-uppercase fw-bold {{if not .PrevInSection}} disabled{{end}}">
+        <i class="ps-3 fas fa-arrow-left"></i>
         {{ T "ui_pager_prev" }}
       </a>
     </div>
@@ -11,9 +11,9 @@
   <li>
     <div class="kanto-button-container">
       <a {{if .NextInSection}}href="{{.NextInSection.RelPermalink}}"aria-label="{{ T "ui_pager_next" }} - {{.NextInSection.Title}}"{{end}}
-        class="kanto-button kanto text-uppercase font-weight-bold {{if not .NextInSection}} disabled{{end}}">
+        class="kanto-button kanto text-uppercase fw-bold {{if not .NextInSection}} disabled{{end}}">
         {{ T "ui_pager_next" }}
-        <i class="pl-3 fas fa-arrow-right"></i>
+        <i class="ps-3 fas fa-arrow-right"></i>
       </a>
     </div>
   </li>
