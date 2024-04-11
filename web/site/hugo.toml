@@ -154,7 +154,7 @@ sidebar_menu_truncate = 80
     desc = "Try out the latest release!"
 [[params.links.developer]]
     name = "Task board"
-    url = "https://github.com/orgs/eclipse-kanto/projects/1/views/1"
+    url = "https://github.com/orgs/eclipse-kanto/projects/1"
     icon = "fas fa-clipboard-list"
     desc = "Check out the roadmap and ongoing work"
 [[params.links.developer]]
