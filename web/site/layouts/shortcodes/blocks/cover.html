@@ -37,7 +37,7 @@
             <img class="td-cover-logo" src="{{ $logo_image_resized.RelPermalink }}"
             alt="{{ $title | html }} Logo">{{ end }}{{ $title | html }}</h1>
           {{ end }}
-          {{ with .Get "subtitle" }}<p class="display-2 font-weight-normal mb-0">{{ . | html }}</p>{{ end }}
+          {{ with .Get "subtitle" }}<p class="display-2 fw-normal mb-0">{{ . | html }}</p>{{ end }}
           <div class="pt-4 lead">
             {{ if eq .Page.File.Ext "md" }}
                 {{ .Inner | markdownify }}

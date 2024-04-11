@@ -19,13 +19,13 @@
         {{ end }}
 			</p>
 			<div class="kanto-button-container">
-				<a href="{{"sponsors" | relURL}}" class="kanto-button {{ $col_button }} text-uppercase font-weight-bold">
+				<a href="{{"sponsors" | relURL}}" class="kanto-button {{ $col_button }} text-uppercase fw-bold">
 					{{ if eq .Page.File.Ext "md" }}
 						{{ $button_text | markdownify }}
 					{{ else }}
 						{{ $button_text | htmlUnescape | safeHTML }}
 					{{ end }}
-					<i class="pl-3 fas fa-arrow-right"></i>
+					<i class="ps-3 fas fa-arrow-right"></i>
 				</a>
 			</div>
 		</div>

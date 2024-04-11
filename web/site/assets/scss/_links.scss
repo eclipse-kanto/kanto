@@ -17,6 +17,14 @@ p > a:hover, main a:hover {
   color: $kanto-gold-color !important;
 }
 
+.td-page-meta > a {
+  color: #616013;
+}
+
+.td-page-meta > a:hover {
+  color: #212107;
+}
+
 .td-navbar .nav-link{
   transition: 0.3s;
   font-size: larger;

@@ -3,6 +3,13 @@ $google_font_family: "Kumbh+Sans:300,300i,400,400i,600,600i" !default;
 $web-font-path: "https://fonts.googleapis.com/css?family=#{$google_font_family}&display=swap";
 
 $font-weight-bold: 600;
+$fw-bold: 600;
+
+$display-font-weight: 600;
+$font-size: 3rem;
+$body-text-align: left;
+$spacer: 1rem;
+
 
 // green-gold palette
 $color1:#476e40;
@@ -13,6 +20,9 @@ $color4:#ace79a;
 $primary: $color1;
 $primary-light: #58a718;
 $primary-dark: #2a4d14;
+
+$white: #ffffff;
+$blue: #0b29bd;
 
 // Home page component
 $kanto-feature-color: $color3;
