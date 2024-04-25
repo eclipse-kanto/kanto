@@ -3,7 +3,7 @@ title: "File backup configuration"
 type: docs
 description: >
   Customize the files backup and restore to and from a backend storage.
-weight: 6
+weight: 3
 ---
 
 ### Properties

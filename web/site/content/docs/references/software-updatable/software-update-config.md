@@ -3,7 +3,7 @@ title: "Software update configuration"
 type: docs
 description: >
   Customize the deployment and management of software artifacts.
-weight: 4
+weight: 3
 ---
 
 ### Properties

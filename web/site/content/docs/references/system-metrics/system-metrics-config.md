@@ -3,7 +3,7 @@ title: "System metrics configuration"
 type: docs
 description: >
   Customize the reporting of system metrics.
-weight: 7
+weight: 3
 ---
 
 ### Properties
