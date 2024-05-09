@@ -21,6 +21,7 @@ To control all aspects of the update manager.
 | reportFeedbackInterval | string | 1m | Time interval as duration string for reporting intermediate desired state feedback messages during an active update operation |
 | currentStateDelay | string | 30s | Time interval as duration string for reporting current state messages |
 | thingsEnabled | bool | true | Specify whether the Update Manager will behave as a thing's feature |
+| ownerConsentCommands | []string | | Specify a list of commands, before which an owner consent should be granted. Possible values are: 'DOWNLOAD', 'UPDATE', 'ACTIVATE' |
 | **Domain agents** | | | Holds a map structure (_agents_) with update agent configurations where each map key is treated as domain name |
 | readTimeout | string | 1m | Timeout as duration string for reading the current state for the domain |
 | rebootRequired | bool | false | Require a reboot for the domain after successful update |
@@ -101,6 +102,7 @@ The following template illustrates all possible properties with their default va
 	"rebootEnabled": true,
 	"reportFeedbackInterval": "1m",
 	"currentStateDelay": "30s",
-	"thingsEnabled": true
+	"thingsEnabled": true,
+	"ownerConsentCommands": ["DOWNLOAD"]
 }
 ```
