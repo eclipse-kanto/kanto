@@ -245,6 +245,7 @@ builds:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
     # local-digital-twins builds
+  # local-digital-twins builds
   - id: build-local-digital-twins
     dir: ./build-tmp/local-digital-twins
     main:  ./cmd/twins
@@ -292,6 +293,7 @@ builds:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
     # suite-bootstrapping builds
+  # suite-bootstrapping builds
   - id: build-suite-bootstrapping
     dir: ./build-tmp/suite-bootstrapping
     main:  ./cmd/bootstrapping
@@ -339,6 +341,7 @@ builds:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
     # file-backup builds
+  # file-backup builds
   - id: build-file-backup
     dir: ./build-tmp/file-backup
     main:  ./
@@ -386,6 +389,7 @@ builds:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
     # system-metrics builds
+  # system-metrics builds
   - id: build-system-metrics
     dir: ./build-tmp/system-metrics
     main:  ./cmd/metrics
@@ -433,6 +437,7 @@ builds:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
     # update-manager builds
+  # update-manager builds
   - id: build-update-manager
     dir: ./build-tmp/update-manager
     main:  ./cmd/update-manager
@@ -479,6 +484,100 @@ builds:
     ldflags:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
+  # azure-connector builds
+  - id: build-azure-connector
+    dir: ./build-tmp/azure-connector
+    main:  ./cmd/azure-connector
+    binary: azure-connector/azure-connector
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  - id: build-azure-connector-pkg
+    dir: ./build-tmp/azure-connector
+    main:  ./cmd/azure-connector
+    binary: azure-connector
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  # aws-connector builds
+  - id: build-aws-connector
+    dir: ./build-tmp/aws-connector
+    main:  ./cmd/aws-connector
+    binary: aws-connector/aws-connector
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+  - id: build-aws-connector-pkg
+    dir: ./build-tmp/aws-connector
+    main:  ./cmd/aws-connector
+    binary: aws-connector
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 7
+    flags:
+      - -mod=readonly
+      - -v
+      - -trimpath
+    asmflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    gcflags:
+      - all=-trimpath={{ .Env.GOPATH }}
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    mod_timestamp: '{{ .CommitTimestamp }}'
 archives:
   - id: kanto-archive-all
     name_template: '{{ .ProjectName }}_{{ .Version }}_linux_{{ if .Amd64 }}x86_64{{ else if .Arm }}armv7{{ else }}{{ .Arch }}{{ end }}'
@@ -493,6 +592,8 @@ archives:
       - build-file-backup
       - build-system-metrics
       - build-update-manager
+      - build-azure-connector
+      - build-aws-connector
     files:
       # common files
       - LICENSE
@@ -562,6 +663,28 @@ archives:
       # update-manager additional files
       - src: ./build-tmp/update-manager/NOTICE.md
         dst: kanto-update-manager
+        strip_parent: true
+        info:
+          mode: 0644
+      # azure-connector additional files
+      - src: ./build-tmp/azure-connector/NOTICE.md
+        dst: azure-connector
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/azure-connector/cmd/azure-connector/iothub.crt
+        dst: azure-connector
+        strip_parent: true
+        info:
+          mode: 0644
+      # aws-connector additional files
+      - src: ./build-tmp/aws-connector/NOTICE.md
+        dst: aws-connector
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/aws-connector/cmd/aws-connector/aws.crt
+        dst: aws-connector
         strip_parent: true
         info:
           mode: 0644
@@ -704,6 +827,36 @@ archives:
         strip_parent: true
         info:
           mode: 0644
+      - src: ./build-tmp/azure-connector/coverage.html
+        dst: azure-connector
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/azure-connector/coverage.txt
+        dst: azure-connector
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/azure-connector/coverage.out
+        dst: azure-connector
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/aws-connector/coverage.html
+        dst: aws-connector
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/aws-connector/coverage.txt
+        dst: aws-connector
+        strip_parent: true
+        info:
+          mode: 0644
+      - src: ./build-tmp/aws-connector/coverage.out
+        dst: aws-connector
+        strip_parent: true
+        info:
+          mode: 0644
 nfpms:
   - builds:
       - build-suite-connector-pkg
@@ -716,6 +869,8 @@ nfpms:
       - build-file-backup-pkg
       - build-system-metrics-pkg
       - build-update-manager-pkg
+      - build-azure-connector-pkg
+      - build-aws-connector-pkg
     bindir: /usr/bin
     file_name_template: '{{ .ProjectName }}_{{ .Version }}_linux_{{ if .Amd64 }}x86_64{{ else if .Arm }}armv7{{ else }}{{ .Arch }}{{ end }}'
     maintainer: Contributors to the Eclipse Foundation, Kanto Project <kanto-dev@eclipse.org>
@@ -1024,6 +1179,72 @@ nfpms:
           mode: 0644
       - src: ./build-tmp/update-manager/LICENSE
         dst: /usr/share/doc/kanto-update-manager/LICENSE
+        file_info:
+          mode: 0644
+      # azure-connector additional resources
+      - src: ./build-tmp/azure-connector/resources/azure-connector.service
+        dst: /etc/systemd/system/azure-connector.service
+        file_info:
+          mode: 0644
+        packager: deb
+      - src: ./build-tmp/azure-connector/resources/azure-connector.service
+        dst: /usr/lib/systemd/system/azure-connector.service
+        file_info:
+          mode: 0644
+        packager: rpm
+      - src: ./build-tmp/azure-connector/resources/config.json
+        dst: /etc/azure-connector/config.json
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/azure-connector/cmd/azure-connector/iothub.crt
+        dst: /etc/azure-connector/iothub.crt
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/azure-connector/NOTICE.md
+        dst: /usr/share/doc/azure-connector/NOTICE.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/azure-connector/README.md
+        dst: /usr/share/doc/azure-connector/README.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/azure-connector/LICENSE
+        dst: /usr/share/doc/azure-connector/LICENSE
+        file_info:
+          mode: 0644
+      # aws-connector additional resources
+      - src: ./build-tmp/aws-connector/resources/aws-connector.service
+        dst: /etc/systemd/system/aws-connector.service
+        file_info:
+          mode: 0644
+        packager: deb
+      - src: ./build-tmp/aws-connector/resources/aws-connector.service
+        dst: /usr/lib/systemd/system/aws-connector.service
+        file_info:
+          mode: 0644
+        packager: rpm
+      - src: ./build-tmp/aws-connector/resources/config.json
+        dst: /etc/aws-connector/config.json
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/aws-connector/cmd/aws-connector/aws.crt
+        dst: /etc/aws-connector/aws.crt
+        type: config
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/aws-connector/NOTICE.md
+        dst: /usr/share/doc/aws-connector/NOTICE.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/aws-connector/README.md
+        dst: /usr/share/doc/aws-connector/README.md
+        file_info:
+          mode: 0644
+      - src: ./build-tmp/aws-connector/LICENSE
+        dst: /usr/share/doc/aws-connector/LICENSE
         file_info:
           mode: 0644
 checksum:

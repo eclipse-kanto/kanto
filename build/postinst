@@ -18,6 +18,20 @@ if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-decon
     fi
 
     # This will only remove masks created by d-s-h on package removal.
+    deb-systemd-helper unmask 'azure-connector.service' >/dev/null || true
+
+    # Update the statefile to add new symlinks (if any), which need to be
+    # cleaned up on purge. Also remove old symlinks.
+    deb-systemd-helper update-state 'azure-connector.service' >/dev/null || true
+
+    # This will only remove masks created by d-s-h on package removal.
+    deb-systemd-helper unmask 'aws-connector.service' >/dev/null || true
+
+    # Update the statefile to add new symlinks (if any), which need to be
+    # cleaned up on purge. Also remove old symlinks.
+    deb-systemd-helper update-state 'aws-connector.service' >/dev/null || true
+
+    # This will only remove masks created by d-s-h on package removal.
     deb-systemd-helper unmask 'local-digital-twins.service' >/dev/null || true
 
     # Update the statefile to add new symlinks (if any), which need to be
@@ -101,7 +115,7 @@ if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-decon
         deb-systemd-helper update-state 'system-metrics.service' >/dev/null || true
     fi
 
-        # This will only remove masks created by d-s-h on package removal.
+    # This will only remove masks created by d-s-h on package removal.
     deb-systemd-helper unmask 'kanto-update-manager.service' >/dev/null || true
 
     # was-enabled defaults to true, so new installations run enable.

@@ -15,6 +15,8 @@ if [ "$1" = "remove" ]; then
         deb-systemd-helper mask 'container-management.service' >/dev/null || true
         deb-systemd-helper mask 'suite-bootstrapping.service' >/dev/null || true
         deb-systemd-helper mask 'local-digital-twins.service' >/dev/null || true
+        deb-systemd-helper mask 'aws-connector.service' >/dev/null || true
+        deb-systemd-helper mask 'azure-connector.service' >/dev/null || true
         deb-systemd-helper mask 'suite-connector.service' >/dev/null || true
     fi
 fi
@@ -37,6 +39,10 @@ if [ "$1" = "purge" ]; then
         deb-systemd-helper unmask 'suite-bootstrapping.service' >/dev/null || true
         deb-systemd-helper purge 'local-digital-twins.service' >/dev/null || true
         deb-systemd-helper unmask 'local-digital-twins.service' >/dev/null || true
+        deb-systemd-helper purge 'aws-connector.service' >/dev/null || true
+        deb-systemd-helper unmask 'aws-connector.service' >/dev/null || true
+        deb-systemd-helper purge 'azure-connector.service' >/dev/null || true
+        deb-systemd-helper unmask 'azure-connector.service' >/dev/null || true
         deb-systemd-helper purge 'suite-connector.service' >/dev/null || true
         deb-systemd-helper unmask 'suite-connector.service' >/dev/null || true
     fi
