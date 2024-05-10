@@ -55,13 +55,6 @@ jobs:
           path: ${{ env.BUILD_TMP }}/local-digital-twins
           ref: ${{ github.ref }}
           token: ${{ secrets.WF_AUTH }}
-      - name: Checkout suite-bootstrapping
-        uses: actions/checkout@v2
-        with:
-          repository: eclipse-kanto/suite-bootstrapping
-          path: ${{ env.BUILD_TMP }}/suite-bootstrapping
-          ref: ${{ github.ref }}
-          token: ${{ secrets.WF_AUTH }}
       - name: Checkout file-backup
         uses: actions/checkout@v2
         with:
@@ -129,12 +122,6 @@ jobs:
           go tool cover -html=coverage.out -o coverage.html
       - name: Generate local-digital-twins Coverage
         working-directory: ${{ env.BUILD_TMP }}/local-digital-twins
-        run: |
-          go test ./... -v -coverprofile coverage.out -tags=unit
-          go tool cover -func=coverage.out -o coverage.txt
-          go tool cover -html=coverage.out -o coverage.html
-      - name: Generate suite-bootstrapping Coverage
-        working-directory: ${{ env.BUILD_TMP }}/suite-bootstrapping
         run: |
           go test ./... -v -coverprofile coverage.out -tags=unit
           go tool cover -func=coverage.out -o coverage.txt

@@ -8,7 +8,6 @@ if [ $1 -eq 0 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
     /usr/lib/systemd/systemd-update-helper remove-system-units software-update.service || :
     /usr/lib/systemd/systemd-update-helper remove-system-units file-upload.service || :
     /usr/lib/systemd/systemd-update-helper remove-system-units container-management.service || :
-    /usr/lib/systemd/systemd-update-helper remove-system-units suite-bootstrapping.service || :
     /usr/lib/systemd/systemd-update-helper remove-system-units local-digital-twins.service || :
     /usr/lib/systemd/systemd-update-helper remove-system-units azure-connector.service || :
     /usr/lib/systemd/systemd-update-helper remove-system-units aws-connector.service || :

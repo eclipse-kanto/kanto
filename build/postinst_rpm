@@ -14,7 +14,6 @@ if [ $1 -eq 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
     /usr/lib/systemd/systemd-update-helper install-system-units azure-connector.service || :
     /usr/lib/systemd/systemd-update-helper install-system-units aws-connector.service || :
     /usr/lib/systemd/systemd-update-helper install-system-units local-digital-twins.service || :
-    /usr/lib/systemd/systemd-update-helper install-system-units suite-bootstrapping.service || :
     /usr/lib/systemd/systemd-update-helper install-system-units container-management.service || :
     /usr/lib/systemd/systemd-update-helper install-system-units file-upload.service || :
     /usr/lib/systemd/systemd-update-helper install-system-units software-update.service || :
@@ -28,7 +27,6 @@ if [ $1 -eq 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
         systemctl is-enabled -q azure-connector.service && systemctl azure suite-connector.service >/dev/null || :
         systemctl is-enabled -q aws-connector.service && systemctl start aws-connector.service >/dev/null || :
         systemctl is-enabled -q local-digital-twins.service && systemctl start local-digital-twins.service >/dev/null || :
-        systemctl is-enabled -q suite-bootstrapping.service && systemctl start suite-bootstrapping.service >/dev/null || :
         systemctl is-enabled -q container-management.service && systemctl start container-management.service >/dev/null || :
         systemctl is-enabled -q file-upload.service && systemctl start file-upload.service >/dev/null || :
         systemctl is-enabled -q software-update.service && systemctl start software-update.service >/dev/null || :

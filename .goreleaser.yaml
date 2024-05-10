@@ -244,7 +244,6 @@ builds:
     ldflags:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
-    # local-digital-twins builds
   # local-digital-twins builds
   - id: build-local-digital-twins
     dir: ./build-tmp/local-digital-twins
@@ -292,55 +291,6 @@ builds:
     ldflags:
       - -s -w -X main.version={{ .Version }}
     mod_timestamp: '{{ .CommitTimestamp }}'
-    # suite-bootstrapping builds
-  # suite-bootstrapping builds
-  - id: build-suite-bootstrapping
-    dir: ./build-tmp/suite-bootstrapping
-    main:  ./cmd/bootstrapping
-    binary: suite-bootstrapping/suite-bootstrapping
-    goos:
-      - linux
-    goarch:
-      - amd64
-      - arm
-      - arm64
-    goarm:
-      - 7
-    flags:
-      - -mod=readonly
-      - -v
-      - -trimpath
-    asmflags:
-      - all=-trimpath={{ .Env.GOPATH }}
-    gcflags:
-      - all=-trimpath={{ .Env.GOPATH }}
-    ldflags:
-      - -s -w -X main.version={{ .Version }}
-    mod_timestamp: '{{ .CommitTimestamp }}'
-  - id: build-suite-bootstrapping-pkg
-    dir: ./build-tmp/suite-bootstrapping
-    main:  ./cmd/bootstrapping
-    binary: suite-bootstrapping
-    goos:
-      - linux
-    goarch:
-      - amd64
-      - arm
-      - arm64
-    goarm:
-      - 7
-    flags:
-      - -mod=readonly
-      - -v
-      - -trimpath
-    asmflags:
-      - all=-trimpath={{ .Env.GOPATH }}
-    gcflags:
-      - all=-trimpath={{ .Env.GOPATH }}
-    ldflags:
-      - -s -w -X main.version={{ .Version }}
-    mod_timestamp: '{{ .CommitTimestamp }}'
-    # file-backup builds
   # file-backup builds
   - id: build-file-backup
     dir: ./build-tmp/file-backup
@@ -588,7 +538,6 @@ archives:
       - build-file-upload
       - build-software-update
       - build-local-digital-twins
-      - build-suite-bootstrapping
       - build-file-backup
       - build-system-metrics
       - build-update-manager
@@ -634,17 +583,6 @@ archives:
           mode: 0644
       - src: ./build-tmp/local-digital-twins/cmd/twins/iothub.crt
         dst: local-digital-twins
-        strip_parent: true
-        info:
-          mode: 0644
-      # suite-bootstrapping additional files
-      - src: ./build-tmp/suite-bootstrapping/NOTICE.md
-        dst: suite-bootstrapping
-        strip_parent: true
-        info:
-          mode: 0644
-      - src: ./build-tmp/suite-bootstrapping/cmd/bootstrapping/iothub.crt
-        dst: suite-bootstrapping
         strip_parent: true
         info:
           mode: 0644
@@ -767,21 +705,6 @@ archives:
         strip_parent: true
         info:
           mode: 0644
-      - src: ./build-tmp/suite-bootstrapping/coverage.html
-        dst: suite-bootstrapping
-        strip_parent: true
-        info:
-          mode: 0644
-      - src: ./build-tmp/suite-bootstrapping/coverage.txt
-        dst: suite-bootstrapping
-        strip_parent: true
-        info:
-          mode: 0644
-      - src: ./build-tmp/suite-bootstrapping/coverage.out
-        dst: suite-bootstrapping
-        strip_parent: true
-        info:
-          mode: 0644
       - src: ./build-tmp/file-backup/coverage.html
         dst: file-backup
         strip_parent: true
@@ -865,7 +788,6 @@ nfpms:
       - build-file-upload-pkg
       - build-software-update-pkg
       - build-local-digital-twins-pkg
-      - build-suite-bootstrapping-pkg
       - build-file-backup-pkg
       - build-system-metrics-pkg
       - build-update-manager-pkg
@@ -1062,39 +984,6 @@ nfpms:
           mode: 0644
       - src: ./build-tmp/local-digital-twins/LICENSE
         dst: /usr/share/doc/local-digital-twins/LICENSE
-        file_info:
-          mode: 0644
-      # suite-bootstrapping additional resources
-      - src: ./build-tmp/suite-bootstrapping/resources/suite-bootstrapping.service
-        dst: /etc/systemd/system/suite-bootstrapping.service
-        file_info:
-          mode: 0644
-        packager: deb
-      - src: ./build-tmp/suite-bootstrapping/resources/suite-bootstrapping.service
-        dst: /usr/lib/systemd/system/suite-bootstrapping.service
-        file_info:
-          mode: 0644
-        packager: rpm
-      - src: ./build-tmp/suite-bootstrapping/resources/config.json
-        dst: /etc/suite-bootstrapping/config.json
-        type: config
-        file_info:
-          mode: 0644
-      - src: ./build-tmp/suite-bootstrapping/cmd/bootstrapping/iothub.crt
-        dst: /etc/suite-bootstrapping/iothub.crt
-        type: config
-        file_info:
-          mode: 0644
-      - src: ./build-tmp/suite-bootstrapping/NOTICE.md
-        dst: /usr/share/doc/suite-bootstrapping/NOTICE.md
-        file_info:
-          mode: 0644
-      - src: ./build-tmp/suite-bootstrapping/README.md
-        dst: /usr/share/doc/suite-bootstrapping/README.md
-        file_info:
-          mode: 0644
-      - src: ./build-tmp/suite-bootstrapping/LICENSE
-        dst: /usr/share/doc/suite-bootstrapping/LICENSE
         file_info:
           mode: 0644
       # file-backup additional resources
