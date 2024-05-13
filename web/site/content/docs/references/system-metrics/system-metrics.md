@@ -18,18 +18,21 @@ Request to receive data.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/request` | - |
-> | path | `/features/Metrics/inbox/messages/request` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | UUID | - |
+> | topic | `<name>/<namespace>/things/live/messages/request` | Information about the affected Thing and the type of operation |
+> | path | `/features/Metrics/inbox/messages/request` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
-> | filter | - | Filter defines the type of metric data to be reported |
-> | frequency | - | Duration of how often the metrics data to be published |
+> | frequency | | Duration of how often the metrics data to be published |
+> | ***filter*** | | An array of the type of metric data to be reported |
+> | id | | An array of identifiers whose metric data to be reported, supported are: cpu.utilization, memory.utilization, memory.total, memory.used, io.readBytes, io.writeBytes |
+> | originator | | The originator for whose metric data to be reported |
+
 <br>
 
-**Example** : In this example, the User can request metrics data with some specified filter and frequency:
+**Example** : In this example, you can request metrics data with some specified filter and frequency.
 
 **Topic:** `command//edge:device/req//request`
 ```json
@@ -59,20 +62,20 @@ Request to receive data.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//request`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/request`
-
-**Ditto Path** : `/features/Metrics/outbox/messages/request`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/request` | Information about the affected Thing and the type of operation |
+> | path | `/features/Metrics/outbox/messages/request` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation request the metrics data |
 
-#### Status: `Status of the operation start over the container`
+<br>
 
-**Example** :
+**Example** : The response of the request the metrics data.
 
 **Topic:** `command//edge:device/res//request``
 ```json
@@ -82,7 +85,7 @@ Request to receive data.
 		"content-type":"application/json",
 		"correlation-id":"<UUID>"
 	},
-	"path":"/features/Container:<UUID>/outbox/messages/request",
+	"path":"/features/Metrics/outbox/messages/request",
 	"status": 204
 }
 ```
@@ -96,19 +99,25 @@ Receive the data from container.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//data`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/data`
-
-**Ditto Path** : `/features/Metrics/outbox/messages/data`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
+> | topic | `<name>/<namespace>/things/live/messages/data` | Information about the affected Thing and the type of operation |
+> | path | `/features/Metrics/outbox/messages/data` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | **Value** | | The value of the received data from the device in json format |
+> | timestamp | | The timestamp in ms when this measure data is published |
+> | ***shapshot*** | | All the measurements collected at a concrete time per originator
+> | originator | | The originator for whose metric data to be reported |
+> | **measurements** | | An array of measurements identifier and value for originator |
+> | id | | The identifier whose metric data to be reported, supported are: cpu.utilization, cpu.load1, cpu.load5, cpu.load15, memory.utilization, memory.total, memory.available, memory.used, io.readBytes, io.writeBytes |
+> | value | | The measured value per metric ID |
 
-#### Value: `The value of the received data from the container in json format`
+<br>
 
-**Example** :
+**Example** : The received data from the device.
 
 **Topic:** `command//edge:device/res//data``
 ```json

@@ -2,7 +2,7 @@
 title: "File Backup API"
 type: docs
 description: >
-  The file backup service provides the ability to backup and restore to and from a backend storage.
+  The file backup service allows you to backup and restore data to and from a backend storage.
 weight: 4
 ---
 
@@ -18,19 +18,22 @@ Create a backup to backend storage.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/backup` | - |
-> | path | `/features/BackupAndRestore/inbox/messages/backup` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | UUID | - |
+> | topic | `<name>/<namespace>/things/live/messages/backup` | Information about the affected Thing and the type of operation |
+> | path | `/features/BackupAndRestore/inbox/messages/backup` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
 > | correlationID | UUID | Identifier of the backup file |
-> | providers | - | - |
-> | options | - | - |
+> | providers | | The providers of the restore command |
+> | ***options*** | | |
+> | backup.dir | | A local directory, which to be backup and upload it, using HTTP upload or Azure/AWS temporary credentials |
+> | https.url | | The URL for restore the backup directory |
+
 <br>
 
-**Example** : In this example, the User can create the backup:
+**Example** : In this example, you can create the backup.
 
 **Topic:** `command//edge:device/req//backup`
 ```json
@@ -59,20 +62,20 @@ Create a backup to backend storage.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//backup`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/backup`
-
-**Ditto Path** : `/features/BackupAndRestore/outbox/messages/backup`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/backup` | Information about the affected Thing and the type of operation |
+> | path | `/features/BackupAndRestore/outbox/messages/backup` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation backup |
 
-#### Status: `Status of the operation backup`
+<br>
 
-**Example** :
+**Example** : The response of the backup operation.
 
 **Topic:** `command//edge:device/res//backup``
 ```json
@@ -100,19 +103,22 @@ Restore the backup from backend.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/restore` | - |
-> | path | `/features/BackupAndRestore/inbox/messages/restore` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | UUID | - |
+> | topic | `<name>/<namespace>/things/live/messages/restore` | Information about the affected Thing and the type of operation |
+> | path | `/features/BackupAndRestore/inbox/messages/restore` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
-> | correlationID | UUID | - |
-> | providers | - | - |
-> | options | - | - |
+> | correlationID | other UUID | Identifier of the restore file |
+> | providers | | The providers of the restore command |
+> | ***options*** | | Options are specific for each provider |
+> | backup.dir | | A local directory, which to be backup and upload it, using HTTP upload or Azure/AWS temporary credentials |
+> | https.url | | The URL for restore the backup directory |
+
 <br>
 
-**Example** : In this example, the User can restore from backend:
+**Example** : In this example, you can restore from backend.
 
 **Topic:** `command//edge:device/req//restore`
 ```json
@@ -126,12 +132,10 @@ Restore the backup from backend.
 	"path":"/features/BackupAndRestore/inbox/messages/restore",
 	"value":{
 		"correlationID":"upload-id-1704439450#n",
+		"providers":{},
 		"options":{
-			"aws.access.key.id":"AWSACCESSKEYID",
-			"aws.region":"eu-central-1",
-			"aws.s3.bucket":"blob-upload-test",
-			"aws.secret.access.key":"AWSSECRETACCESSKEY",
-			"storage.provider":"aws"
+			"backup.dir":"/var/tmp/backup",
+			"https.url":"https://raw.githubusercontent.com/eclipse-kanto/container-management/main/containerm/pkg/testutil/config/"
 		}
 	}
 }
@@ -143,20 +147,20 @@ Restore the backup from backend.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//restore`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/restore`
-
-**Ditto Path** : `/features/BackupAndRestore/outbox/messages/restore`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/restore` | Information about the affected Thing and the type of operation |
+> | path | `/features/BackupAndRestore/outbox/messages/restore` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation restore |
 
-#### Status: `Status of the restore operation`
+<br>
 
-**Example** :
+**Example** : The response of the restore operation.
 
 **Topic:** `command//edge:device/res//restore``
 ```json

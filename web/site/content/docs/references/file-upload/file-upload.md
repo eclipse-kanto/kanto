@@ -18,18 +18,20 @@ Start to upload file.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/start` | - |
-> | path | `/features/AutoUploadable/inbox/messages/start` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | UUID | - |
+> | topic | `<name>/<namespace>/things/live/messages/start` | Information about the affected Thing and the type of operation |
+> | path | `/features/AutoUploadable/inbox/messages/start` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
-> | correlationID  | other UUID | - |
-> | options | - | - |
+> | correlationID | other UUID | Identifier of the uploaded file |
+> | ***options*** | | Options are specific for each provider |
+> | storage.provider | aws/azure/generic | This is mandatory option for finding the provider to upload |
+
 <br>
 
-**Example** : In this example, the User can start uploading a file:
+**Example** : In this example, you can start uploading a file.
 
 **Topic:** `command//edge:device/req//start`
 ```json
@@ -60,20 +62,20 @@ Start to upload file.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//start`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/start`
-
-**Ditto Path** : `/features/AutoUploadable/outbox/messages/start`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/start` | Information about the affected Thing and the type of operation |
+> | path | `/features/AutoUploadable/outbox/messages/start` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation start upload the file |
 
-#### Status: `Status of the operation start to upload the file`
+<br>
 
-**Example** :
+**Example** : The response of the start upload file operation.
 
 **Topic:** `command//edge:device/res//start``
 ```json
@@ -101,18 +103,19 @@ Trigger operation is invoked from the backend.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/trigger` | - |
-> | path | `/features/AutoUploadable/inbox/messages/trigger` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | UUID | - |
+> | topic | `<name>/<namespace>/things/live/messages/trigger` | Information about the affected Thing and the type of operation |
+> | path | `/features/AutoUploadable/inbox/messages/trigger` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
-> | correlationID  | other UUID | - |
-> | options | - | - |
+> | correlationID | other UUID | Identifier of the triggered file |
+> | ***options*** | | Options are specific for each provider |
+
 <br>
 
-**Example** : In this example, the User can pause an existing and running container:
+**Example** : In this example, you can pause an existing and running container.
 
 **Topic:** `command//edge:device/req//trigger`
 ```json
@@ -137,20 +140,20 @@ Trigger operation is invoked from the backend.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//trigger`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/trigger`
-
-**Ditto Path** : `/features/AutoUploadable/outbox/messages/trigger`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/trigger` | Information about the affected Thing and the type of operation |
+> | path | `/features/AutoUploadable/outbox/messages/trigger` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation trigger |
 
-#### Status: `Status of the operation trigger`
+<br>
 
-**Example** :
+**Example** : The response of the trigger operation.
 
 **Topic:** `command//edge:device/res//trigger``
 ```json
@@ -178,18 +181,20 @@ Cancel upload the file.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/cancel` | - |
-> | path | `/features/AutoUploadable/inbox/messages/cancel` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | UUID | - |
+> | topic | `<name>/<namespace>/things/live/messages/cancel` | Information about the affected Thing and the type of operation |
+> | path | `/features/AutoUploadable/inbox/messages/cancel` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
-> | correlationID  | other UUID | - |
-> | options  | - | - |
+> | correlationID | other UUID | Identifier of the uploaded file |
+> | statusCode | | This status code is set to update status code |
+> | message | | This message is set to update status message |
+
 <br>
 
-**Example** : In this example, the User can resume cancel operation upload of the file:
+**Example** : In this example, you can resume cancel operation upload of the file.
 
 **Topic:** `command//edge:device/req//cancel`
 ```json
@@ -203,13 +208,8 @@ Cancel upload the file.
 	"path":"/features/AutoUploadable/inbox/messages/cancel",
 	"value":{
 		"correlationID":"upload-id-1704439450#n",
-		"options":{
-			"aws.access.key.id":"AWSACCESSKEYID",
-			"aws.region":"eu-central-1",
-			"aws.s3.bucket":"blob-upload-test",
-			"aws.secret.access.key":"AWSSECRETACCESSKEY",
-			"storage.provider":"aws"
-		}
+		"statusCode": 400,
+		"message":"description why the upload is canceled "
 	}
 }
 ```
@@ -220,20 +220,20 @@ Cancel upload the file.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//cancel`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/cancel`
-
-**Ditto Path** : `/features/AutoUploadable/outbox/messages/cancel`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/cancel` | Information about the affected Thing and the type of operation |
+> | path | `/features/AutoUploadable/outbox/messages/cancel` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation cancel upload file |
 
-#### Status: `Status of the operation cancel upload of file`
+<br>
 
-**Example** :
+**Example** : The response of the cancel upload file operation.
 
 **Topic:** `command//edge:device/res//cancel``
 ```json
@@ -261,18 +261,19 @@ Activate upload of the file.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/activate` | - |
-> | path | `/features/AutoUploadable/inbox/messages/activate` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | UUID | - |
+> | topic | `<name>/<namespace>/things/live/messages/activate` | Information about the affected Thing and the type of operation |
+> | path | `/features/AutoUploadable/inbox/messages/activate` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
-> | correlationID | other UUID | - |
-> | options | - | - |
+> | from | | A Time after which the upload must be activated |
+> | to | | A Time grater than `from` marks the end of activated |
+
 <br>
 
-**Example** : In this example, the User can activate upload of the file:
+**Example** : In this example, you can activate upload of the file.
 
 **Topic:** `command//edge:device/req//activate`
 ```json
@@ -285,14 +286,8 @@ Activate upload of the file.
 	},
 	"path":"/features/AutoUploadable/inbox/messages/activate",
 	"value":{
-		"correlationID":"upload-id-1704439450#n",
-		"options":{
-			"aws.access.key.id":"AWSACCESSKEYID",
-			"aws.region":"eu-central-1",
-			"aws.s3.bucket":"blob-upload-test",
-			"aws.secret.access.key":"AWSSECRETACCESSKEY",
-			"storage.provider":"aws"
-		}
+		"from":957139200,
+		"to":959817599
 	}
 }
 ```
@@ -303,20 +298,20 @@ Activate upload of the file.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//activate`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/activate`
-
-**Ditto Path** : `/features/AutoUploadable/outbox/messages/activate`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/activate` | Information about the affected Thing and the type of operation |
+> | path | `/features/AutoUploadable/outbox/messages/activate` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation activate upload file |
 
-#### Status: `Status of the operation activate upload of file`
+<br>
 
-**Example** :
+**Example** : The response of the activate upload file operation.
 
 **Topic:** `command//edge:device/res//activate``
 ```json
@@ -344,18 +339,17 @@ Deactivate upload file.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/deactivate` | - |
-> | path | `/features/AutoUploadable/inbox/messages/deactivate` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | UUID | - |
+> | topic | `<name>/<namespace>/things/live/messages/deactivate` | Information about the affected Thing and the type of operation |
+> | path | `/features/AutoUploadable/inbox/messages/deactivate` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
-> | correlationID | other UUID | - |
-> | options | - | - |
+
 <br>
 
-**Example** : In this example, the User can deactivate upload of file:
+**Example** : In this example, you can deactivate upload of file.
 
 **Topic:** `command//edge:device/req//deactivate`
 ```json
@@ -367,16 +361,7 @@ Deactivate upload file.
 		"correlation-id":"<UUID>"
 	},
 	"path":"/features/AutoUploadable/inbox/messages/deactivate",
-	"value":{
-		"correlationID":"upload-id-1704439450#n",
-		"options":{
-			"aws.access.key.id":"AWSACCESSKEYID",
-			"aws.region":"eu-central-1",
-			"aws.s3.bucket":"blob-upload-test",
-			"aws.secret.access.key":"AWSSECRETACCESSKEY",
-			"storage.provider":"aws"
-		}
-	}
+	"value":{}
 }
 ```
 </details>
@@ -386,20 +371,20 @@ Deactivate upload file.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//deactivate`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/deactivate`
-
-**Ditto Path** : `/features/AutoUploadable/outbox/messages/deactivate`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/deactivate` | Information about the affected Thing and the type of operation |
+> | path | `/features/AutoUploadable/outbox/messages/deactivate` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation deactivate upload file |
 
-#### Status: `Status of the operation deactivate`
+<br>
 
-**Example** :
+**Example** : The response of the deactivate upload file operation.
 
 **Topic:** `command//edge:device/res//deactivate``
 ```json

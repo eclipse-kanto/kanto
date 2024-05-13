@@ -2,12 +2,12 @@
 title: "Software Updatable API"
 type: docs
 description: >
-  The software updatable service provides the ability to install given list of software modules and to remove modules from containers.
+  The software updatable service utilizes the Eclipse hawkBit message format to install a specified list of containers (software modules) and remove already installed modules.
 weight: 4
 ---
 
 ## **Install**
-Install given list of software modules to the container.
+You can install a specified list of containers (software modules).
 
 <details>
   <summary>Request</summary>
@@ -18,21 +18,37 @@ Install given list of software modules to the container.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/install` | - |
-> | path | `/features/SoftwareUpdatable/inbox/messages/install` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | container UUID | - |
+> | topic | `<name>/<namespace>/things/live/messages/install` | Information about the affected Thing and the type of operation |
+> | path | `/features/SoftwareUpdatable/inbox/messages/install` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | container UUID | The container UUID |
 > | **Value** | | |
-> | correlationId | - | different from container UUID |
-> | softwareModules | - | Array from modules, which will be installed |
-> | weight | - | - |
-> | metadata | - | Metadata |
+> | correlationId | | Different identifier from the container UUID |
+> | weight | | The weight is the priority in case of multiple, parallel instructions |
+> | metadata | | The metadata is any other information which should be passed to the device |
 > | forced | true/false | Forced to install the software modules |
+> | ***softwareModules*** | | An array of modules that will be installed |
+> | metadata | | The metadata is any other information which should be passed to the device |
+> | **softwareModule** | | An unique identifier for the software module |
+> | name | | The name of the software module |
+> | version | | The version of the software module |
+> | **artifacts** | | An array of artifacts contained in the software module |
+> | filename | | The file name of the artifact behind the provided URLs |
+> | size | | The size of the file in bytes |
+> | **download** | | A map with protocols and links to downloaded |
+> | key | HTTP/HTTPS/FTP/SFTP | Available transport protocols |
+> | url | | URL to download the artifact |
+> | md5url | | MD5URL to download the MD5SUM file |
+> | **checksums** | | A map with checksums to verify the proper download |
+> | MD5 | | The checksum by md5 hash algorithm |
+> | SHA1 | | The checksum by sha1 hash algorithm |
+> | SHA256 | | The checksum by sha256 hash algorithm |
+
 <br>
 
-**Example** : In this example, the User can install listed modules:
+**Example** : In this example, you can install the listed modules.
 
 **Topic:** `command//edge:device/req//install`
 ```json
@@ -49,6 +65,10 @@ Install given list of software modules to the container.
 		"forced":true,
 		"softwareModules":[
 			{
+				"softwareModule":{
+					"name":"influxdb",
+					"version":"1.8.4"
+				},
 				"artifacts":[
 					{
 						"filename":"valid.json",
@@ -65,11 +85,7 @@ Install given list of software modules to the container.
 						},
 						"size":100
 					}
-				],
-				"softwareModule":{
-					"name":"influxdb",
-					"version":"1.8.4"
-				}
+				]
 			}
 		]
 	}
@@ -82,20 +98,20 @@ Install given list of software modules to the container.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//install`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/install`
-
-**Ditto Path** : `/features/SoftwareUpdatable/outbox/messages/install`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/install` | Information about the affected Thing and the type of operation |
+> | path | `/features/SoftwareUpdatable/outbox/messages/install` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation install software modules over the container |
 
-#### Status: `Status of the operation install software modules over the container`
+<br>
 
-**Example** :
+**Example** : The response of the install software modules operation.
 
 **Topic:** `command//edge:device/res//install``
 ```json
@@ -112,7 +128,7 @@ Install given list of software modules to the container.
 </details>
 
 ## **Remove**
-Remove software modules from the container.
+Remove a software module that is already installed.
 
 <details>
   <summary>Request</summary>
@@ -123,17 +139,26 @@ Remove software modules from the container.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/remove` | - |
-> | path | `/features/SoftwareUpdatable/inbox/messages/remove` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | container UUID | - |
-> | **Value** | | |
-> | value | - | Json presentation of software module to be removed |
+> | topic | `<name>/<namespace>/things/live/messages/remove` | Information about the affected Thing and the type of operation |
+> | path | `/features/SoftwareUpdatable/inbox/messages/remove` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | container UUID | The container UUID |
+> | **Value** | | Json presentation of software module to be removed |
+> | correlationId | | Different identifier from the container UUID |
+> | weight | | The weight is the priority in case of multiple, parallel instructions |
+> | metadata | | The metadata is any other information which should be passed to the device |
+> | forced | true/false | Forced to remove the software modules |
+> | ***software*** | | An array of software modules to be removed |
+> | group | | An identifier which groups the dependency into a certain category |
+> | name | | The dependency name |
+> | version | | The dependency version |
+> | type | | The "category" classifier for the dependency |
+
 <br>
 
-**Example** : In this example, the User can remove an existing software modules container:
+**Example** : In this example, you can remove an existing software modules container.
 
 **Topic:** `command//edge:device/req//remove`
 ```json
@@ -164,19 +189,19 @@ Remove software modules from the container.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//remove`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/remove`
-
-**Ditto Path** : `/features/SoftwareUpdatable/outbox/messages/remove`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/remove` | Information about the affected Thing and the type of operation |
+> | path | `/features/SoftwareUpdatable/outbox/messages/remove` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | correlation-id | container UUID | The container UUID |
+> | **Status** | | Status of the operation remove software modules from container |
 
-#### Status: `Status of the operation remove software modules from container`
+<br>
 
-**Example** :
+**Example** : The response of the remove software modules operation.
 
 **Topic:** `command//edge:device/res//remove``
 ```json

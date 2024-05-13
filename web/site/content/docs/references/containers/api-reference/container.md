@@ -18,16 +18,17 @@ Start an existing container.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/start` | - |
-> | path | `/features/Container:<UUID>/inbox/messages/start` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | container UUID | - |
+> | topic | `<name>/<namespace>/things/live/messages/start` | Information about the affected Thing and the type of operation |
+> | path | `/features/Container:<UUID>/inbox/messages/start` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | container UUID | The container UUID |
 > | **Value** | | |
+
 <br>
 
-**Example** : In this example, the User can start an existing container:
+**Example** : In this example, you can start an existing container.
 
 **Topic:** `command//edge:device/req//start`
 ```json
@@ -49,20 +50,21 @@ Start an existing container.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//start`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/start`
-
-**Ditto Path** : `/features/Container:<UUID>/outbox/messages/start`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/start` | Information about the affected Thing and the type of operation |
+> | path | `/features/Container:<UUID>/outbox/messages/start` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation start over the container |
 
-#### Status: `Status of the operation start over the container`
+<br>
 
-**Example** :
+
+**Example** : The response of the start operation.
 
 **Topic:** `command//edge:device/res//start``
 ```json
@@ -90,16 +92,17 @@ Stop an existing and running container.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/stop` | - |
-> | path | `/features/Container:<UUID>/inbox/messages/stop` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | container UUID | - |
+> | topic | `<name>/<namespace>/things/live/messages/stop` | Information about the affected Thing and the type of operation |
+> | path | `/features/Container:<UUID>/inbox/messages/stop` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | container UUID | The container UUID |
 > | **Value** | | |
+
 <br>
 
-**Example** : In this example, the User can stop an existing and running container:
+**Example** : In this example, you can stop an existing and running container.
 
 **Topic:** `command//edge:device/req//stop`
 ```json
@@ -121,20 +124,20 @@ Stop an existing and running container.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//stop`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/stop`
-
-**Ditto Path** : `/features/Container:<UUID>/outbox/messages/stop`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/stop` | Information about the affected Thing and the type of operation |
+> | path | `/features/Container:<UUID>/outbox/messages/stop` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation stop over the container |
 
-#### Status: `Status of the operation stop over the container`
+<br>
 
-**Example** :
+**Example** : The response of the stop operation.
 
 **Topic:** `command//edge:device/res//stop``
 ```json
@@ -162,20 +165,20 @@ Stop an existing and running container with given options.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/stopWithOptions` | - |
-> | path | `/features/Container:<UUID>/inbox/messages/stopWithOptions` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | container UUID | - |
+> | topic | `<name>/<namespace>/things/live/messages/stopWithOptions` | Information about the affected Thing and the type of operation |
+> | path | `/features/Container:<UUID>/inbox/messages/stopWithOptions` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | container UUID | The container UUID |
 > | **Value** | | |
 > | signal | `SIGTERM` | Stop a container using a specific signal. Signals could be specified by using their names or numbers, e.g. SIGINT or 2 |
 > | timeout | -1 << 63 // -9223372036854775808 | Sets the timeout period in seconds to gracefully stop the container. When timeout expires the container process would be forcibly killed |
-> | name | - | Stop a container with a specific name |
 > | force | true/false | Whether to send a SIGKILL signal to the container's process if it does not finish within the timeout specified |
+
 <br>
 
-**Example** : In this example, the User can stop an existing and running container with specified options:
+**Example** : In this example, you can stop an existing and running container with specified options.
 
 **Topic:** `command//edge:device/req//stopWithOptions`
 ```json
@@ -188,7 +191,9 @@ Stop an existing and running container with given options.
 	},
 	"path":"/features/Container:<UUID>/inbox/messages/stopWithOptions",
 	"value":{
-		"signal":"SIGINT"
+		"signal":"SIGINT",
+		"timeout": 30,
+		"force": true
 	}
 }
 ```
@@ -199,20 +204,21 @@ Stop an existing and running container with given options.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//stopWithOptions`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/stopWithOptions`
-
-**Ditto Path** : `/features/Container:<UUID>/outbox/messages/stopWithOptions`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/stopWithOptions` | Information about the affected Thing and the type of operation |
+> | path | `/features/Container:<UUID>/outbox/messages/stopWithOptions` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation stop with options over the container |
 
-#### Status: `Status of the operation stop with options over the container`
+<br>
 
-**Example** :
+
+**Example** : The response of the stopWithOptions operation.
 
 **Topic:** `command//edge:device/res//stopWithOptions``
 ```json
@@ -240,17 +246,17 @@ Rename an existing container with given new name.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/rename` | - |
-> | path | `/features/Container:<UUID>/inbox/messages/rename` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | container UUID | - |
-> | **Value** | | |
-> | value | container new name | - |
+> | topic | `<name>/<namespace>/things/live/messages/rename` | Information about the affected Thing and the type of operation |
+> | path | `/features/Container:<UUID>/inbox/messages/rename` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | container UUID | The container UUID |
+> | **Value** | | The container new name |
+
 <br>
 
-**Example** : In this example, the User can rename an existing container with specified name:
+**Example** : In this example, you can rename an existing container with specified name.
 
 **Topic:** `command//edge:device/req//rename`
 ```json
@@ -272,20 +278,20 @@ Rename an existing container with given new name.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//rename`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/rename`
-
-**Ditto Path** : `/features/Container:<UUID>/outbox/messages/rename`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/rename` | Information about the affected Thing and the type of operation |
+> | path | `/features/Container:<UUID>/outbox/messages/rename` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation rename container |
 
-#### Status: `Status of the operation rename container`
+<br>
 
-**Example** :
+**Example** : The response of the rename operation.
 
 **Topic:** `command//edge:device/res//rename``
 ```json
@@ -313,21 +319,25 @@ Update an existing container without recreating it. The provided configurations 
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/update` | - |
-> | path | `/features/Container:<UUID>/inbox/messages/update` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | container UUID | - |
+> | topic | `<name>/<namespace>/things/live/messages/update` | Information about the affected Thing and the type of operation |
+> | path | `/features/Container:<UUID>/inbox/messages/update` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | container UUID | The container UUID |
 > | **Value** | | |
-> | restartPolicy | - | Updates the restart policy for the container. The policy will be applied when the container exits |
+> | **restartPolicy** | | Updates the restart policy for the container. The policy will be applied when the container exits |
 > | type | no/always/unless-stopped/on-failure | Supported restart policies |
-> | timeout | -1 << 63 // -9223372036854775808 | Updates the time out period in seconds for each retry that will be made to restart the container on exit if the policy is set to on-failure |
 > | maxRetryCount | -1 << 31 // -2147483648 | Updates the number of retries that will be made to restart the container on exit if the policy is on-failure |
+> | timeout | -1 << 63 // -9223372036854775808 | Updates the time out period in seconds for each retry that will be made to restart the container on exit if the policy is set to on-failure |
+> | **resources** | | |
+> | memory | | Updates the max amount of memory the container can use in the form of 200m, 1.2g |
+> | memoryReservation | | Updates the soft memory limitation in the form of 200m, 1.2g |
+> | memorySwap | | Updates the total amount of memory + swap that the container can use in the form of 200m, 1.2g |
 
 <br>
 
-**Example** : In this example, the User can update an existing container with specified options:
+**Example** : In this example, you can update an existing container with specified options.
 
 **Topic:** `command//edge:device/req//update`
 ```json
@@ -341,7 +351,14 @@ Update an existing container without recreating it. The provided configurations 
 	"path":"/features/Container:<UUID>/inbox/messages/update",
 	"value":{
 		"restartPolicy":{
-			"type":"always"
+			"type":"on-failure",
+			"maxRetryCount":3,
+			"timeout":10
+		},
+		"resources":{
+			"memory":"500M",
+			"memoryReservation":"300M",
+			"memorySwap":"1G",
 		}
 	}
 }
@@ -353,20 +370,20 @@ Update an existing container without recreating it. The provided configurations 
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//update`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/update`
-
-**Ditto Path** : `/features/Container:<UUID>/outbox/messages/update`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/update` | Information about the affected Thing and the type of operation |
+> | path | `/features/Container:<UUID>/outbox/messages/update` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation update over the container |
 
-#### Status: `Status of the operation update over the container`
+<br>
 
-**Example** :
+**Example** : The response of the update operation.
 
 **Topic:** `command//edge:device/res//update``
 ```json
@@ -394,17 +411,17 @@ Remove a container and frees the associated resources.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/remove` | - |
-> | path | `/features/Container:<UUID>/inbox/messages/remove` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | container UUID | - |
-> | **Value** | | |
-> | value | true/false | Force stopping before removing a container |
+> | topic | `<name>/<namespace>/things/live/messages/remove` | Information about the affected Thing and the type of operation |
+> | path | `/features/Container:<UUID>/inbox/messages/remove` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | container UUID | The container UUID |
+> | **Value** | true/false | Force stopping before removing a container |
+
 <br>
 
-**Example** : In this example, the User can remove an existing container:
+**Example** : In this example, you can remove an existing container.
 
 **Topic:** `command//edge:device/req//remove`
 ```json
@@ -426,20 +443,20 @@ Remove a container and frees the associated resources.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//remove`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/remove`
-
-**Ditto Path** : `/features/Container:<UUID>/outbox/messages/remove`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/remove` | Information about the affected Thing and the type of operation |
+> | path | `/features/Container:<UUID>/outbox/messages/remove` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation remove container |
 
-#### Status: `Status of the operation remove container`
+<br>
 
-**Example** :
+**Example** : The response of the remove operation.
 
 **Topic:** `command//edge:device/res//remove``
 ```json

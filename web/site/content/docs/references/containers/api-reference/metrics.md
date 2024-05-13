@@ -2,8 +2,8 @@
 title: "Metrics API"
 type: docs
 description: >
-  The metrics service provides the ability to make requests and receive the data for some originators or containers.
-weight: 5
+  With the metrics service, you can request and receive metrics data for specific containers.
+weight: 4
 ---
 
 ## **Request**
@@ -18,18 +18,21 @@ Request to receive data from the container.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/request` | - |
-> | path | `/features/Metrics/inbox/messages/request` | - |
-> | **Headers** | | |
-> | response-required | `true` | - |
-> | content-type | `application/json` | - |
-> | correlation-id  | container UUID | - |
+> | topic | `<name>/<namespace>/things/live/messages/request` | Information about the affected Thing and the type of operation |
+> | path | `/features/Metrics/inbox/messages/request` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | response-required | true/false | If response required |
+> | content-type | `application/json` | The content type |
+> | correlation-id | container UUID | The container UUID |
 > | **Value** | | |
-> | filter | - | Filter defines the type of metric data to be reported |
-> | frequency | - | Duration of how often the metrics data to be published |
+> | frequency | | Duration of how often the metrics data to be published |
+> | ***filter*** | | Filter defines the type of metric data to be reported |
+> | id | | An array of identifiers whose metric data to be reported, supported are: cpu.utilization, memory.utilization, memory.total, memory.used, io.readBytes, io.writeBytes, net.readBytes, net.writeBytes, pids |
+> | originator | | The originator for whose metric data to be reported |
+
 <br>
 
-**Example** : In this example, the User can request metrics data with some specified filter and frequency:
+**Example** : In this example, you can request metrics data with a specified filter and frequency.
 
 **Topic:** `command//edge:device/req//request`
 ```json
@@ -44,8 +47,8 @@ Request to receive data from the container.
 	"value":{
 		"filter":[
 			{
-				"id":"Container",
-				"originator":"test.process"
+				"id":null,
+				"originator":"SYSTEM"
 			}
 		],
 		"frequency":"2s"
@@ -59,20 +62,20 @@ Request to receive data from the container.
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//request`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/request`
-
-**Ditto Path** : `/features/Metrics/outbox/messages/request`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
-> | correlation-id | \<UUID\> | - |
+> | topic | `<name>/<namespace>/things/live/messages/request` | Information about the affected Thing and the type of operation |
+> | path | `/features/Metrics/outbox/messages/request` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | **Status** | | Status of the operation request metrics data |
 
-#### Status: `Status of the operation start over the container`
+<br>
 
-**Example** :
+**Example** : The response of the request metrics data operation.
 
 **Topic:** `command//edge:device/res//request``
 ```json
@@ -82,33 +85,39 @@ Request to receive data from the container.
 		"content-type":"application/json",
 		"correlation-id":"<UUID>"
 	},
-	"path":"/features/Container:<UUID>/outbox/messages/request",
+	"path":"/features/Metrics/outbox/messages/request",
 	"status": 204
 }
 ```
 </details>
 
 ## **Data**
-Receive the data from container.
+You will receive data from a container based on the frequency specified in the request.
 
 <details>
   <summary>Response</summary>
 
 **Hono Command** : `command//<name>:<namespace>:edge:containers/res//data`
 
-**Ditto Topic** : `<name>/<namespace>/things/live/messages/data`
-
-**Ditto Path** : `/features/Metrics/outbox/messages/data`
-
-#### Headers
+**Ditto Message:**
 
 > | Name | Value | Description |
 > | - | - | - |
-> | content-type | application/json | - |
+> | topic | `<name>/<namespace>/things/live/messages/data` | Information about the affected Thing and the type of operation |
+> | path | `/features/Metrics/outbox/messages/data` | A path that references a part of a Thing which is affected by this message |
+> | **Headers** | | Additional headers |
+> | content-type | `application/json` | The content type |
+> | **Value** | | The value of the received data from the container in json format |
+> | timestamp | | The timestamp in ms when this measure data is published |
+> | ***shapshot*** | | All the measurements collected per originator |
+> | originator | | The originator for whose metric data to be reported |
+> | **measurements** | | An array of measurements identifier and value for originator |
+> | id | | The identifier whose metric data to be reported, supported are: cpu.utilization, memory.utilization, memory.total, memory.used, io.readBytes, io.writeBytes, net.readBytes, net.writeBytes, pids |
+> | value | | The measured value per metric ID |
 
-#### Value: `The value of the received data from the container in json format`
+<br>
 
-**Example** :
+**Example** : The received data from the container.
 
 **Topic:** `command//edge:device/res//data``
 ```json
