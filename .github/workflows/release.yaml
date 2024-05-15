@@ -55,13 +55,6 @@ jobs:
           path: ${{ env.BUILD_TMP }}/local-digital-twins
           ref: ${{ github.ref }}
           token: ${{ secrets.WF_AUTH }}
-      - name: Checkout suite-bootstrapping
-        uses: actions/checkout@v2
-        with:
-          repository: eclipse-kanto/suite-bootstrapping
-          path: ${{ env.BUILD_TMP }}/suite-bootstrapping
-          ref: ${{ github.ref }}
-          token: ${{ secrets.WF_AUTH }}
       - name: Checkout file-backup
         uses: actions/checkout@v2
         with:
@@ -81,6 +74,20 @@ jobs:
         with:
           repository: eclipse-kanto/update-manager
           path: ${{ env.BUILD_TMP }}/update-manager
+          ref: ${{ github.ref }}
+          token: ${{ secrets.WF_AUTH }}
+      - name: Checkout azure-connector
+        uses: actions/checkout@v2
+        with:
+          repository: eclipse-kanto/azure-connector
+          path: ${{ env.BUILD_TMP }}/azure-connector
+          ref: ${{ github.ref }}
+          token: ${{ secrets.WF_AUTH }}
+      - name: Checkout aws-connector
+        uses: actions/checkout@v2
+        with:
+          repository: eclipse-kanto/aws-connector
+          path: ${{ env.BUILD_TMP }}/aws-connector
           ref: ${{ github.ref }}
           token: ${{ secrets.WF_AUTH }}
       - name: Setup Go
@@ -119,12 +126,6 @@ jobs:
           go test ./... -v -coverprofile coverage.out -tags=unit
           go tool cover -func=coverage.out -o coverage.txt
           go tool cover -html=coverage.out -o coverage.html
-      - name: Generate suite-bootstrapping Coverage
-        working-directory: ${{ env.BUILD_TMP }}/suite-bootstrapping
-        run: |
-          go test ./... -v -coverprofile coverage.out -tags=unit
-          go tool cover -func=coverage.out -o coverage.txt
-          go tool cover -html=coverage.out -o coverage.html
       - name: Generate file-backup Coverage
         run: |
           go test ./... -v -coverprofile coverage.out -tags=unit
@@ -141,6 +142,18 @@ jobs:
         working-directory: ${{ env.BUILD_TMP }}/update-manager
         run: |
           go test -v -race ./... -coverprofile coverage.out -covermode atomic
+          go tool cover -func=coverage.out -o coverage.txt
+          go tool cover -html=coverage.out -o coverage.html
+      - name: Generate azure-connector Coverage
+        working-directory: ${{ env.BUILD_TMP }}/azure-connector
+        run: |
+          go test ./... -v -coverprofile coverage.out -tags=unit
+          go tool cover -func=coverage.out -o coverage.txt
+          go tool cover -html=coverage.out -o coverage.html
+      - name: Generate aws-connector Coverage
+        working-directory: ${{ env.BUILD_TMP }}/aws-connector
+        run: |
+          go test ./... -v -coverprofile coverage.out -tags=unit
           go tool cover -func=coverage.out -o coverage.txt
           go tool cover -html=coverage.out -o coverage.html
       - name: Run GoReleaser

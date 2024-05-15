@@ -3,8 +3,9 @@ if [ $1 -ge 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
 
     # Mark the Kanto services for restart, including ones that are usually disabled by default
     /usr/lib/systemd/systemd-update-helper mark-restart-system-units suite-connector.service || :
+    /usr/lib/systemd/systemd-update-helper mark-restart-system-units azure-connector.service || :
+    /usr/lib/systemd/systemd-update-helper mark-restart-system-units aws-connector.service || :
     /usr/lib/systemd/systemd-update-helper mark-restart-system-units local-digital-twins.service || :
-    /usr/lib/systemd/systemd-update-helper mark-restart-system-units suite-bootstrapping.service || :
     /usr/lib/systemd/systemd-update-helper mark-restart-system-units container-management.service || :
     /usr/lib/systemd/systemd-update-helper mark-restart-system-units file-upload.service || :
     /usr/lib/systemd/systemd-update-helper mark-restart-system-units software-update.service || :
