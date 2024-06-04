@@ -37,7 +37,8 @@ container-management.service \
 software-update.service \
 file-upload.service \
 file-backup.service \
-system-metrics.service
+system-metrics.service \
+kanto-update-manager.service
 ```
 
 All listed services must be in an active running state.
