@@ -24,7 +24,7 @@ if [ $1 -eq 1 ] && [ -x "/usr/lib/systemd/systemd-update-helper" ]; then
     # Start the Kanto services if enabled
     if [ -d /run/systemd/system ]; then
         systemctl is-enabled -q suite-connector.service && systemctl start suite-connector.service >/dev/null || :
-        systemctl is-enabled -q azure-connector.service && systemctl azure suite-connector.service >/dev/null || :
+        systemctl is-enabled -q azure-connector.service && systemctl start azure-connector.service >/dev/null || :
         systemctl is-enabled -q aws-connector.service && systemctl start aws-connector.service >/dev/null || :
         systemctl is-enabled -q local-digital-twins.service && systemctl start local-digital-twins.service >/dev/null || :
         systemctl is-enabled -q container-management.service && systemctl start container-management.service >/dev/null || :
