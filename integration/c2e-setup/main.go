@@ -34,9 +34,8 @@ const (
 	restart   = "restart"
 	stop      = "stop"
 
-	suiteConnectorService     = "suite-connector.service"
-	suiteBootstrappingService = "suite-bootstrapping.service"
-	ldtService                = "local-digital-twins.service"
+	suiteConnectorService = "suite-connector.service"
+	ldtService            = "local-digital-twins.service"
 
 	deleteResourcesTemplate = "%s unable to delete resources, error: %v\n"
 )
@@ -58,21 +57,13 @@ var (
 
 	authID string
 
-	bootstrapCaCert           string
-	logBootstrapFile          string
-	postBootstrapFile         string
-	postBootstrapScript       string
-	configBootstrapFile       string
-	configBootstrapFileBackup string
-
 	ldtCaCert           string
 	logLdtFile          string
 	thingsDb            string
 	configLdtFile       string
 	configLdtFileBackup string
 
-	bootstrap bool
-	ldt       bool
+	ldt bool
 )
 
 type c2eConfiguration struct {
@@ -103,22 +94,6 @@ func main() {
 		"Path to Suite Connector configuration file backup. "+
 			"If set to the empty string, backing up the Suite Connector configuration file will be skipped")
 
-	flag.StringVar(&bootstrapCaCert, "bootstrapCaCert", "/etc/suite-bootstrapping/iothub.crt", "Path to Suite Bootstrapping CA certificates file")
-	flag.StringVar(&logBootstrapFile, "logBootstrapFile", "/var/log/suite-bootstrapping/suite-bootstrapping.log",
-		"Path to Suite Bootstrapping log file")
-	flag.StringVar(&postBootstrapFile, "postBootstrapFile", "/etc/suite-connector/config.json",
-		"Path to the file used for a bootstrapping response data")
-	flag.StringVar(&postBootstrapScript, "postBootstrapScript", "/var/tmp/suite-bootstrapping/post_script.sh",
-		"Path to the script that is executed after a bootstrapping response")
-
-	flag.StringVar(&configBootstrapFile, "configBootstrapFile", "/etc/suite-bootstrapping/config.json",
-		"Path to Suite Bootstrapping configuration file. "+
-			"If set to the empty string, configuring Suite Bootstrapping and restarting it will be skipped")
-
-	flag.StringVar(&configBootstrapFileBackup, "configBootstrapFileBackup", "/etc/suite-bootstrapping/configBackup.json",
-		"Path to Suite Bootstrapping configuration file backup. "+
-			"If set to the empty string, backing up the Suite Bootstrapping configuration file will be skipped")
-
 	flag.StringVar(&ldtCaCert, "ldtCaCert", "/etc/local-digital-twins/iothub.crt", "Path to Local Digital Twins CA certificates file")
 	flag.StringVar(&logLdtFile, "logLdtFile", "/var/log/local-digital-twins/local-digital-twins.log",
 		"Path to Local Digital Twins log file")
@@ -134,7 +109,6 @@ func main() {
 			"If set to the empty string, backing up the Local Digital Twins configuration file will be skipped")
 
 	clean := flag.Bool("clean", false, "Clean up test resources")
-	flag.BoolVar(&bootstrap, "bootstrap", false, "Create bootstrapping resources")
 	flag.BoolVar(&ldt, "ldt", false, "Create local-digital-twins resources")
 
 	flag.Parse()
@@ -239,9 +213,7 @@ func isDeviceIDPresentInRegistry(deviceResource *util.Resource) bool {
 }
 
 func getServiceNameConfigAndBackupFile() (string, string, string) {
-	if bootstrap {
-		return suiteBootstrappingService, configBootstrapFile, configBootstrapFileBackup
-	} else if ldt {
+	if ldt {
 		return ldtService, configLdtFile, configLdtFileBackup
 	}
 	return suiteConnectorService, configConnectorFile, configConnectorFileBackup
@@ -291,9 +263,7 @@ func performSetUp(resources []*util.Resource) bool {
 	ok := true
 	if configFile != "" {
 		var err error
-		if serviceName == suiteBootstrappingService {
-			err = writeConfigBootstrapFile(configFile)
-		} else if serviceName == ldtService {
+		if serviceName == ldtService {
 			err = writeConfigLdtFile(configFile)
 		} else {
 			err = writeConfigFile(configFile)
@@ -391,21 +361,6 @@ func writeConfigFile(path string) error {
 		TenantID: tenantID,
 		AuthID:   authID,
 		Password: password,
-	}
-	return util.WriteConfigFile(path, cfg)
-}
-
-func writeConfigBootstrapFile(path string) error {
-	postScriptArr := []string{postBootstrapScript}
-	cfg := &util.BootstrapConfiguration{
-		LogFile:             logBootstrapFile,
-		PostBootstrapFile:   postBootstrapFile,
-		PostBootstrapScript: postScriptArr,
-		Address:             c2eCfg.MQTTAdapterAddress,
-		TenantID:            tenantID,
-		DeviceID:            deviceID,
-		AuthID:              authID,
-		Password:            password,
 	}
 	return util.WriteConfigFile(path, cfg)
 }

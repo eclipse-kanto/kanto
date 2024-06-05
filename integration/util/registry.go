@@ -32,20 +32,6 @@ type Resource struct {
 	Delete bool
 }
 
-// BootstrapConfiguration holds the required configuration to suite bootstrapping to connect and
-// where to receive post bootstrapping files and script.
-type BootstrapConfiguration struct {
-	LogFile             string   `json:"logFile"`
-	PostBootstrapFile   string   `json:"postBootstrapFile"`
-	PostBootstrapScript []string `json:"postBootstrapScript"`
-	CaCert              string   `json:"caCert"`
-	Address             string   `json:"address"`
-	TenantID            string   `json:"tenantId"`
-	DeviceID            string   `json:"deviceId"`
-	AuthID              string   `json:"authId"`
-	Password            string   `json:"password"`
-}
-
 // ConnectorConfiguration holds the minimum required configuration to suite connector to connect.
 type ConnectorConfiguration struct {
 	CaCert   string `json:"caCert"`
