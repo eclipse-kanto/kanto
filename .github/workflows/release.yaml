@@ -26,70 +26,61 @@ jobs:
           repository: eclipse-kanto/suite-connector
           path: ${{ env.BUILD_TMP }}/suite-connector
           ref: ${{ github.ref }}
-          token: ${{ secrets.WF_AUTH }}
+          persist-credentials: false
       - name: Checkout container-management
         uses: actions/checkout@v2
         with:
           repository: eclipse-kanto/container-management
           path: ${{ env.BUILD_TMP }}/container-management
           ref: ${{ github.ref }}
-          token: ${{ secrets.WF_AUTH }}
       - name: Checkout file-upload
         uses: actions/checkout@v2
         with:
           repository: eclipse-kanto/file-upload
           path: ${{ env.BUILD_TMP }}/file-upload
           ref: ${{ github.ref }}
-          token: ${{ secrets.WF_AUTH }}
       - name: Checkout software-update
         uses: actions/checkout@v2
         with:
           repository: eclipse-kanto/software-update
           path: ${{ env.BUILD_TMP }}/software-update
           ref: ${{ github.ref }}
-          token: ${{ secrets.WF_AUTH }}
       - name: Checkout local-digital-twins
         uses: actions/checkout@v2
         with:
           repository: eclipse-kanto/local-digital-twins
           path: ${{ env.BUILD_TMP }}/local-digital-twins
           ref: ${{ github.ref }}
-          token: ${{ secrets.WF_AUTH }}
       - name: Checkout file-backup
         uses: actions/checkout@v2
         with:
           repository: eclipse-kanto/file-backup
           path: ${{ env.BUILD_TMP }}/file-backup
           ref: ${{ github.ref }}
-          token: ${{ secrets.WF_AUTH }}
       - name: Checkout system-metrics
         uses: actions/checkout@v2
         with:
           repository: eclipse-kanto/system-metrics
           path: ${{ env.BUILD_TMP }}/system-metrics
           ref: ${{ github.ref }}
-          token: ${{ secrets.WF_AUTH }}
       - name: Checkout update-manager
         uses: actions/checkout@v2
         with:
           repository: eclipse-kanto/update-manager
           path: ${{ env.BUILD_TMP }}/update-manager
           ref: ${{ github.ref }}
-          token: ${{ secrets.WF_AUTH }}
       - name: Checkout azure-connector
         uses: actions/checkout@v2
         with:
           repository: eclipse-kanto/azure-connector
           path: ${{ env.BUILD_TMP }}/azure-connector
           ref: ${{ github.ref }}
-          token: ${{ secrets.WF_AUTH }}
       - name: Checkout aws-connector
         uses: actions/checkout@v2
         with:
           repository: eclipse-kanto/aws-connector
           path: ${{ env.BUILD_TMP }}/aws-connector
           ref: ${{ github.ref }}
-          token: ${{ secrets.WF_AUTH }}
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
