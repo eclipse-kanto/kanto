@@ -77,7 +77,6 @@ Be aware that some combinations may be incompatible
 {
     "provisioningFile": "provisioning.json",
     "address": "mqtts://mqtt.bosch-iot-hub.com:8883",
-    "alpn" : [],
     "deviceId": "",
     "authId": "",
     "tenantId": "",
@@ -85,6 +84,7 @@ Be aware that some combinations may be incompatible
     "username": "",
     "clientId": "",
     "policyId": "",
+    "alpn" : [],
     "caCert": "iothub.crt",
     "cert": "",
     "key": "",

@@ -16,7 +16,7 @@ To control all aspects of the container manager behavior.
 | exec_root_dir | string | /var/run/container-management | Root directory for the container manager's executable artifacts |
 | container_client_sid | string | container-management.service.local.v1.service-containerd-client | Unique identifier that is used for an interaction with the runtime |
 | network_manager_sid | string | container-management.service.local.v1.service-libnetwork-manager | Unique identifier that is used for networking |
-| default_ctrs_stop_timeout | int | 30 | Timeout in seconds for a container to stop gracefully, otherwise its root process will be force stopped |
+| default_ctrs_stop_timeout | string | 30s | Timeout for a container to stop gracefully in duration string format (e.g. 1h2m3s5ms), otherwise its root process will be forcefully stopped |
 | **Runtime** | | | |
 | default_ns | string | kanto-cm | Namespace that is used by the runtime for isolation |
 | address_path | string | /run/containerd/containerd.sock | Path to the runtime's communication endpoint |
@@ -28,6 +28,8 @@ To control all aspects of the container manager behavior.
 | image_expiry | string | 744h | Time period for the cached images and content to be kept in the form of e.g. 72h3m0.5s |
 | image_expiry_disable | bool | false | Disable expiry management of cached images and content, must be used with caution as it may lead to large memory volumes being persistently allocated |
 | lease_id | string | kanto-cm.lease | Lease identifier to be used for container resources persistence |
+| image_verifier_type | string | none | The image verifier type - possible values are none and notation, when set to none image signatures wil not be verified |
+| image_verifier_config | map[string]string |  | The configuration of the image verifier, as a string map - possible keys for notation verifier are `configDir` and `libexecDir`, for more info check [notation documentation](https://notaryproject.dev/docs/user-guides/how-to/directory-structure/#user-level) |
 | **Registry access - secure** | | | |
 | user_id | string | | User unique identifier to authenticate to the image registry |
 | password | string | | Password to authenticate to the image registry |
@@ -133,6 +135,10 @@ Be aware that in the registry configuration the host (used as a key) has to be s
         "runc_runtime": "io.containerd.runc.v2",
         "image_expiry": "744h",
         "image_expiry_disable": false,
+        "image_verifier_type": "notation",
+        "image_verifier_config": {
+            "configDir": "/home/user/.config/notation"
+        },
         "lease_id": "kanto-cm.lease",
         "registry_configurations": {
             "": {
