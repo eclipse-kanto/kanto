@@ -3,7 +3,7 @@ title: "Suite connector configuration"
 type: docs
 description: >
   Customize the remote connectivity.
-weight: 1
+weight: 3
 ---
 
 ### Properties
@@ -16,12 +16,12 @@ To control all aspects of the suite connector behavior.
 | address | string | mqtts://mqtt.bosch-iot-hub.com:8883 | Address of the MQTT endpoint that the suite connector will connect for the remote communication, the format is: `scheme://host:port` |
 | deviceId | string | | Device unique identifier |
 | authId | string | | Authentication unique identifier that is a part of the credentials |
-| generic | bool | | Force use of modified topics for cloud access |
 | tenantId | string | | Tenant unique identifier that the device belongs to |
 | username | string | | MQTT username that is a part of the credentials. This parameter takes precedence over authId and tenantId  |
 | password | string | | Password that is a part of the credentials |
 | clientId | string | | MQTT client unique identifier |
 | policyId | string | | Policy unique identifier of the digital twin |
+| generic | bool | | Force use of modified topics for cloud access |
 | **Remote connectivity - TLS** | | | |
 | alpn | string[] | | TLS application layer protocol negotiation options space separated for cloud access |
 | caCert | string | iothub.crt | PEM encoded CA certificates file |
@@ -80,10 +80,11 @@ Be aware that some combinations may be incompatible
     "deviceId": "",
     "authId": "",
     "tenantId": "",
-    "password": "",
     "username": "",
+    "password": "",
     "clientId": "",
     "policyId": "",
+    "generic": false,
     "alpn" : [],
     "caCert": "iothub.crt",
     "cert": "",
@@ -96,6 +97,9 @@ Be aware that some combinations may be incompatible
     "localAddress": "tcp://localhost:1883",
     "localUsername": "",
     "localPassword": "",
+    "localCACert": "",
+    "localCert": "",
+    "localKey": "",
     "logFile": "log/suite-connector.log",
     "logLevel": "INFO",
     "logFileCount": 5,

@@ -1,26 +1,24 @@
 ---
-title: "AWS Connector configuration"
+title: "Azure Connector configuration"
 type: docs
 description: >
   Customize the remote connectivity.
-weight: 1
+weight: 2
 ---
 
 ### Properties
 
-To control all aspects of the aws connector behavior.
+To control all aspects of the azure connector behavior.
 
 | Property | Type | Default | Description |
 | - | - | - | - |
-| topicFilter | string ​| | Regex filter used to block incoming messages by their topic |
-| payloadFilters | string ​| | Regex filters used to exclude parts of the incoming messages payload |
-| **Remote connectivity** | | | |
-| address | string | | Address of the MQTT endpoint that the connector will connect for the remote communication, the format is: `scheme://host:port` |
-| tenantId | string | default-tenant-id | Tenant unique identifier that the device belongs to |
-| clientId | string | | MQTT client unique identifier |
+| tenantId | string | defaultTenant | Tenant unique identifier that the device belongs to |
+| connectionString | string ​| | The connection string for connectivity to Azure IoT Hub, the format is: `"HostName=newHostName.azure-devices.net;DeviceId=deviceId;SharedAccessKey=accessKey"` |
+| sasTokenValidity | string | 1h | The validity period for the generated SAS token for device authentication. Positive integer number followed by a unit suffix, such as '300m', '1h', etc., time units are: m, h, d |
+| idScope | string | | ID scope for Azure Device Provisioning service |
 | **Remote connectivity - TLS** | | | |
 | alpn | string[] | | TLS application layer protocol negotiation options space separated for cloud access |
-| caCert | string | aws.crt | PEM encoded CA certificates file |
+| caCert | string | iothub.crt | PEM encoded CA certificates file |
 | cert | string | | PEM encoded certificate file to authenticate to the MQTT endpoint |
 | key | string | | PEM encoded unencrypted private key file to authenticate to the MQTT endpoint |
 | **Remote connectivity - TLS over TPM** | | | |
@@ -29,7 +27,7 @@ To control all aspects of the aws connector behavior.
 | tpmKeyPub | string | | File path to the public part of the TPM 2.0 key |
 | tpmKey | string | | File path to the private part of the TPM 2.0 key |
 | **Local connectivity** | | | |
-| localAddress | string | tcp://localhost:1883 | Address of the MQTT server/broker that the aws connector will connect for the local communication, the format is: `scheme://host:port` |
+| localAddress | string | tcp://localhost:1883 | Address of the MQTT server/broker that the azure connector will connect for the local communication, the format is: `scheme://host:port` |
 | localUsername | string | | Username that is a part of the credentials |
 | localPassword | string | | Password that is a part of the credentials |
 | **Local connectivity - TLS** | | | |
@@ -37,7 +35,7 @@ To control all aspects of the aws connector behavior.
 | localCert | string | | PEM encoded certificate file to authenticate to the MQTT server/broker |
 | localKey | string | | PEM encoded unencrypted private key file to authenticate to the MQTT server/broker |
 | **Logging** | | | |
-| logFile | string | logs/aws-connector.log | Path to the file where log messages are written |
+| logFile | string | logs/azure-connector.log | Path to the file where log messages are written |
 | logLevel | string | INFO | All log messages at this or a higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
 | logFileCount | int | 5 | Log file maximum rotations count |
 | logFileMaxAge | int | 28 | Log file rotations maximum age in days, use 0 to not remove old log files |
@@ -49,12 +47,9 @@ The minimal required configuration to connect.
 
 ```json
 {
-    "address": "tls://<AWS-endpoint-address>:8883",
-    "caCert": "AmazonRootCA1.pem",
-    "cert": "example-device.crt",
-    "key": "example-device.key",
-    "clientId": "org.eclipse.kanto:exampleDevice",
-    "logFile": "/var/log/aws-connector/aws-connector.log"
+    "connectionString": "HostName=hostName.azure-devices.net;DeviceId=deviceId;SharedAccessKey=cGFzc3AvcKQ=",
+    "caCert": "iothub.crt",
+    "logFile": "/var/log/azure-connector/azure-connector.log"
 }
 ```
 
@@ -69,13 +64,12 @@ Be aware that some combinations may be incompatible
 
 ```json
 {
-    "topicFilter": "",
-    "payloadFilters": [],
-    "address": "",
-    "tenantId": "default-tenant-id",
-    "clientId": "",
+    "tenantId": "defaultTenant",
+    "connectionString": "",
+    "sasTokenValidity": "1h",
+    "idScope": "",
     "alpn" : [],
-    "caCert": "aws.crt",
+    "caCert": "iothub.crt",
     "cert": "",
     "key": "",
     "tpmDevice": "",
@@ -88,7 +82,7 @@ Be aware that some combinations may be incompatible
     "localCACert": "",
     "localCert": "",
     "localKey": "",
-    "logFile": "logs/aws-connector.log",
+    "logFile": "logs/azure-connector.log",
     "logLevel": "INFO",
     "logFileCount": 5,
     "logFileMaxAge": 28,
