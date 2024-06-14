@@ -48,7 +48,7 @@ The minimal required configuration to connect.
 ```json
 {
     "connectionString": "HostName=hostName.azure-devices.net;DeviceId=deviceId;SharedAccessKey=cGFzc3AvcKQ=",
-    "caCert": "iothub.crt",
+    "caCert": "/etc/azure-connector/iothub.crt",
     "logFile": "/var/log/azure-connector/azure-connector.log"
 }
 ```

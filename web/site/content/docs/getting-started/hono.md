@@ -77,13 +77,13 @@ authentication data to establish the remote connection. Update it with the follo
 
 ```json
 {
-  "provisioningFile": "/etc/suite-connector/provisioning.json",
+  "caCert": "/etc/suite-connector/iothub.crt",
   "logFile": "/var/log/suite-connector/suite-connector.log",
-  "address":"mqtts://hono.eclipseprojects.io:8883",
-  "tenantId":"demo",
-  "deviceId":"demo:device",
-  "authId":"demo_device",
-  "password":"secret"
+  "address": "mqtts://hono.eclipseprojects.io:8883",
+  "tenantId": "demo",
+  "deviceId": "demo:device",
+  "authId": "demo_device",
+  "password": "secret"
 }
 ```
 {{% tip %}}

@@ -56,6 +56,7 @@ The minimal required configuration to connect the publicly available
 ```json
 {
     "address": "hono.eclipseprojects.io:1883",
+    "caCert": "/etc/suite-connector/iothub.crt",
     "tenantId": "org.eclipse.kanto",
     "deviceId": "org.eclipse.kanto:exampleDevice",
     "authId": "org.eclipse.kanto_example",
@@ -75,7 +76,6 @@ Be aware that some combinations may be incompatible
 
 ```json
 {
-    "provisioningFile": "provisioning.json",
     "address": "mqtts://mqtt.bosch-iot-hub.com:8883",
     "deviceId": "",
     "authId": "",
