@@ -327,13 +327,13 @@ Update an existing container without recreating it. The provided configurations 
 > | correlation-id | container UUID | The container UUID |
 > | **Value** | | |
 > | **restartPolicy** | | Updates the restart policy for the container. The policy will be applied when the container exits |
-> | type | no/always/unless-stopped/on-failure | Supported restart policies |
-> | maxRetryCount | -1 << 31 // -2147483648 | Updates the number of retries that will be made to restart the container on exit if the policy is on-failure |
-> | timeout | -1 << 63 // -9223372036854775808 | Updates the time out period in seconds for each retry that will be made to restart the container on exit if the policy is set to on-failure |
+> | type | no/always/unless-stopped/on-failure | The container's restart policy, the supported types are: always, no, on-failure and unless-stopped |
+> | maxRetryCount | -1 << 31 // -2147483648 | Maximum number of retries that are made to restart the container on exit with fail, if the `type` is on-failure |
+> | timeout | -1 << 63 // -9223372036854775808 | Timeout period in seconds for each retry that is made to restart the container on exit with fail, if the `type` is on-failure  |
 > | **resources** | | |
-> | memory | | Updates the max amount of memory the container can use in the form of 200m, 1.2g |
-> | memoryReservation | | Updates the soft memory limitation in the form of 200m, 1.2g |
-> | memorySwap | | Updates the total amount of memory + swap that the container can use in the form of 200m, 1.2g |
+> | memory | | Hard memory limitation of the container as a number with a unit suffix of B, K, M and G, the minimum allowed value is 3M |
+> | memoryReservation | | Soft memory limitation of the container as a number with a unit suffix of B, K, M and G, if `memory` is specified, the `memoryReservation` must be smaller than it |
+> | memorySwap | | Total amount of memory and swap that the container can use as a number with a unit suffix of B, K, M and G, use -1 to allow the container to use unlimited swap |
 
 <br>
 

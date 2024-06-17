@@ -103,17 +103,17 @@ Create a container from a given container configuration.
 > | content-type | `application/json` | The content type |
 > | correlation-id  | container UUID | The container UUID |
 > | **Value** | | |
-> | imageRef | URL | Container image URL |
+> | imageRef | URL | Fully qualified image reference, that follows the {{% refn "https://github.com/opencontainers/image-spec" %}}OCI Image Specification{{% /refn %}}, the format is: `host[:port]/[namespace/]name:tag` |
 > | start | true/false | Force to start created container |
 > | ***config*** | | json presentation of the configuration |
-> | domainName | | The domain name |
-> | hostName | | The host name of the container |
+> | domainName | | Domain name inside the container, if omitted the container's domain name will be set to a system-defined value |
+> | hostName | | Host name for the container, if omitted the container's hostname will be set to a system-defined value |
 > | env | | An array of environment variables that are set into the container |
 > | cmd | | An array of command with arguments that is executed upon the container's start |
-> | privileged | false | Whether the container has a privileged access to the host |
-> | extraHosts | | An array of additional host address for container to host communication |
+> | privileged | false | Grant root capabilities to all devices on the host system|
+> | extraHosts | | An array of additional extra host names to IP address mappings added to the container network configuration, the format is: hostname:ip. If the IP of the host machine is to be added to the container’s hosts file the reserved host_ip[_<network-interface>] must be provided. If only host_ip (the network-interface part is skipped) is used, by default it will be resolved to the host’s IP on the default bridge network interface for containerm (the default configuration is kanto-cm0) and add it to the container’s hosts file. If the IP of a container in the same bridge network is to be added to the hosts file the reserved container_<container-host_name> must be provided. |
 > | extraCapabilities | | An array of additional capabilities for a container |
-> | networkMode | | The network mode for the container, supported are: bridge and host |
+> | networkMode | | The container’s networking capabilities type based on the desired communication mode, the possible options are: bridge or host |
 > | openStdin | true/false | Open the terminal's standard input for an interaction with the current container |
 > | tty | true/false | Attach standard streams to a TTY|
 > | **mountPoints** | | An array of the mount points |
