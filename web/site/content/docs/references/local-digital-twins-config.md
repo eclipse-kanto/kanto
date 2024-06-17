@@ -53,6 +53,7 @@ The minimal required configuration to enable the local digital twins and their s
 ```json
 {
     "address": "hono.eclipseprojects.io:1883",
+    "caCert": "/etc/local-digital-twins/iothub.crt",
     "tenantId": "org.eclipse.kanto",
     "deviceId": "org.eclipse.kanto:exampleDevice",
     "authId": "org.eclipse.kanto_example",
@@ -74,7 +75,6 @@ Be aware that some combinations may be incompatible
 ```json
 {
     "thingsDb": "things.db",
-    "provisioningFile": "provisioning.json",
     "address": "mqtts://mqtt.bosch-iot-hub.com:8883",
     "deviceId": "",
     "authId": "",

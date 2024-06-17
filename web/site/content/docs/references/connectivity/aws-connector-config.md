@@ -8,7 +8,7 @@ weight: 1
 
 ### Properties
 
-To control all aspects of the suite connector behavior.
+To control all aspects of the aws connector behavior.
 
 | Property | Type | Default | Description |
 | - | - | - | - |
@@ -29,7 +29,7 @@ To control all aspects of the suite connector behavior.
 | tpmKeyPub | string | | File path to the public part of the TPM 2.0 key |
 | tpmKey | string | | File path to the private part of the TPM 2.0 key |
 | **Local connectivity** | | | |
-| localAddress | string | tcp://localhost:1883 | Address of the MQTT server/broker that the suite connector will connect for the local communication, the format is: `scheme://host:port` |
+| localAddress | string | tcp://localhost:1883 | Address of the MQTT server/broker that the aws connector will connect for the local communication, the format is: `scheme://host:port` |
 | localUsername | string | | Username that is a part of the credentials |
 | localPassword | string | | Password that is a part of the credentials |
 | **Local connectivity - TLS** | | | |
@@ -37,7 +37,7 @@ To control all aspects of the suite connector behavior.
 | localCert | string | | PEM encoded certificate file to authenticate to the MQTT server/broker |
 | localKey | string | | PEM encoded unencrypted private key file to authenticate to the MQTT server/broker |
 | **Logging** | | | |
-| logFile | string | log/suite-connector.log | Path to the file where log messages are written |
+| logFile | string | logs/aws-connector.log | Path to the file where log messages are written |
 | logLevel | string | INFO | All log messages at this or a higher level will be logged, the log levels in descending order are: ERROR, WARN, INFO, DEBUG and TRACE |
 | logFileCount | int | 5 | Log file maximum rotations count |
 | logFileMaxAge | int | 28 | Log file rotations maximum age in days, use 0 to not remove old log files |
@@ -72,9 +72,9 @@ Be aware that some combinations may be incompatible
     "topicFilter": "",
     "payloadFilters": [],
     "address": "",
-    "alpn" : [],
     "tenantId": "default-tenant-id",
     "clientId": "",
+    "alpn" : [],
     "caCert": "aws.crt",
     "cert": "",
     "key": "",
