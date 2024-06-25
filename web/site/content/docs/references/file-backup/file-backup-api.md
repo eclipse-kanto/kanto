@@ -7,7 +7,7 @@ weight: 4
 ---
 
 ## **Backup**
-Create a backup to backend storage.
+Create a file backup.
 
 <details>
   <summary>Request</summary>
@@ -19,21 +19,21 @@ Create a backup to backend storage.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/backup` | Information about the affected Thing and the type of operation |
-> | path | `/features/BackupAndRestore/inbox/messages/backup` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/BackupAndRestore/inbox/messages/backup` | A path to the `BackupAndRestore` Feature, it's message channel, and `backup` command |
 > | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | response-required | true/false | If response is required |
 > | content-type | `application/json` | The content type |
 > | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
 > | correlationID | UUID | Identifier of the backup file |
 > | providers | | The providers of the restore command |
 > | ***options*** | | |
-> | backup.dir | | A local directory, which to be backup and upload it, using HTTP upload or Azure/AWS temporary credentials |
-> | https.url | | The URL for restore the backup directory |
+> | backup.dir | | A local directory, to be backed up |
+> | https.url | | The URL for restoring the backed up directory |
 
 <br>
 
-**Example** : In this example, you can create the backup.
+**Example** : Back up a directory.
 
 **Topic:** `command//edge:device/req//backup`
 ```json
@@ -67,15 +67,15 @@ Create a backup to backend storage.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/backup` | Information about the affected Thing and the type of operation |
-> | path | `/features/BackupAndRestore/outbox/messages/backup` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/BackupAndRestore/outbox/messages/backup` | A path to the `BackupAndRestore` Feature, it's message channel, and `backup` command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
-> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
-> | **Status** | | Status of the operation backup |
+> | correlation-id | \<UUID\> | The same correlation id as the request message |
+> | **Status** | | Status of the `backup` operation |
 
 <br>
 
-**Example** : The response of the backup operation.
+**Example** : Successful response of a `backup` operation.
 
 **Topic:** `command//edge:device/res//backup``
 ```json
@@ -92,7 +92,7 @@ Create a backup to backend storage.
 </details>
 
 ## **Restore**
-Restore the backup from backend.
+Restore the backed up files or directory from a backend service.
 
 <details>
   <summary>Request</summary>
@@ -104,21 +104,21 @@ Restore the backup from backend.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/restore` | Information about the affected Thing and the type of operation |
-> | path | `/features/BackupAndRestore/inbox/messages/restore` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/BackupAndRestore/inbox/messages/restore` | A path to the `BackupAndRestore` Feature, it's message channel, and `restore` command |
 > | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | response-required | true/false | If response is required |
 > | content-type | `application/json` | The content type |
 > | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
-> | correlationID | other UUID | Identifier of the restore file |
-> | providers | | The providers of the restore command |
+> | correlationID | other UUID | Identifier of the restored file |
+> | providers | | Storage provider, one of `aws`, `azure`, `generic` |
 > | ***options*** | | Options are specific for each provider |
-> | backup.dir | | A local directory, which to be backup and upload it, using HTTP upload or Azure/AWS temporary credentials |
-> | https.url | | The URL for restore the backup directory |
+> | backup.dir | | A local directory, which to be backed up and then uploaded, using a storage provider of choice and temporary credentials |
+> | https.url | | The URL for restoring the backed up directory |
 
 <br>
 
-**Example** : In this example, you can restore from backend.
+**Example** : Restore a backup from a storage provider.
 
 **Topic:** `command//edge:device/req//restore`
 ```json
@@ -152,15 +152,15 @@ Restore the backup from backend.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/restore` | Information about the affected Thing and the type of operation |
-> | path | `/features/BackupAndRestore/outbox/messages/restore` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/BackupAndRestore/outbox/messages/restore` | A path to the `BackupAndRestore` Feature, it's message channel, and `restore` command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
-> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | correlation-id | \<UUID\> | The same correlation id as the request message |
 > | **Status** | | Status of the operation restore |
 
 <br>
 
-**Example** : The response of the restore operation.
+**Example** : Response of a successful `restore` operation.
 
 **Topic:** `command//edge:device/res//restore``
 ```json

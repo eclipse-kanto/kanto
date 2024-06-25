@@ -2,12 +2,12 @@
 title: "System Metrics API"
 type: docs
 description: >
-  The system metrics service provides the ability to make requests and receive the data for some originators.
+  The system metrics service provides the ability to request and receive metrics data.
 weight: 4
 ---
 
 ## **Request**
-Request to receive data.
+Request to receive metrics data.
 
 <details>
   <summary>Request</summary>
@@ -19,20 +19,21 @@ Request to receive data.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/request` | Information about the affected Thing and the type of operation |
-> | path | `/features/Metrics/inbox/messages/request` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/Metrics/inbox/messages/request` | A path to the `Metrics` Feature, it's message channel, and `request` command |
 > | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | response-required | true/false | If response is required |
 > | content-type | `application/json` | The content type |
-> | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
+> | correlation-id | container UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
-> | frequency | | Duration of how often the metrics data to be published |
-> | ***filter*** | | An array of the type of metric data to be reported |
-> | id | | An array of identifiers whose metric data to be reported, supported are: cpu.utilization, memory.utilization, memory.total, memory.used, io.readBytes, io.writeBytes |
-> | originator | | The originator for whose metric data to be reported |
+> | frequency | | Time interval of how often the metrics data will be published as duration string (e.g. 5s) |
+> | ***filter*** | | Filter defines the type of metric data to be reported |
+> | id | | An array of identifiers whose metric data to be reported, supported are: `cpu.utilization`, `memory.utilization`, `memory.total`, `memory.used`, `io.readBytes`, `io.writeBytes`, `net.readBytes`, `net.writeBytes`, `pids` |
+> | originator | | Metrics data originator |
+> 
 
 <br>
 
-**Example** : In this example, you can request metrics data with some specified filter and frequency.
+**Example** : Request metrics data with specified filter and frequency.
 
 **Topic:** `command//edge:device/req//request`
 ```json
@@ -67,15 +68,15 @@ Request to receive data.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/request` | Information about the affected Thing and the type of operation |
-> | path | `/features/Metrics/outbox/messages/request` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/Metrics/outbox/messages/request` | A path to the `Metrics` Feature, it's message channel, and `request` command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
-> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | correlation-id | \<UUID\> | The same correlation id as the request message |
 > | **Status** | | Status of the operation request the metrics data |
 
 <br>
 
-**Example** : The response of the request the metrics data.
+**Example** : Successful response of a `request` metrics message.
 
 **Topic:** `command//edge:device/res//request``
 ```json
@@ -92,7 +93,7 @@ Request to receive data.
 </details>
 
 ## **Data**
-Receive the data from container.
+Metrics data reported by the device.
 
 <details>
   <summary>Response</summary>
@@ -104,7 +105,7 @@ Receive the data from container.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/data` | Information about the affected Thing and the type of operation |
-> | path | `/features/Metrics/outbox/messages/data` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/Metrics/outbox/messages/data` |  A path to the `Metrics` Feature, it's message channel, and metrics data |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
 > | **Value** | | The value of the received data from the device in json format |
@@ -117,7 +118,7 @@ Receive the data from container.
 
 <br>
 
-**Example** : The received data from the device.
+**Example** : Metrics data from the device.
 
 **Topic:** `command//edge:device/res//data``
 ```json

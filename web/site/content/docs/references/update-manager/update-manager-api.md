@@ -19,11 +19,11 @@ Applies a desired state to the device.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/apply` | Information about the affected Thing and the type of operation |
-> | path | `/features/UpdateManager/inbox/messages/apply` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/UpdateManager/inbox/messages/apply` | A path to the `UpdateManager` Feature, it's message channel, and `apply` command |
 > | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | response-required | true/false | If response is required |
 > | content-type | `application/json` | The content type |
-> | correlation-id | container UUID | The container UUID |
+> | correlation-id | container UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
 > | activityId | | The activity id of the new desired state |
 > | ***desiredState*** | | The desired state to be applied on a device |
@@ -45,7 +45,7 @@ Applies a desired state to the device.
 
 <br>
 
-**Example** : In this example, you can apply a desired state to the container.
+**Example** : Apply a desired state to the device.
 
 **Topic:** `command//edge:device/req//apply`
 ```json
@@ -110,16 +110,16 @@ Applies a desired state to the device.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/apply` | Information about the affected Thing and the type of operation |
-> | path | `/features/UpdateManager/outbox/messages/apply` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/UpdateManager/outbox/messages/apply` | A path to the `UpdateManager` Feature, it's message channel, and `apply` command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
-> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | correlation-id | \<UUID\> | The same correlation id as the request message |
 > | **Status** | | Status of the operation apply |
 
 <br>
 
 
-**Example** : The response of the apply operation.
+**Example** : Successful response of an `apply` desired state operation.
 
 **Topic:** `command//edge:device/res//apply`
 ```json
@@ -136,7 +136,7 @@ Applies a desired state to the device.
 </details>
 
 ## **Refresh**
-Reads the current state from the device and updates the status of the Update Manager.
+Reads the current state from the device and updates the status of the `UpdateManager` feature.
 
 <details>
   <summary>Request</summary>
@@ -148,17 +148,17 @@ Reads the current state from the device and updates the status of the Update Man
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/refresh` | Information about the affected Thing and the type of operation |
-> | path | `/features/UpdateManager/inbox/messages/refresh` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/UpdateManager/inbox/messages/refresh` | A path to the `UpdateManager` Feature, it's message channel, and `refresh` command |
 > | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | response-required | true/false | If response is required |
 > | content-type | `application/json` | The content type |
 > | correlation-id | container UUID | The container UUID |
 > | **Value** | | |
-> | activityId | | The activity id of the refresh |
+> | activityId | | The activity id of the `refresh` operation |
 
 <br>
 
-**Example** : In this example, you can update the status of the Update Manager.
+**Example** : Update the status of the `UpdateManager` feature.
 
 **Topic:** `command//edge:device/req//refresh`
 ```json
@@ -187,15 +187,15 @@ Reads the current state from the device and updates the status of the Update Man
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/refresh` | Information about the affected Thing and the type of operation |
-> | path | `/features/UpdateManager/outbox/messages/refresh` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/UpdateManager/outbox/messages/refresh` | A path to the `UpdateManager` Feature, it's message channel, and `refresh` command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
-> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
-> | **Status** | | Status of the operation refresh |
+> | correlation-id | \<UUID\> | The same correlation id as the request message |
+> | **Status** | | Status of the `refresh` operation |
 
 <br>
 
-**Example** : The response of the refresh operation.
+**Example** : Successful response of a `refresh` operation.
 
 **Topic:** `command//edge:device/res//refresh`
 ```json

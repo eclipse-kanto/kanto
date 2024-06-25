@@ -21,13 +21,13 @@ Start to upload file.
 > | topic | `<name>/<namespace>/things/live/messages/start` | Information about the affected Thing and the type of operation |
 > | path | `/features/AutoUploadable/inbox/messages/start` | A path that references a part of a Thing which is affected by this message |
 > | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | response-required | true/false | If response is required |
 > | content-type | `application/json` | The content type |
 > | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
 > | correlationID | other UUID | Identifier of the uploaded file |
 > | ***options*** | | Options are specific for each provider |
-> | storage.provider | aws/azure/generic | This is mandatory option for finding the provider to upload |
+> | storage.provider | aws/azure/generic | Storage provider that will be used for uploading the files |
 
 <br>
 
@@ -106,7 +106,7 @@ Trigger operation is invoked from the backend.
 > | topic | `<name>/<namespace>/things/live/messages/trigger` | Information about the affected Thing and the type of operation |
 > | path | `/features/AutoUploadable/inbox/messages/trigger` | A path that references a part of a Thing which is affected by this message |
 > | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | response-required | true/false | If response is required |
 > | content-type | `application/json` | The content type |
 > | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
@@ -184,7 +184,7 @@ Cancel upload the file.
 > | topic | `<name>/<namespace>/things/live/messages/cancel` | Information about the affected Thing and the type of operation |
 > | path | `/features/AutoUploadable/inbox/messages/cancel` | A path that references a part of a Thing which is affected by this message |
 > | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | response-required | true/false | If response is required |
 > | content-type | `application/json` | The content type |
 > | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
@@ -264,7 +264,7 @@ Activate upload of the file.
 > | topic | `<name>/<namespace>/things/live/messages/activate` | Information about the affected Thing and the type of operation |
 > | path | `/features/AutoUploadable/inbox/messages/activate` | A path that references a part of a Thing which is affected by this message |
 > | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | response-required | true/false | If response is required |
 > | content-type | `application/json` | The content type |
 > | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
@@ -342,7 +342,7 @@ Deactivate upload file.
 > | topic | `<name>/<namespace>/things/live/messages/deactivate` | Information about the affected Thing and the type of operation |
 > | path | `/features/AutoUploadable/inbox/messages/deactivate` | A path that references a part of a Thing which is affected by this message |
 > | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | response-required | true/false | If response is required |
 > | content-type | `application/json` | The content type |
 > | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |

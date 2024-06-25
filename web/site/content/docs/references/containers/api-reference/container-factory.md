@@ -19,18 +19,18 @@ Create a container from a single container image reference with an option to sta
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/create` | Information about the affected Thing and the type of operation |
-> | path | `/features/ContainerFactory/inbox/messages/create` | A path that references a part of a Thing which is affected by this message |
-> | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | path | `/features/ContainerFactory/inbox/messages/create` | A path to the `ContainerFactory` Feature, it's message channel, and command |
+> | **Headers** | | Additional headers. |
+> | response-required | true/false | If response is required|
 > | content-type | `application/json` | The content type |
 > | correlation-id | container UUID | The container UUID |
 > | **Value** | | |
-> | imageRef | URL | Container image URL |
-> | start | true/false | If the created container will be started ot only created |
+> | imageRef | URL | Fully qualified image reference, that follows the {{% refn "https://github.com/opencontainers/image-spec" %}}OCI Image Specification{{% /refn %}}, the format is: `host[:port]/[namespace/]name:tag` |
+> | start | true/false | Start or only create the container |
 
 <br>
 
-**Example** : In this example, you can create and automatically start a new `Hello World` container.
+**Example** : Create and automatically start a new `Hello World` container.
 
 **Topic:** `command//edge:device/req//create`
 ```json
@@ -60,15 +60,15 @@ Create a container from a single container image reference with an option to sta
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/create` | Information about the affected Thing and the type of operation |
-> | path | `/features/ContainerFactory/outbox/messages/create` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/ContainerFactory/outbox/messages/create` | A path to the Feature, it's message channel, and command |
 > | **Headers** | | Additional headers |
 > | content-type | application/json | The content type |
-> | correlation-id | \<UUID\> | The same correlation id as the sent request message |
+> | correlation-id | \<UUID\> | The same correlation id as the request message |
 > | **Value** | | UUID of the created container |
 
 <br>
 
-**Example** : The response of the create operation.
+**Example** : Response of a `create` operation.
 
 **Topic:** `command//edge:device/res//create``
 ```json
@@ -85,7 +85,7 @@ Create a container from a single container image reference with an option to sta
 </details>
 
 ## **Create  with config**
-Create a container from a given container configuration.
+Create a container with a specified container configuration.
 
 <details>
   <summary>Request</summary>
@@ -97,9 +97,9 @@ Create a container from a given container configuration.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/createWithConfig` | Information about the affected Thing and the type of operation |
-> | path | `/features/ContainerFactory/inbox/messages/createWithConfig` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/ContainerFactory/inbox/messages/createWithConfig` | A path to the `ContainerFactory` Feature, it's message channel, and command |
 > | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | response-required | true/false | If response is required |
 > | content-type | `application/json` | The content type |
 > | correlation-id  | container UUID | The container UUID |
 > | **Value** | | |
@@ -113,7 +113,7 @@ Create a container from a given container configuration.
 > | privileged | false | Grant root capabilities to all devices on the host system|
 > | extraHosts | | An array of additional extra host names to IP address mappings added to the container network configuration, the format is: hostname:ip. If the IP of the host machine is to be added to the container's hosts file the reserved host_ip[_<network-interface>] must be provided. If only host_ip (the network-interface part is skipped) is used, by default it will be resolved to the host's IP on the default bridge network interface for containerm (the default configuration is kanto-cm0) and add it to the container's hosts file. If the IP of a container in the same bridge network is to be added to the hosts file the reserved container_<container-host_name> must be provided. |
 > | extraCapabilities | | An array of additional capabilities for a container |
-> | networkMode | | The container's networking capabilities type based on the desired communication mode, the possible options are: bridge or host |
+> | networkMode | | The container's networking capabilities type based on the desired communication mode. The possible options are: bridge or host |
 > | openStdin | true/false | Open the terminal's standard input for an interaction with the current container |
 > | tty | true/false | Attach standard streams to a TTY|
 > | **mountPoints** | | An array of the mount points |
@@ -151,7 +151,7 @@ Create a container from a given container configuration.
 
 <br>
 
-**Example** : In this example, you can create and automatically start a new `Hello World` container.
+**Example** : Create and automatically start a new `Hello World` container.
 
 **Topic:** `command//edge:device/req//createWithConfig`
 ```json
@@ -238,7 +238,7 @@ Create a container from a given container configuration.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/createWithConfig` | Information about the affected Thing and the type of operation |
-> | path | `/features/ContainerFactory/outbox/messages/createWithConfig` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/ContainerFactory/outbox/messages/createWithConfig` | A path to the `ContainerFactory` Feature, it's message channel, and command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
 > | correlation-id | \<UUID\> | |
@@ -246,7 +246,7 @@ Create a container from a given container configuration.
 
 <br>
 
-**Example** : The response of the create with config operation.
+**Example** : Response of a `createWithConfig` operation.
 
 **Topic:** `command//edge:device/res//createWithConfig``
 ```json

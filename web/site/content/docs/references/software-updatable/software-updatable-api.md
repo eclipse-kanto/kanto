@@ -19,13 +19,13 @@ Install given list of software modules.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/install` | Information about the affected Thing and the type of operation |
-> | path | `/features/SoftwareUpdatable/inbox/messages/install` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/SoftwareUpdatable/inbox/messages/install` | A path to the `SoftwareUpdatable` Feature, it's message channel, and `install` command |
 > | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | response-required | true/false | If response is required |
 > | content-type | `application/json` | The content type |
-> | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
-> | **Value** | | Json presentation of software module to be installed |
-> | correlationId | | Different identifier from the container UUID |
+> | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the response message |
+> | **Value** | | JSON presentation of software module that will be installed |
+> | correlationId | | Unique identifier that is used to associate and track the series of messages |
 > | weight | | The weight is the priority in case of multiple, parallel instructions |
 > | metadata | | The metadata is any other information which should be passed to the device |
 > | forced | true/false | Forced to remove the software modules |
@@ -35,20 +35,20 @@ Install given list of software modules.
 > | name | | The name of the software module |
 > | version | | The version of the software module |
 > | **artifacts** | | An array of artifacts contained in the software module |
-> | filename | | The file name of the artifact behind the provided URLs |
-> | size | | The size of the file in bytes |
-> | **download** | | A map with protocols and links to downloaded |
+> | filename | | The file name of the artifact |
+> | size | | Artifact file size in bytes |
+> | **download** | | A map with protocols and links for downloading the artifacts |
 > | key | HTTP/HTTPS/FTP/SFTP | Available transport protocols |
 > | url | | URL to download the artifact |
 > | md5url | | MD5URL to download the MD5SUM file |
 > | **checksums** | | A map with checksums to verify the proper download |
-> | MD5 | | The checksum by md5 hash algorithm |
-> | SHA1 | | The checksum by sha1 hash algorithm |
-> | SHA256 | | The checksum by sha256 hash algorithm |
+> | MD5 | | MD5 checksum |
+> | SHA1 | | MD5 checksum |
+> | SHA256 | | MD5 checksum |
 
 <br>
 
-**Example** : In this example, you can install listed modules.
+**Example** : Install a `hello-world` software module.
 
 **Topic:** `command//edge:device/req//install`
 ```json
@@ -101,7 +101,7 @@ Install given list of software modules.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/install` | Information about the affected Thing and the type of operation |
-> | path | `/features/SoftwareUpdatable/outbox/messages/install` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/SoftwareUpdatable/outbox/messages/install` | A path to the `SoftwareUpdatable` Feature, it's message channel, and `install` command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
 > | correlation-id | \<UUID\> | The same correlation id as the sent request message |
@@ -138,36 +138,36 @@ Download software modules.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/download` | Information about the affected Thing and the type of operation |
-> | path | `/features/SoftwareUpdatable/inbox/messages/download` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/SoftwareUpdatable/inbox/messages/download` | A path to the `SoftwareUpdatable` Feature, it's message channel, and `download` command |
 > | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | response-required | true/false | If response is required |
 > | content-type | `application/json` | The content type |
 > | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
-> | **Value** | | Json presentation of software module to be download |
-> | correlationId | | Different identifier from the container UUID |
+> | **Value** | | JSON representation of the software modules that will be downloaded |
+> | correlationId | | Unique identifier that is used to associate and track the series of messages |
 > | weight | | The weight is the priority in case of multiple, parallel instructions |
 > | metadata | | The metadata is any other information which should be passed to the device |
-> | forced | true/false | Forced to remove the software modules |
-> | ***softwareModules*** | | An array of software modules to be download |
+> | forced | true/false | Remove the software modules forcefully |
+> | ***softwareModules*** | | An array of software modules that will be downloaded|
 > | metadata | | The metadata is any other information which should be passed to the device |
-> | **softwareModule** | | An unique identifier for the software module |
+> | **softwareModule** | | A unique identifier for the software module |
 > | name | | The name of the software module |
 > | version | | The version of the software module |
 > | **artifacts** | | An array of artifacts contained in the software module |
-> | filename | | The file name of the artifact behind the provided URLs |
-> | size | | The size of the file in bytes |
-> | **download** | | A map with protocols and links to downloaded |
+> | filename | | The file name of the artifact |
+> | size | | Artifact file size in bytes |
+> | **download** | | A map with protocols and links for downloading the artifacts |
 > | key | HTTP/HTTPS/FTP/SFTP | Available transport protocols |
 > | url | | URL to download the artifact |
 > | md5url | | MD5URL to download the MD5SUM file |
 > | **checksums** | | A map with checksums to verify the proper download |
-> | MD5 | | The checksum by md5 hash algorithm |
-> | SHA1 | | The checksum by sha1 hash algorithm |
-> | SHA256 | | The checksum by sha256 hash algorithm |
+> | MD5 | | MD5 checksum |
+> | SHA1 | | MD5 checksum |
+> | SHA256 | | MD5 checksum |
 
 <br>
 
-**Example** : In this example, you can download an existing software modules.
+**Example** : Download a hello-world software module.
 
 **Topic:** `command//edge:device/req//download`
 ```json
@@ -220,14 +220,14 @@ Download software modules.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/download` | Information about the affected Thing and the type of operation |
-> | path | `/features/SoftwareUpdatable/outbox/messages/download` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/SoftwareUpdatable/outbox/messages/download` | A path to the `SoftwareUpdatable` Feature, it's message channel, and `download` command |
 > | **Headers** | | Additional headers |
-> | correlation-id | container UUID | The same correlation id as the sent request message |
-> | **Status** | | Status of the operation download software modules |
+> | correlation-id | container UUID | The same correlation id as the request message |
+> | **Status** | | Status of the  `download` operation |
 
 <br>
 
-**Example** : The response of the download software modules operation.
+**Example** : Successful download response.
 
 **Topic:** `command//edge:device/res//download``
 ```json

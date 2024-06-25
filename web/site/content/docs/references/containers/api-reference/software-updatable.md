@@ -19,13 +19,13 @@ You can install a specified list of containers (software modules).
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/install` | Information about the affected Thing and the type of operation |
-> | path | `/features/SoftwareUpdatable/inbox/messages/install` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/SoftwareUpdatable/inbox/messages/install` | A path to the `SoftwareUpdatable` Feature, it's message channel, and `install` command |
 > | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | response-required | true/false | If response is required |
 > | content-type | `application/json` | The content type |
 > | correlation-id | container UUID | The container UUID |
 > | **Value** | | |
-> | correlationId | | Different identifier from the container UUID |
+> | correlationId | | Unique identifier that is used to associate and track the series of messages |
 > | weight | | The weight is the priority in case of multiple, parallel instructions |
 > | metadata | | The metadata is any other information which should be passed to the device |
 > | forced | true/false | Forced to install the software modules |
@@ -37,14 +37,14 @@ You can install a specified list of containers (software modules).
 > | **artifacts** | | An array of artifacts contained in the software module |
 > | filename | | The file name of the artifact behind the provided URLs |
 > | size | | The size of the file in bytes |
-> | **download** | | A map with protocols and links to downloaded |
+> | **download** | | A map with protocols and links for artifact download |
 > | key | HTTP/HTTPS/FTP/SFTP | Available transport protocols |
 > | url | | URL to download the artifact |
 > | md5url | | MD5URL to download the MD5SUM file |
 > | **checksums** | | A map with checksums to verify the proper download |
-> | MD5 | | The checksum by md5 hash algorithm |
-> | SHA1 | | The checksum by sha1 hash algorithm |
-> | SHA256 | | The checksum by sha256 hash algorithm |
+> | MD5 | | MD5 checksum of the downloaded file |
+> | SHA1 | | SHA1 checksum of the downloaded file |
+> | SHA256 | | SHA256 checksum of the downloaded file |
 
 <br>
 
@@ -103,15 +103,15 @@ You can install a specified list of containers (software modules).
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/install` | Information about the affected Thing and the type of operation |
-> | path | `/features/SoftwareUpdatable/outbox/messages/install` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/SoftwareUpdatable/outbox/messages/install` | A path to the `SoftwareUpdatable` Feature, it's message channel, and `install` command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
 > | correlation-id | \<UUID\> | The same correlation id as the sent request message |
-> | **Status** | | Status of the operation install software modules over the container |
+> | **Status** | | Status of the `install` operation`|
 
 <br>
 
-**Example** : The response of the install software modules operation.
+**Example** : Response of a successful install of the software modules.
 
 **Topic:** `command//edge:device/res//install``
 ```json
@@ -128,7 +128,7 @@ You can install a specified list of containers (software modules).
 </details>
 
 ## **Remove**
-Remove a software module that is already installed.
+Remove of an installed software module.
 
 <details>
   <summary>Request</summary>
@@ -140,25 +140,25 @@ Remove a software module that is already installed.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/remove` | Information about the affected Thing and the type of operation |
-> | path | `/features/SoftwareUpdatable/inbox/messages/remove` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/SoftwareUpdatable/inbox/messages/remove` | A path to the `SoftwareUpdatable` Feature, it's message channel, and `remove` command |
 > | **Headers** | | Additional headers |
-> | response-required | true/false | If response required |
+> | response-required | true/false | If response is required |
 > | content-type | `application/json` | The content type |
 > | correlation-id | container UUID | The container UUID |
-> | **Value** | | Json presentation of software module to be removed |
-> | correlationId | | Different identifier from the container UUID |
+> | **Value** | | Json presentation of the software module to be removed |
+> | correlationId | | Unique identifier that is used to associate and track the series of messages |
 > | weight | | The weight is the priority in case of multiple, parallel instructions |
 > | metadata | | The metadata is any other information which should be passed to the device |
-> | forced | true/false | Forced to remove the software modules |
+> | forced | true/false | Force remove the software modules |
 > | ***software*** | | An array of software modules to be removed |
 > | group | | An identifier which groups the dependency into a certain category |
 > | name | | The dependency name |
 > | version | | The dependency version |
-> | type | | The "category" classifier for the dependency |
+> | type | | The "category" classifier of the dependency |
 
 <br>
 
-**Example** : In this example, you can remove an existing software modules container.
+**Example** : In this example, you can remove an existing software modules.
 
 **Topic:** `command//edge:device/req//remove`
 ```json
@@ -194,14 +194,14 @@ Remove a software module that is already installed.
 > | Name | Value | Description |
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/remove` | Information about the affected Thing and the type of operation |
-> | path | `/features/SoftwareUpdatable/outbox/messages/remove` | A path that references a part of a Thing which is affected by this message |
+> | path | `/features/SoftwareUpdatable/outbox/messages/remove` | A path to the `SoftwareUpdatable` Feature, it's message channel, and `remove` command |
 > | **Headers** | | Additional headers |
 > | correlation-id | container UUID | The container UUID |
 > | **Status** | | Status of the operation remove software modules from container |
 
 <br>
 
-**Example** : The response of the remove software modules operation.
+**Example** : The response of successful removal of software modules.
 
 **Topic:** `command//edge:device/res//remove``
 ```json
