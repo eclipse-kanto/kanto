@@ -27,7 +27,7 @@ Create a file backup.
 > | **Value** | | |
 > | correlationID | UUID | Identifier of the backup file |
 > | providers | | The providers of the restore command |
-> | ***options*** | | |
+> | **options** | | |
 > | backup.dir | | A local directory, to be backed up |
 > | https.url | | The URL for restoring the backed up directory |
 
@@ -112,7 +112,7 @@ Restore the backed up files or directory from a backend service.
 > | **Value** | | |
 > | correlationID | other UUID | Identifier of the restored file |
 > | providers | | Storage provider, one of `aws`, `azure`, `generic` |
-> | ***options*** | | Options are specific for each provider |
+> | **options** | | Options are specific for each provider |
 > | backup.dir | | A local directory, which to be backed up and then uploaded, using a storage provider of choice and temporary credentials |
 > | https.url | | The URL for restoring the backed up directory |
 

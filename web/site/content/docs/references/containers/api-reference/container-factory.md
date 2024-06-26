@@ -20,7 +20,7 @@ Create a container from a single container image reference with an option to sta
 > | - | - | - |
 > | topic | `<name>/<namespace>/things/live/messages/create` | Information about the affected Thing and the type of operation |
 > | path | `/features/ContainerFactory/inbox/messages/create` | A path to the `ContainerFactory` Feature, it's message channel, and command |
-> | **Headers** | | Additional headers. |
+> | **Headers** | | Additional headers |
 > | response-required | true/false | If response is required|
 > | content-type | `application/json` | The content type |
 > | correlation-id | container UUID | The container UUID |
@@ -105,7 +105,7 @@ Create a container with a specified container configuration.
 > | **Value** | | |
 > | imageRef | URL | Fully qualified image reference, that follows the {{% refn "https://github.com/opencontainers/image-spec" %}}OCI Image Specification{{% /refn %}}, the format is: `host[:port]/[namespace/]name:tag` |
 > | start | true/false | Force to start created container |
-> | ***config*** | | json presentation of the configuration |
+> | **config** | | json presentation of the configuration |
 > | domainName | | Domain name inside the container, if omitted the container's domain name will be set to a system-defined value |
 > | hostName | | Host name for the container, if omitted the container's hostname will be set to a system-defined value |
 > | env | | An array of environment variables that are set into the container |

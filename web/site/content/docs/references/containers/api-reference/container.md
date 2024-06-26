@@ -2,7 +2,7 @@
 title: "Container API"
 type: docs
 description: >
-  The container service provides the ability to start, pause, resume, stop, stop with specified options, rename, update or remove existing containers.
+  The container service offers a comprehensive range of operations for managing existing containers. Users can effortlessly start, pause, resume or stop, containers with specific configurations. Additionally, they have the flexibility to rename, update, or remove containers as needed.
 weight: 3
 ---
 
@@ -400,7 +400,7 @@ Update an existing container without recreating it. The provided configurations 
 </details>
 
 ## **Remove**
-Remove a container and frees the associated resources.
+Remove an existing container.
 
 <details>
   <summary>Request</summary>

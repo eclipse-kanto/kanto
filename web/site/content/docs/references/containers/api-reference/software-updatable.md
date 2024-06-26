@@ -29,7 +29,7 @@ You can install a specified list of containers (software modules).
 > | weight | | The weight is the priority in case of multiple, parallel instructions |
 > | metadata | | The metadata is any other information which should be passed to the device |
 > | forced | true/false | Forced to install the software modules |
-> | ***softwareModules*** | | An array of modules that will be installed |
+> | **softwareModules** | | An array of modules that will be installed |
 > | metadata | | The metadata is any other information which should be passed to the device |
 > | **softwareModule** | | An unique identifier for the software module |
 > | name | | The name of the software module |
@@ -150,7 +150,7 @@ Remove of an installed software module.
 > | weight | | The weight is the priority in case of multiple, parallel instructions |
 > | metadata | | The metadata is any other information which should be passed to the device |
 > | forced | true/false | Force remove the software modules |
-> | ***software*** | | An array of software modules to be removed |
+> | **software** | | An array of software modules to be removed |
 > | group | | An identifier which groups the dependency into a certain category |
 > | name | | The dependency name |
 > | version | | The dependency version |

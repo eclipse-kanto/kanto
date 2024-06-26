@@ -29,7 +29,7 @@ Install given list of software modules.
 > | weight | | The weight is the priority in case of multiple, parallel instructions |
 > | metadata | | The metadata is any other information which should be passed to the device |
 > | forced | true/false | Forced to remove the software modules |
-> | ***softwareModules*** | | An array of software modules to be installed |
+> | **softwareModules** | | An array of software modules to be installed |
 > | metadata | | The metadata is any other information which should be passed to the device |
 > | **softwareModule** | | An unique identifier for the software module |
 > | name | | The name of the software module |
@@ -148,7 +148,7 @@ Download software modules.
 > | weight | | The weight is the priority in case of multiple, parallel instructions |
 > | metadata | | The metadata is any other information which should be passed to the device |
 > | forced | true/false | Remove the software modules forcefully |
-> | ***softwareModules*** | | An array of software modules that will be downloaded|
+> | **softwareModules** | | An array of software modules that will be downloaded|
 > | metadata | | The metadata is any other information which should be passed to the device |
 > | **softwareModule** | | A unique identifier for the software module |
 > | name | | The name of the software module |

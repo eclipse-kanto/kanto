@@ -26,7 +26,7 @@ Request to receive metrics data.
 > | correlation-id | container UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
 > | frequency | | Time interval of how often the metrics data will be published as duration string (e.g. 5s) |
-> | ***filter*** | | Filter defines the type of metric data to be reported |
+> | **filter** | | Filter defines the type of metric data to be reported |
 > | id | | An array of identifiers whose metric data to be reported, supported are: `cpu.utilization`, `memory.utilization`, `memory.total`, `memory.used`, `io.readBytes`, `io.writeBytes`, `net.readBytes`, `net.writeBytes`, `pids` |
 > | originator | | Metrics data originator |
 > 
@@ -110,7 +110,7 @@ Metrics data reported by the device.
 > | content-type | `application/json` | The content type |
 > | **Value** | | The value of the received data from the device in json format |
 > | timestamp | | The timestamp in ms when this measure data is published |
-> | ***shapshot*** | | All the measurements collected at a concrete time per originator
+> | **snapshot** | | All the measurements collected at a concrete time per originator
 > | originator | | The originator for whose metric data to be reported |
 > | **measurements** | | An array of measurements identifier and value for originator |
 > | id | | The identifier whose metric data to be reported, supported are: cpu.utilization, cpu.load1, cpu.load5, cpu.load15, memory.utilization, memory.total, memory.available, memory.used, io.readBytes, io.writeBytes |

@@ -26,7 +26,7 @@ Start to upload file.
 > | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
 > | correlationID | other UUID | Identifier of the uploaded file |
-> | ***options*** | | Options are specific for each provider |
+> | **options** | | Options are specific for each provider |
 > | storage.provider | aws/azure/generic | Storage provider that will be used for uploading the files |
 
 <br>
@@ -111,7 +111,7 @@ Trigger operation is invoked from the backend.
 > | correlation-id | UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
 > | correlationID | other UUID | Identifier of the triggered file |
-> | ***options*** | | Options are specific for each provider |
+> | **options** | | Options are specific for each provider |
 
 <br>
 

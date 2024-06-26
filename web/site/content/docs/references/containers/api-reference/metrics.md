@@ -26,7 +26,7 @@ Request to receive data from the container.
 > | correlation-id | container UUID | The container UUID |
 > | **Value** | | |
 > | frequency | | Time interval of how often the metrics data will be published as duration string (e.g. 5s) |
-> | ***filter*** | | Filter defines the type of metric data to be reported |
+> | **filter** | | Filter defines the type of metric data to be reported |
 > | id | | An array of identifiers whose metric data to be reported, supported are: `cpu.utilization`, `memory.utilization`, `memory.total`, `memory.used`, `io.readBytes`, `io.writeBytes`, `net.readBytes`, `net.writeBytes`, `pids` |
 > | originator | | Metrics data originator |
 
@@ -109,7 +109,7 @@ Metrics data from a container based on the frequency specified in the request.
 > | content-type | `application/json` | The content type |
 > | **Value** | | The value of the received data from the container in json format |
 > | timestamp | | The timestamp in ms when this measure data is published |
-> | ***shapshot*** | | All the measurements collected per originator |
+> | **shapshot** | | All the measurements collected per originator |
 > | originator | | The originator for whose metric data to be reported |
 > | **measurements** | | An array of measurements identifier and value for originator |
 > | id | | The identifier whose metric data to be reported, supported are: `cpu.utilization`, `memory.utilization`, `memory.total`, `memory.used`, `io.readBytes`, `io.writeBytes`, `net.readBytes`, `net.writeBytes`, `pids` |

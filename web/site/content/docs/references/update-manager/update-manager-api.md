@@ -7,7 +7,7 @@ weight: 5
 ---
 
 ## **Apply**
-Applies a desired state to the device.
+Applies a [desired state](https://github.com/eclipse-kanto/update-manager/blob/main/docs/desired-state-specification.md) to the device.
 
 <details>
   <summary>Request</summary>
@@ -26,7 +26,7 @@ Applies a desired state to the device.
 > | correlation-id | container UUID | Used for correlating protocol messages, the same correlation-id as the sent back response message |
 > | **Value** | | |
 > | activityId | | The activity id of the new desired state |
-> | ***desiredState*** | | The desired state to be applied on a device |
+> | **desiredState** | | The [desired state](https://github.com/eclipse-kanto/update-manager/blob/main/docs/desired-state-specification.md) to be applied on a device |
 > | **baselines** | | An array of domain or cross-domain dependencies between components |
 > | title | | The title of the dependency |
 > | description | | The description of the dependency |
@@ -34,10 +34,10 @@ Applies a desired state to the device.
 > | components | | An array of the components of the dependency |
 > | **domains** | | An array of desired state for a single domain |
 > | id | | The id of this domain|
-> | ***config*** | | An array of key/value string pair|
+> | **config** | | An array of key/value string pair|
 > | key | | The key string |
 > | value | | The value of the key string |
-> | ***components*** | | An array of desired state component with additional key-value configuration pairs |
+> | **components** | | An array of desired state component with additional key-value configuration pairs |
 > | id | | The id of the component |
 > | version | | The version of the component |
 > | key | | The key string |
@@ -136,7 +136,7 @@ Applies a desired state to the device.
 </details>
 
 ## **Refresh**
-Reads the current state from the device and updates the status of the `UpdateManager` feature.
+Reads the [current state](https://github.com/eclipse-kanto/update-manager/blob/main/docs/current-state-specification.md) from the device and updates the status of the `UpdateManager` feature.
 
 <details>
   <summary>Request</summary>
