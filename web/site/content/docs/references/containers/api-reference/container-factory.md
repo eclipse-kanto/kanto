@@ -18,7 +18,7 @@ Create a container from a single container image reference with an option to sta
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/create` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/create` | Information about the affected Thing and the type of operation |
 > | path | `/features/ContainerFactory/inbox/messages/create` | A path to the `ContainerFactory` Feature, it's message channel, and command |
 > | **Headers** | | Additional headers |
 > | response-required | true/false | If response is required|
@@ -32,10 +32,10 @@ Create a container from a single container image reference with an option to sta
 
 **Example** : Create and automatically start a new `Hello World` container.
 
-**Topic:** `command//edge:device/req//create`
+**Topic:** `command//edge:device:edge:containers/req//create`
 ```json
 {
-	"topic":"edge/device/things/live/messages/create",
+	"topic":"edge/device:edge:containers/things/live/messages/create",
 	"headers":{
 		"response-required":true,
 		"content-type":"application/json",
@@ -59,7 +59,7 @@ Create a container from a single container image reference with an option to sta
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/create` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/create` | Information about the affected Thing and the type of operation |
 > | path | `/features/ContainerFactory/outbox/messages/create` | A path to the Feature, it's message channel, and command |
 > | **Headers** | | Additional headers |
 > | content-type | application/json | The content type |
@@ -70,10 +70,10 @@ Create a container from a single container image reference with an option to sta
 
 **Example** : Response of a `create` operation.
 
-**Topic:** `command//edge:device/res//create``
+**Topic:** `command//edge:device:edge:containers/res//create``
 ```json
 {
-	"topic":"edge/device/things/live/messages/create",
+	"topic":"edge/device:edge:containers/things/live/messages/create",
 	"headers":{
 		"content-type":"application/json",
 		"correlation-id":"<UUID>"
@@ -96,7 +96,7 @@ Create a container with a specified container configuration.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/createWithConfig` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/createWithConfig` | Information about the affected Thing and the type of operation |
 > | path | `/features/ContainerFactory/inbox/messages/createWithConfig` | A path to the `ContainerFactory` Feature, it's message channel, and command |
 > | **Headers** | | Additional headers |
 > | response-required | true/false | If response is required |
@@ -153,10 +153,10 @@ Create a container with a specified container configuration.
 
 **Example** : Create and automatically start a new `Hello World` container.
 
-**Topic:** `command//edge:device/req//createWithConfig`
+**Topic:** `command//edge:device:edge:containers/req//createWithConfig`
 ```json
 {
-	"topic":"edge/device/things/live/messages/createWithConfig",
+	"topic":"edge/device:edge:containers/things/live/messages/createWithConfig",
 	"headers":{
 		"response-required":true,
 		"content-type":"application/json",
@@ -237,7 +237,7 @@ Create a container with a specified container configuration.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/createWithConfig` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/createWithConfig` | Information about the affected Thing and the type of operation |
 > | path | `/features/ContainerFactory/outbox/messages/createWithConfig` | A path to the `ContainerFactory` Feature, it's message channel, and command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
@@ -251,7 +251,7 @@ Create a container with a specified container configuration.
 **Topic:** `command//edge:device/res//createWithConfig``
 ```json
 {
-	"topic":"edge/device/things/live/messages/createWithConfig",
+	"topic":"edge/device:edge:containers/things/live/messages/createWithConfig",
 	"headers":{
 		"content-type":"application/json",
 		"correlation-id":"<UUID>"

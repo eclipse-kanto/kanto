@@ -3,7 +3,7 @@ title: "Local digital twins configuration"
 type: docs
 description: >
   Customize the local digital twins persistency, access and synchronization.
-weight: 2
+weight: 4
 ---
 
 ### Properties

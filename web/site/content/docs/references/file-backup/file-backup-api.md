@@ -12,7 +12,7 @@ Create a file backup.
 <details>
   <summary>Request</summary>
 
-**Hono Command:** `command//<name>:<namespace>:edge:containers/req//backup`
+**Hono Command:** `command//<name>:<namespace>/req//backup`
 
 **Ditto Message:**
 
@@ -60,7 +60,7 @@ Create a file backup.
 <details>
   <summary>Response</summary>
 
-**Hono Command** : `command//<name>:<namespace>:edge:containers/res//backup`
+**Hono Command** : `command//<name>:<namespace>/res//backup`
 
 **Ditto Message:**
 
@@ -97,7 +97,7 @@ Restore the backed up files or directory from a backend service.
 <details>
   <summary>Request</summary>
 
-**Hono Command:** `command//<name>:<namespace>:edge:containers/req//restore`
+**Hono Command:** `command//<name>:<namespace>/req//restore`
 
 **Ditto Message:**
 
@@ -145,7 +145,7 @@ Restore the backed up files or directory from a backend service.
 <details>
   <summary>Response</summary>
 
-**Hono Command** : `command//<name>:<namespace>:edge:containers/res//restore`
+**Hono Command** : `command//<name>:<namespace>/res//restore`
 
 **Ditto Message:**
 
