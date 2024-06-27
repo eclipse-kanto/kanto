@@ -248,7 +248,7 @@ Create a container with a specified container configuration.
 
 **Example** : Response of a `createWithConfig` operation.
 
-**Topic:** `command//edge:device/res//createWithConfig``
+**Topic:** `command//edge:device:edge:containers/res//createWithConfig`
 ```json
 {
 	"topic":"edge/device:edge:containers/things/live/messages/createWithConfig",

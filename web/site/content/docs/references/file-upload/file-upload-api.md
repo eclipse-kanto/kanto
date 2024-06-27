@@ -12,7 +12,7 @@ Start a file upload operation.
 <details>
   <summary>Request</summary>
 
-**Hono Command:** `command//<name>:<namespace>:edge:containers/req//start`
+**Hono Command:** `command//<name>:<namespace>/req//start`
 
 **Ditto Message:**
 
@@ -175,7 +175,7 @@ Cancel a file upload operation.
 <details>
   <summary>Request</summary>
 
-**Hono Command:** `command//<name>:<namespace>:edge:containers/req//cancel`
+**Hono Command:** `command//<name>:<namespace>/req//cancel`
 
 **Ditto Message:**
 
@@ -255,7 +255,7 @@ Activate an upload of a file.
 <details>
   <summary>Request</summary>
 
-**Hono Command:** `command//<name>:<namespace>:edge:containers/req//activate`
+**Hono Command:** `command//<name>:<namespace>/req//activate`
 
 **Ditto Message:**
 

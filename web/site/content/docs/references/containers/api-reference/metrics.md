@@ -18,7 +18,7 @@ Request to receive data from the container.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/request` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/request` | Information about the affected Thing and the type of operation |
 > | path | `/features/Metrics/inbox/messages/request` | A path to the `Metrics` Feature, it's message channel, and `request` command|
 > | **Headers** | | Additional headers |
 > | response-required | true/false | If response is required |
@@ -34,10 +34,10 @@ Request to receive data from the container.
 
 **Example** : Request metrics data with a specified filter and frequency.
 
-**Topic:** `command//edge:device/req//request`
+**Topic:** `command//edge:device:edge:containers/req//request`
 ```json
 {
-	"topic":"edge/device/things/live/messages/request",
+	"topic":"edge/device:edge:containers/things/live/messages/request",
 	"headers":{
 		"response-required":true,
 		"content-type":"application/json",
@@ -66,7 +66,7 @@ Request to receive data from the container.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/request` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/request` | Information about the affected Thing and the type of operation |
 > | path | `/features/Metrics/outbox/messages/request` | A path to the `Metrics` Feature, it's message channel, and `request` command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
@@ -77,10 +77,10 @@ Request to receive data from the container.
 
 **Example** : The response of the request metrics data operation.
 
-**Topic:** `command//edge:device/res//request``
+**Topic:** `command//edge:device:edge:containers/res//request``
 ```json
 {
-	"topic":"edge/device/things/live/messages/request",
+	"topic":"edge/device:edge:containers/things/live/messages/request",
 	"headers":{
 		"content-type":"application/json",
 		"correlation-id":"<UUID>"
@@ -103,7 +103,7 @@ Metrics data from a container based on the frequency specified in the request.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/data` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/data` | Information about the affected Thing and the type of operation |
 > | path | `/features/Metrics/outbox/messages/data` | A path to the `Metrics` Feature and it's message channel. |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
@@ -119,10 +119,10 @@ Metrics data from a container based on the frequency specified in the request.
 
 **Example** : Metrics data from a container.
 
-**Topic:** `command//edge:device/res//data``
+**Topic:** `command//edge:device:edge:containers/res//data``
 ```json
 {
-	"topic":"edge/device/things/live/messages/data",
+	"topic":"edge/device:edge:containers/things/live/messages/data",
 	"headers":{
 		"content-type":"application/json",
 	},

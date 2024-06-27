@@ -18,7 +18,7 @@ Start an existing container.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/start` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/start` | Information about the affected Thing and the type of operation |
 > | path | `/features/Container:<UUID>/inbox/messages/start` | A path to the `Container` Feature, it's message channel, and `start` command |
 > | **Headers** | | Additional headers |
 > | response-required | true/false | If response is required |
@@ -30,10 +30,10 @@ Start an existing container.
 
 **Example** : Start an existing container.
 
-**Topic:** `command//edge:device/req//start`
+**Topic:** `command//edge:device:edge:containers/req//start`
 ```json
 {
-	"topic":"edge/device/things/live/messages/start",
+	"topic":"edge/device:edge:containers/things/live/messages/start",
 	"headers":{
 		"response-required":true,
 		"content-type":"application/json",
@@ -54,7 +54,7 @@ Start an existing container.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/start` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/start` | Information about the affected Thing and the type of operation |
 > | path | `/features/Container:<UUID>/outbox/messages/start` | A path to the `Container` Feature, it's message channel, and `start` command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
@@ -66,10 +66,10 @@ Start an existing container.
 
 **Example** : Response of a successful `start` operation.
 
-**Topic:** `command//edge:device/res//start``
+**Topic:** `command//edge:device:edge:containers/res//start``
 ```json
 {
-	"topic":"edge/device/things/live/messages/start",
+	"topic":"edge/device:edge:containers/things/live/messages/start",
 	"headers":{
 		"content-type":"application/json",
 		"correlation-id":"<UUID>"
@@ -92,7 +92,7 @@ Stop an existing and running container.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/stop` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/stop` | Information about the affected Thing and the type of operation |
 > | path | `/features/Container:<UUID>/inbox/messages/stop` | A path to the `Container` Feature, it's message channel, and `stop` command |
 > | **Headers** | | Additional headers |
 > | response-required | true/false | If response is required |
@@ -104,10 +104,10 @@ Stop an existing and running container.
 
 **Example** : Stop an existing and running container.
 
-**Topic:** `command//edge:device/req//stop`
+**Topic:** `command//edge:device:edge:containers/req//stop`
 ```json
 {
-	"topic":"edge/device/things/live/messages/stop",
+	"topic":"edge/device:edge:containers/things/live/messages/stop",
 	"headers":{
 		"response-required":true,
 		"content-type":"application/json",
@@ -128,7 +128,7 @@ Stop an existing and running container.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/stop` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/stop` | Information about the affected Thing and the type of operation |
 > | path | `/features/Container:<UUID>/outbox/messages/stop` | A path to the `Container` Feature, it's message channel, and `stop` command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
@@ -139,10 +139,10 @@ Stop an existing and running container.
 
 **Example** : Response of a successful stop operation.
 
-**Topic:** `command//edge:device/res//stop``
+**Topic:** `command//edge:device:edge:containers/res//stop``
 ```json
 {
-	"topic":"edge/device/things/live/messages/stop",
+	"topic":"edge/device:edge:containers/things/live/messages/stop",
 	"headers":{
 		"content-type":"application/json",
 		"correlation-id":"<UUID>"
@@ -165,7 +165,7 @@ Stop an existing and running container with given options.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/stopWithOptions` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/stopWithOptions` | Information about the affected Thing and the type of operation |
 > | path | `/features/Container:<UUID>/inbox/messages/stopWithOptions` | A path to the `Container` Feature, it's message channel, and `stopWithOptions` command |
 > | **Headers** | | Additional headers |
 > | response-required | true/false | If response is required |
@@ -180,10 +180,10 @@ Stop an existing and running container with given options.
 
 **Example** : Stop an existing and running container with specified options.
 
-**Topic:** `command//edge:device/req//stopWithOptions`
+**Topic:** `command//edge:device:edge:containers/req//stopWithOptions`
 ```json
 {
-	"topic":"edge/device/things/live/messages/stopWithOptions",
+	"topic":"edge/device:edge:containers/things/live/messages/stopWithOptions",
 	"headers":{
 		"response-required":true,
 		"content-type":"application/json",
@@ -208,7 +208,7 @@ Stop an existing and running container with given options.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/stopWithOptions` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/stopWithOptions` | Information about the affected Thing and the type of operation |
 > | path | `/features/Container:<UUID>/outbox/messages/stopWithOptions` | A path to the `Container` Feature, it's message channel, and `stopWithOptions` command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
@@ -223,7 +223,7 @@ Stop an existing and running container with given options.
 **Topic:** `command//edge:device/res//stopWithOptions``
 ```json
 {
-	"topic":"edge/device/things/live/messages/stopWithOptions",
+	"topic":"edge/device:edge:containers/things/live/messages/stopWithOptions",
 	"headers":{
 		"content-type":"application/json",
 		"correlation-id":"<UUID>"
@@ -246,7 +246,7 @@ Change the name of an existing container to the specified new name.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/rename` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/rename` | Information about the affected Thing and the type of operation |
 > | path | `/features/Container:<UUID>/inbox/messages/rename` | A path to the `Container` Feature, it's message channel, and `rename` command  |
 > | **Headers** | | Additional headers |
 > | response-required | true/false | If response is required |
@@ -258,10 +258,10 @@ Change the name of an existing container to the specified new name.
 
 **Example** : Change the name of an existing container to the specified new name.
 
-**Topic:** `command//edge:device/req//rename`
+**Topic:** `command//edge:device:edge:containers/req//rename`
 ```json
 {
-	"topic":"edge/device/things/live/messages/rename",
+	"topic":"edge/device:edge:containers/things/live/messages/rename",
 	"headers":{
 		"response-required":true,
 		"content-type":"application/json",
@@ -282,7 +282,7 @@ Change the name of an existing container to the specified new name.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/rename` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/rename` | Information about the affected Thing and the type of operation |
 > | path | `/features/Container:<UUID>/outbox/messages/rename` | A path to the `Container` Feature, it's message channel, and `rename` command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
@@ -293,10 +293,10 @@ Change the name of an existing container to the specified new name.
 
 **Example** : The response of the rename operation.
 
-**Topic:** `command//edge:device/res//rename``
+**Topic:** `command//edge:device:edge:containers/res//rename``
 ```json
 {
-	"topic":"edge/device/things/live/messages/rename",
+	"topic":"edge/device:edge:containers/things/live/messages/rename",
 	"headers":{
 		"content-type":"application/json",
 		"correlation-id":"<UUID>"
@@ -319,7 +319,7 @@ Update an existing container without recreating it. The provided configurations 
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/update` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/update` | Information about the affected Thing and the type of operation |
 > | path | `/features/Container:<UUID>/inbox/messages/update` | A path to the `Container` Feature, it's message channel, and `update` command |
 > | **Headers** | | Additional headers |
 > | response-required | true/false | If response is required |
@@ -339,10 +339,10 @@ Update an existing container without recreating it. The provided configurations 
 
 **Example** : Update an existing container resources and restart policy.
 
-**Topic:** `command//edge:device/req//update`
+**Topic:** `command//edge:device:edge:containers/req//update`
 ```json
 {
-	"topic":"edge/device/things/live/messages/update",
+	"topic":"edge/device:edge:containers/things/live/messages/update",
 	"headers":{
 		"response-required":true,
 		"content-type":"application/json",
@@ -374,7 +374,7 @@ Update an existing container without recreating it. The provided configurations 
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/update` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/update` | Information about the affected Thing and the type of operation |
 > | path | `/features/Container:<UUID>/outbox/messages/update` | A path to the `Container` Feature, it's message channel, and `update` command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
@@ -385,10 +385,10 @@ Update an existing container without recreating it. The provided configurations 
 
 **Example** : Successful response of an `update` operation.
 
-**Topic:** `command//edge:device/res//update``
+**Topic:** `command//edge:device:edge:containers/res//update``
 ```json
 {
-	"topic":"edge/device/things/live/messages/update",
+	"topic":"edge/device:edge:containers/things/live/messages/update",
 	"headers":{
 		"content-type":"application/json",
 		"correlation-id":"<UUID>"
@@ -411,7 +411,7 @@ Remove an existing container.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/remove` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/remove` | Information about the affected Thing and the type of operation |
 > | path | `/features/Container:<UUID>/inbox/messages/remove` | A path to the `Container` Feature, it's message channel, and `remove` command |
 > | **Headers** | | Additional headers |
 > | response-required | true/false | If response is required |
@@ -423,10 +423,10 @@ Remove an existing container.
 
 **Example** : Remove an existing container.
 
-**Topic:** `command//edge:device/req//remove`
+**Topic:** `command//edge:device:edge:containers/req//remove`
 ```json
 {
-	"topic":"edge/device/things/live/messages/remove",
+	"topic":"edge/device:edge:containers/things/live/messages/remove",
 	"headers":{
 		"response-required":true,
 		"content-type":"application/json",
@@ -447,7 +447,7 @@ Remove an existing container.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/remove` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/remove` | Information about the affected Thing and the type of operation |
 > | path | `/features/Container:<UUID>/outbox/messages/remove` | A path to the `Container` Feature, it's message channel, and `remove` command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
@@ -458,10 +458,10 @@ Remove an existing container.
 
 **Example** : Successful response of an `remove` operation.
 
-**Topic:** `command//edge:device/res//remove``
+**Topic:** `command//edge:device:edge:containers/res//remove``
 ```json
 {
-	"topic":"edge/device/things/live/messages/remove",
+	"topic":"edge/device:edge:containers/things/live/messages/remove",
 	"headers":{
 		"content-type":"application/json",
 		"correlation-id":"<UUID>"

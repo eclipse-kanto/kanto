@@ -12,7 +12,7 @@ Install given list of software modules.
 <details>
   <summary>Request</summary>
 
-**Hono Command:** `command//<name>:<namespace>:edge:containers/req//install`
+**Hono Command:** `command//<name>:<namespace>/req//install`
 
 **Ditto Message:**
 
@@ -94,7 +94,7 @@ Install given list of software modules.
 <details>
   <summary>Response</summary>
 
-**Hono Command** : `command//<name>:<namespace>:edge:containers/res//install`
+**Hono Command** : `command//<name>:<namespace>/res//install`
 
 **Ditto Message:**
 
@@ -131,7 +131,7 @@ Download software modules.
 <details>
   <summary>Request</summary>
 
-**Hono Command:** `command//<name>:<namespace>:edge:containers/req//download`
+**Hono Command:** `command//<name>:<namespace>/req//download`
 
 **Ditto Message:**
 
@@ -213,7 +213,7 @@ Download software modules.
 <details>
   <summary>Response</summary>
 
-**Hono Command** : `command//<name>:<namespace>:edge:containers/res//download`
+**Hono Command** : `command//<name>:<namespace>/res//download`
 
 **Ditto Message:**
 

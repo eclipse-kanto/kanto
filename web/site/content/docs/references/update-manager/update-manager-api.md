@@ -12,7 +12,7 @@ Applies a [desired state](https://github.com/eclipse-kanto/update-manager/blob/m
 <details>
   <summary>Request</summary>
 
-**Hono Command:** `command//<name>:<namespace>:edge:containers/req//apply`
+**Hono Command:** `command//<name>:<namespace>/req//apply`
 
 **Ditto Message:**
 
@@ -103,7 +103,7 @@ Applies a [desired state](https://github.com/eclipse-kanto/update-manager/blob/m
 <details>
   <summary>Response</summary>
 
-**Hono Command** : `command//<name>:<namespace>:edge:containers/res//apply`
+**Hono Command** : `command//<name>:<namespace>/res//apply`
 
 **Ditto Message:**
 
@@ -141,7 +141,7 @@ Reads the [current state](https://github.com/eclipse-kanto/update-manager/blob/m
 <details>
   <summary>Request</summary>
 
-**Hono Command:** `command//<name>:<namespace>:edge:containers/req//refresh`
+**Hono Command:** `command//<name>:<namespace>/req//refresh`
 
 **Ditto Message:**
 
@@ -180,7 +180,7 @@ Reads the [current state](https://github.com/eclipse-kanto/update-manager/blob/m
 <details>
   <summary>Response</summary>
 
-**Hono Command** : `command//<name>:<namespace>:edge:containers/res//refresh`
+**Hono Command** : `command//<name>:<namespace>/res//refresh`
 
 **Ditto Message:**
 

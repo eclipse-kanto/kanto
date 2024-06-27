@@ -12,7 +12,7 @@ Request to receive metrics data.
 <details>
   <summary>Request</summary>
 
-**Hono Command:** `command//<name>:<namespace>:edge:containers/req//request`
+**Hono Command:** `command//<name>:<namespace>/req//request`
 
 **Ditto Message:**
 
@@ -61,7 +61,7 @@ Request to receive metrics data.
 <details>
   <summary>Response</summary>
 
-**Hono Command** : `command//<name>:<namespace>:edge:containers/res//request`
+**Hono Command** : `command//<name>:<namespace>/res//request`
 
 **Ditto Message:**
 
@@ -98,7 +98,7 @@ Metrics data reported by the device.
 <details>
   <summary>Response</summary>
 
-**Hono Command** : `command//<name>:<namespace>:edge:containers/res//data`
+**Hono Command** : `command//<name>:<namespace>/res//data`
 
 **Ditto Message:**
 

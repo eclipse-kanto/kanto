@@ -18,7 +18,7 @@ You can install a specified list of containers (software modules).
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/install` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/install` | Information about the affected Thing and the type of operation |
 > | path | `/features/SoftwareUpdatable/inbox/messages/install` | A path to the `SoftwareUpdatable` Feature, it's message channel, and `install` command |
 > | **Headers** | | Additional headers |
 > | response-required | true/false | If response is required |
@@ -50,10 +50,10 @@ You can install a specified list of containers (software modules).
 
 **Example** : In this example, you can install the listed modules.
 
-**Topic:** `command//edge:device/req//install`
+**Topic:** `command//edge:device:edge:containers/req//install`
 ```json
 {
-	"topic":"edge/device/things/live/messages/install",
+	"topic":"edge/device:edge:containers/things/live/messages/install",
 	"headers":{
 		"response-required":true,
 		"content-type":"application/json",
@@ -102,7 +102,7 @@ You can install a specified list of containers (software modules).
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/install` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/install` | Information about the affected Thing and the type of operation |
 > | path | `/features/SoftwareUpdatable/outbox/messages/install` | A path to the `SoftwareUpdatable` Feature, it's message channel, and `install` command |
 > | **Headers** | | Additional headers |
 > | content-type | `application/json` | The content type |
@@ -116,7 +116,7 @@ You can install a specified list of containers (software modules).
 **Topic:** `command//edge:device/res//install``
 ```json
 {
-	"topic":"edge/device/things/live/messages/install",
+	"topic":"edge/device:edge:containers/things/live/messages/install",
 	"headers":{
 		"content-type":"application/json",
 		"correlation-id":"<UUID>"
@@ -139,7 +139,7 @@ Remove of an installed software module.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/remove` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/remove` | Information about the affected Thing and the type of operation |
 > | path | `/features/SoftwareUpdatable/inbox/messages/remove` | A path to the `SoftwareUpdatable` Feature, it's message channel, and `remove` command |
 > | **Headers** | | Additional headers |
 > | response-required | true/false | If response is required |
@@ -160,10 +160,10 @@ Remove of an installed software module.
 
 **Example** : In this example, you can remove an existing software modules.
 
-**Topic:** `command//edge:device/req//remove`
+**Topic:** `command//edge:device:edge:containers/req//remove`
 ```json
 {
-	"topic":"edge/device/things/live/messages/remove",
+	"topic":"edge/device/things:edge:containers/live/messages/remove",
 	"headers":{
 		"response-required":true,
 		"content-type":"application/json",
@@ -193,7 +193,7 @@ Remove of an installed software module.
 
 > | Name | Value | Description |
 > | - | - | - |
-> | topic | `<name>/<namespace>/things/live/messages/remove` | Information about the affected Thing and the type of operation |
+> | topic | `<name>/<namespace>:edge:containers/things/live/messages/remove` | Information about the affected Thing and the type of operation |
 > | path | `/features/SoftwareUpdatable/outbox/messages/remove` | A path to the `SoftwareUpdatable` Feature, it's message channel, and `remove` command |
 > | **Headers** | | Additional headers |
 > | correlation-id | container UUID | The container UUID |
@@ -203,10 +203,10 @@ Remove of an installed software module.
 
 **Example** : The response of successful removal of software modules.
 
-**Topic:** `command//edge:device/res//remove``
+**Topic:** `command//edge:device:edge:containers/res//remove``
 ```json
 {
-	"topic":"edge/device/things/live/messages/remove",
+	"topic":"edge/device:edge:containers/things/live/messages/remove",
 	"headers":{
 		"correlation-id":"<UUID>"
 	},
