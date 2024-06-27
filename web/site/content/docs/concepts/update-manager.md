@@ -3,7 +3,7 @@ title: "Update manager"
 type: docs
 description: >
   Empower the edge device for OTA updates.
-weight: 2
+weight: 4
 ---
 
 Update manager enables a lightweight core component which is capable to easily perform complex OTA update scenarios on a target device. The following capabilities are provided:
