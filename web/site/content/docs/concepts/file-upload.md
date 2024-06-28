@@ -3,7 +3,7 @@ title: "File upload"
 type: docs
 description: >
   Empower the edge device to upload files to various storage providers.
-weight: 4
+weight: 7
 ---
 
 File upload enables sending of files to a backend storage of choice. It can be used both locally and remotely via a desired IoT cloud ecosystem. The following use cases are provided:
