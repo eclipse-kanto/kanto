@@ -220,7 +220,7 @@ Stop an existing and running container with given options.
 
 **Example** : Response of a successful the `stopWithOptions` operation.
 
-**Topic:** `command//edge:device/res//stopWithOptions``
+**Topic:** `command//edge:device:edge:containers/res//stopWithOptions``
 ```json
 {
 	"topic":"edge/device:edge:containers/things/live/messages/stopWithOptions",

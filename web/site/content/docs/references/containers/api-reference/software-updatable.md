@@ -113,7 +113,7 @@ You can install a specified list of containers (software modules).
 
 **Example** : Response of a successful install of the software modules.
 
-**Topic:** `command//edge:device/res//install``
+**Topic:** `command//edge:device:edge:containers/res//install``
 ```json
 {
 	"topic":"edge/device:edge:containers/things/live/messages/install",
@@ -163,7 +163,7 @@ Remove of an installed software module.
 **Topic:** `command//edge:device:edge:containers/req//remove`
 ```json
 {
-	"topic":"edge/device/things:edge:containers/live/messages/remove",
+	"topic":"edge/device:edge:containers/things/live/messages/remove",
 	"headers":{
 		"response-required":true,
 		"content-type":"application/json",
