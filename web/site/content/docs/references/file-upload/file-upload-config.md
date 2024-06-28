@@ -3,7 +3,7 @@ title: "File upload configuration"
 type: docs
 description: >
   Customize the files transfer to a backend storage.
-weight: 5
+weight: 3
 ---
 
 ### Properties
