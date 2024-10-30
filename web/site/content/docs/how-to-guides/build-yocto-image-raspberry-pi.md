@@ -39,10 +39,11 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
   
 ### Add Meta Layers to the source directory
 
-* Based on the yocto version, clone the below meta layers in the source directory
+* Based on the yocto version, clone the meta layers in the source directory
   `meta-raspberrypi`
   `meta-openembedded`
   `meta-virtualization`
+  `meta-lts-mixins`
   
 * Clone meta-raspberry pi layer to sources directory
   ```shell
@@ -67,7 +68,17 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
   cd meta-virtualization
   git checkout kirkstone
   ```
+  
+* Clone meta-lts-mixins layers to source directory
+  ```shell
+  cd ..
+  git clone https://git.yoctoproject.org/git/meta-lts-mixins
+  cd meta-lts-mixins
+  git checkout kirkstone/go
+  ```
 
+  Note : The above layer is required to get the updated go version to be added in the yocto build, since kanto requires go version 1.19 and above.
+  
 ### Add meta-kanto layer to the sources directory
 
 * Clone meta-kanto layer to the sources directory
@@ -97,19 +108,30 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
    
 ### Configure bblayer.conf file
 
+* By Default in the bblayer.conf file some of the layers will be added
+
 * Add all the layers to the bblayers.conf file with below command
   ```shell
   bitbake-layers add-layer /home/path/to/meta/layer/directory
   ```
-* Add layers to bblayers.conf file
   
-  ```shell
-  bitbake-layers add-layers /path/to/meta/layer
+  The following layers should be added in the bblayer.conf file
+  
+  ```json
+  meta-raspberrypi
+  meta-openembedded
+  meta-virtualization
+  meta-lts-mixins
+  meta-openembedded/meta-oe
+  meta-openembedded/meta-python
+  meta-opemembedded/meta-networking
+  meta-openembedded/meta-filesystems
+  meta-kanto
   ```
-  while adding layers bitbake might have dependencies, add the dependent layers.
   
-  Note : Provide path for the meta-layer that has been cloned in the previous steps.
+* Example to add layers to bblayers.conf file
   
+  while adding layers bitbake might have dependencies, add the dependent layers first.
   Example,
   
   To add meta-kanto layer to bblayer.conf file which is kept at `/home/yocto/sources/meta-kanto`
@@ -121,7 +143,10 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
   ```shell
   bitbake-layers show-layers
   ```
-
+  
+  The ouput should be as shown below
+  
+  
 ### Configure local.conf file
 
 * Open local.conf file which is placed at the below location in build directory
@@ -137,9 +162,9 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
 
   Note: Check the sources/meta-raspberrypi/conf/machine for the availabe machines for raspberry pi.
   
-* Add required variables in local.conf file as provided in the link below
+* Add required variables in local.conf file as shown and provided in the link below,
 
-  {{% relrefn "hono" %}} https://github.com/eclipse-kanto/meta-kanto {{% /relrefn %}} readme.md file
+  {{% relrefn "hono" %}} https://github.com/eclipse-kanto/meta-kanto {{% /relrefn %}}
   
   ```json
     # Add the required DISTRO_FEATURES
@@ -152,14 +177,10 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
     VIRTUAL-RUNTIME_init_manager = "systemd"
     DISTRO_FEATURES_BACKFILL_CONSIDERED = "sysvinit"
     VIRTUAL-RUNTIME_initscripts = "systemd-compat-units"
-
+    
     # Add the Eclipse Kanto components
+    IMAGE_INSTALL:append = " mosquitto"
     IMAGE_INSTALL:append = " suite-connector"
-  ``` 
-  
-  Note : Add IMAGE_INSTALL:append with other kanto components to build all the kanto recepies.
-  
-  ```json
     IMAGE_INSTALL:append = " aws-connector"
     IMAGE_INSTALL:append = " azure-connector"
     IMAGE_INSTALL:append = " software-updates"
@@ -182,12 +203,60 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
     meta-ide-support
   ```
 
-  Note : Build issues if something arises needs to be resolved and again 'bitbake target-name' to be run.
+  Note : If any build issues comes up, resolve the issue and run the bitbake `target-name' command again for the build.
+  
 
-### Build Image Repository
+### Final Build Image Repository Location
 
 * After the successful build, the image will be availabe at the below location.
 
   ```json
   build/tmp/deploy/images/`machine_name`/
   ```
+  
+### Run & Test the image with QEMU (Quick Emulator)
+
+* If RaspberryPi device is not availabe, the image can be run and tested on QEMU. Make the below changes to run on QEMU.
+
+  In `build/conf/local.conf' file 
+  
+* Change the machine variable name to relevant qemu arch as shown below by changing the `MACHINE` varilabe from raspberrypi4 to 'qemux86_64`
+  
+  ```json
+  # You need to select a specific machine to target the build with. There are a selection
+  # of emulated machines available which can boot and run in the QEMU emulator:
+  #
+  #MACHINE ?= "qemuarm"
+  #MACHINE ?= "qemuarm64"
+  #MACHINE ?= "qemux86"
+  #MACHINE ?= "qemux86-64"
+
+  # This sets the default machine to be qemux86-64 if no other machine is selected:
+  MACHINE ??= "qemux86-64"
+ 
+  ```
+  
+* Run bitbake `target-name` command by sourcing the `oe-init-build-env` script
+
+* In the same build directory run the below command to run qemu
+
+ ```shell
+  runqemu qemux86-64
+  ```
+  
+* The above command will open a window which boots as "YOCTO PROJECT" and it enters to command line window. Enter login as `root', and check for kanto components with the below commands.
+
+ ```shell
+  systemctl status \
+  suite-connector.service \
+  container-management.service \
+  software-update.service \
+  file-upload.service \
+  file-backup.service \
+  system-metrics.service \
+  kanto-update-manager.service
+  ```
+  
+  All listed services must be in an active running state.
+
+
