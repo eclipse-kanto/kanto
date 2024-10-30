@@ -229,7 +229,7 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
   #MACHINE ?= "qemux86-64"
 
   # This sets the default machine to be qemux86-64 if no other machine is selected:
-  MACHINE ??= "qemux86-64"
+  MACHINE ??= "qemuarm64"
  
   ```
   
@@ -238,7 +238,7 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
 * In the same build directory run the below command to run qemu
 
  ```shell
-  runqemu qemux86-64
+  runqemu qemuarm64
   ```
   
 * The above command will open a window which boots as "YOCTO PROJECT" and it enters to command line window. Enter login as `root', and check for kanto components with the below commands.
