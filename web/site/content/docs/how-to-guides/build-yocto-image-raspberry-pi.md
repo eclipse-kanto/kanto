@@ -144,9 +144,6 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
   bitbake-layers show-layers
   ```
   
-  The ouput should be as shown below
-  
-  
 ### Configure local.conf file
 
 * Open local.conf file which is placed at the below location in build directory
