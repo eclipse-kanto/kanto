@@ -244,6 +244,10 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
    runqemu qemuarm64
   ```
   
+  ![how-to-guides](/kanto/images/docs/how-to-guides/runqemu_qemuarm64.png)
+  
+  ![how-to-guides](/kanto/images/docs/how-to-guides/login_page.png)
+  
 * The above command will open a window which boots as "YOCTO PROJECT" and it enters to command line window. Enter login as `root', and check for kanto components with the below commands.
 
   ```shell
@@ -258,6 +262,8 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
   ```
   
   All listed services must be in an active running state.
+  
+  ![how-to-guides](/kanto/images/docs/how-to-guides/verify_kanto_components.png)
 
 ### Flash the image on Raspberry Pi
 
