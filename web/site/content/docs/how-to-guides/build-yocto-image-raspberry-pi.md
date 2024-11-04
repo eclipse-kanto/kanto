@@ -1,3 +1,4 @@
+
 ---
 title: "Build Yocto Image for Raspberry Pi"
 type: docs
