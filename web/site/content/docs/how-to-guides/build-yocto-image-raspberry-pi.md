@@ -144,6 +144,9 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
   bitbake-layers show-layers
   ```
   
+  The ouput should be as shown below
+  
+  
 ### Configure local.conf file
 
 * Open local.conf file which is placed at the below location in build directory
@@ -229,7 +232,7 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
   #MACHINE ?= "qemux86-64"
 
   # This sets the default machine to be qemux86-64 if no other machine is selected:
-  MACHINE ??= "qemuarm64"
+  MACHINE ??= "qemuarm"
  
   ```
   
@@ -237,13 +240,13 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
 
 * In the same build directory run the below command to run qemu
 
- ```shell
-  runqemu qemuarm64
+  ```shell
+   runqemu qemuarm
   ```
   
 * The above command will open a window which boots as "YOCTO PROJECT" and it enters to command line window. Enter login as `root', and check for kanto components with the below commands.
 
- ```shell
+  ```shell
   systemctl status \
   suite-connector.service \
   container-management.service \
@@ -256,4 +259,35 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
   
   All listed services must be in an active running state.
 
+### Flash the image on Raspberry Pi
 
+* The build image will be availabe at `build/tmp/deploy/images/raspberrypi4/`
+
+* Identify the SD Card Device with the below command to find the device name of your SD card
+
+  ```shell
+  lsblk
+  ```
+
+* Flash the image to sd card
+
+  ```shell
+  sudo dd if=/path/to/image.wic of=/dev/sdX bs=4M status=progress
+  ```
+  
+* Boot the Raspberry Pi,
+
+  Insert the SD card into your Raspberry Pi and power it on. The Pi should boot from the Yocto image.Login to your device and run the below command to verify the kanto components.
+  
+  ```shell
+  systemctl status \
+  suite-connector.service \
+  container-management.service \
+  software-update.service \
+  file-upload.service \
+  file-backup.service \
+  system-metrics.service \
+  kanto-update-manager.service
+  ```
+  
+  
