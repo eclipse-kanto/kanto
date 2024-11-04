@@ -6,6 +6,7 @@ description: >
 weight: 9
 ---
 
+
 Building a Yocto Image for a Raspberry Pi involves several steps, including setting up the environment, download the necessary layers, configuring the build and compiling the image.
 
 ### Before you begin
