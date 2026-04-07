@@ -180,7 +180,7 @@ Building a Yocto Image for a Raspberry Pi involves several steps, including sett
     IMAGE_INSTALL:append = " suite-connector"
     IMAGE_INSTALL:append = " aws-connector"
     IMAGE_INSTALL:append = " azure-connector"
-    IMAGE_INSTALL:append = " software-updates"
+    IMAGE_INSTALL:append = " software-update"
     IMAGE_INSTALL:append = " file-upload"
     IMAGE_INSTALL:append = " file-backup"
     IMAGE_INSTALL:append = " update-manager"
